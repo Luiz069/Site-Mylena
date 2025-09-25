@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jogo da Forca Multijogador</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="side-menu-overlay" class="side-menu-overlay"></div>
+    <div id="side-menu" class="side-menu">
+      <h2>Tema</h2>
+      <div class="menu-itens">
+        <div class="select-theme-section">
+          <select id="theme-selector" class="theme-select">
+            <option value="frutas">Frutas</option>
+            <option value="animais">Animais</option>
+            <option value="paises">Países</option>
+            <option value="profissoes">Profissões</option>
+            <option value="comidas">Comidas</option>
+          </select>
+        </div>
+
+        <div class="sair">
+          <a class="sair-link" href="/html/game.html">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="28"
+              height="28"
+              fill="currentColor"
+              class="bi bi-box-arrow-right"
+              viewBox="0 0 16 16"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"
+              />
+              <path
+                fill-rule="evenodd"
+                d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"
+              />
+            </svg>
+            Logout
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <header>
+      <div id="side-menu-overlay" class="side-menu-overlay"></div>
+      <div id="side-menu" class="side-menu">
+        <h2>Tema</h2>
+        <div class="select-theme-section">
+          <select id="theme-selector" class="theme-select">
+            <option value="frutas">Frutas</option>
+            <option value="animais">Animais</option>
+            <option value="paises">Países</option>
+            <option value="profissoes">Profissões</option>
+            <option value="comidas">Comidas</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="game-header">
+        <button id="hamburger-btn" class="menu-hamburguer">
+          <span class="linha"></span>
+          <span class="linha"></span>
+          <span class="linha"></span>
+        </button>
+        <div class="right-icons">
+          <button
+            id="add-player-btn"
+            class="icon-btn"
+            title="Adicionar Jogador"
+          >
+            <span class="add-profile" style="font-size: 0.8rem"
+              ><img src="Add-Friend-Icon.png" alt=""
+            /></span>
+            <!-- <span style="font-size: 1.5rem">+</span> -->
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="container">
+        <h1 class="titulo">Jogo da Forca</h1>
+        <p id="selected-theme-display" class="theme-info"></p>
+
+        <div id="score-board" class="score-board hidden"></div>
+
+        <div class="gallows">
+          <svg viewBox="0 0 200 200">
+            <path d="M 10 190 H 190" class="gallows-part visible" />
+            <path d="M 50 190 V 10" class="gallows-part visible" />
+            <path d="M 50 10 H 150" class="gallows-part visible" />
+            <path d="M 150 10 V 50" class="gallows-part visible" />
+
+            <circle cx="150" cy="70" r="20" class="gallows-part" id="head" />
+            <path d="M 150 90 V 140" class="gallows-part" id="torso" />
+            <path d="M 150 100 L 120 130" class="gallows-part" id="left-arm" />
+            <path d="M 150 100 L 180 130" class="gallows-part" id="right-arm" />
+            <path d="M 150 140 L 120 170" class="gallows-part" id="left-leg" />
+            <path d="M 150 140 L 180 170" class="gallows-part" id="right-leg" />
+          </svg>
+        </div>
+
+        <div id="word-display" class="word-display"></div>
+
+        <!-- <p id="loading-message" class="message hidden"></p> -->
+        <div id="message" class="message"></div>
+
+        <div id="keyboard" class="keyboard"></div>
+
+        <div id="end-game-buttons" class="hidden">
+          <button id="new-round-btn" class="btn btn-new-round">
+            Nova Rodada
+          </button>
+          <button id="reset-game-btn" class="btn btn-reset">
+            Reiniciar Jogo
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

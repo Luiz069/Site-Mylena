@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jogo da Memória</title>
+    <link rel="stylesheet" href="memoria.css" />
+  </head>
+  <body>
+    <header class="volta">
+      <a href="/html/game.html">
+        <svg
+          class="volta-foto"
+          xmlns="http://www.w3.org/3000/svg"
+          width="16"
+          height="16"
+          fill="white"
+          class="bi bi-arrow-left"
+          viewBox="0 0 16 16"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"
+          />
+        </svg>
+        <!-- <p class="volta-texto">Voltar</p> -->
+      </a>
+    </header>
+
+    <h1>Jogo da Memória</h1>
+
+    <div class="player-setup">
+      <div class="player-setup-ly">
+        <label for="player1-name">JOGADOR 1</label>
+        <input type="text" id="player1-name" placeholder="Ex:Luiz" />
+      </div>
+
+      <div class="player-setup-ly">
+        <label for="player2-name">JOGADOR 2</label>
+        <input type="text" id="player2-name" placeholder="Ex:Mylena" />
+      </div>
+      <button class="iniciar-game" id="start-button">Começar Jogo</button>
+    </div>
+
+    <div class="game-container hidden">
+      <div class="scoreboard">
+        <div id="player1-score" class="score-card current-player">
+          <span id="player1-name-display"></span>
+          <span class="score">Pontos: <span id="player1-points">0</span></span>
+        </div>
+        <div id="player2-score" class="score-card">
+          <span id="player2-name-display"></span>
+          <span class="score">Pontos: <span id="player2-points">0</span></span>
+        </div>
+      </div>
+
+      <div class="game-board" id="game-board"></div>
+
+      <div class="message-container">
+        <p id="message"></p>
+        <button id="reset-button" class="hidden">Reiniciar Jogo</button>
+      </div>
+    </div>
+
+    <script src="memoria.js"></script>
+  </body>
+</html>

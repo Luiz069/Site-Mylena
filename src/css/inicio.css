@@ -1,0 +1,139 @@
+.linha {
+  width: 85%;
+  margin: 22px auto;
+  border: 1px solid var(--branco);
+}
+
+.linha-sumiu {
+  width: 0%;
+  margin: 22px auto;
+  border: 0;
+  /* background-color: var(--azul); */
+}
+
+.rodape-inicio {
+  margin-top: 40px !important;
+}
+
+/* -------------------TITULO---------------------------------- */
+.inicio-cabe {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.titulo-inicio {
+  font-family: var(--fonte);
+  color: var(--preto);
+  margin-top: -15px;
+}
+
+/* --------------------MUSICA---------------------------- */
+.musica {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 15px 0 -40px 0;
+}
+
+/* --------------------FOTO DO BOLO---------------------------- */
+.capa {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: -48px 0 0 0;
+}
+
+.inicio-foto {
+  height: 280px;
+  width: 262px;
+  border: 0.1px solid var(--branco);
+}
+
+.foto-primeira {
+  /* width: 320px; */
+  /* height: 320px; */
+  border-radius: 20px;
+}
+
+.foto-piada {
+  width: 320px;
+  height: 320px;
+  border-radius: 20px;
+}
+
+.foto {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 25px;
+  margin-top: 10px;
+}
+
+/* ---------------------FRASES----------------------------------- */
+.comeco {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.comeco-in {
+  margin: 0 0 10px 0;
+  font-size: 30px;
+}
+
+.data-inicio {
+  color: var(--branco);
+  font-family: var(--fonte-numero);
+  font-size: 40px;
+}
+
+.comeco-tempo {
+  margin-top: 15px;
+}
+
+/* ------------------------TEMPO DE NAMORO------------------------- */
+.timer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.box {
+  /* background: var(--azul); */
+  background-image: url("/src/img/plano-de-fundo/fundo-patinhas.png");
+  border-radius: 12px;
+  border-color: var(--branco);
+  border: 2px solid var(--branco);
+  padding: 10px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 25px;
+  /* box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); */
+}
+
+.time-unit {
+  font-family: var(--fonte-numero);
+  text-align: center;
+  font-weight: bold;
+  color: var(--branco);
+}
+
+.time-unit span {
+  display: block;
+  font-size: 3rem;
+}
+
+.time-label {
+  font-size: 1rem;
+  margin-top: 5px;
+  color: var(--branco);
+}
+
+/* ------------------------FOTOS------------------------- */
+.comeco-sem {
+  padding: 0 !important;
+  border-radius: 0;
+}

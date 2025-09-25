@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Filme</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="/src/css/filme.css" />
+  </head>
+  <body>
+    <header class="cabecalho">
+      <div class="search-box">
+        <button id="toggle-search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+        <div id="search-list-container" class="hidden">
+          <input
+            type="text"
+            id="search-list-input"
+            placeholder="Buscar na sua lista..."
+          />
+        </div>
+      </div>
+
+      <button id="dark-light-toggle" class="dark-light-toggle">
+        <i id="mode-icon" class="fa-solid fa-sun"></i>
+      </button>
+    </header>
+
+    <main>
+      <div class="titulo">
+        <img src="/src/img/itens/titulo-filme.png" alt="" />
+      </div>
+
+      <div class="container">
+        <!-- <div class="header">
+          <h1>Minha Lista de Filmes</h1>
+        </div> -->
+
+        <div class="control-panel">
+          <div class="form-field form-select">
+            <label for="name-input">Digite o nome do filme</label>
+            <input type="text" id="name-input" placeholder="Buscar..." />
+            <div id="movie-search-results"></div>
+          </div>
+
+          <div class="container_painel">
+            <div class="form-field form-status">
+              <label for="status-select">Status</label>
+              <select id="status-select">
+                <option value="assistido">Assistido</option>
+                <option value="assistindo">Assistindo</option>
+                <option value="proximo">Quero Assistir</option>
+              </select>
+            </div>
+            <div class="form-field form-nota">
+              <label for="rating-input">Nota</label>
+              <input
+                type="number"
+                id="rating-input"
+                min="1"
+                max="5"
+                value="0"
+              />
+            </div>
+            <button id="add-button">Adicionar</button>
+          </div>
+        </div>
+
+        <!--  -->
+        <div class="filter-icon" id="filterIcon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            class="bi bi-funnel"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2z"
+            />
+          </svg>
+        </div>
+
+        <!-- Dropdown -->
+        <div class="dropdown" id="dropdown">
+          <button class="filter-button active" data-filter="all">Todos</button>
+          <button class="filter-button" data-filter="assistido">
+            Assistidos
+          </button>
+          <button class="filter-button" data-filter="assistindo">
+            Assistindo
+          </button>
+          <button class="filter-button" data-filter="proximo">
+            Quero Assistir
+          </button>
+        </div>
+        <!--  -->
+
+        <!-- <div class="filter-buttons">
+          <button class="filter-button active" data-filter="all">Todos</button>
+          <button class="filter-button" data-filter="assistido">
+            Assistidos
+          </button>
+          <button class="filter-button" data-filter="assistindo">
+            Assistindo
+          </button>
+          <button class="filter-button" data-filter="proximo">
+            Quero Assistir
+          </button>
+        </div> -->
+
+        <div id="movie-grid" class="movie-grid"></div>
+      </div>
+    </main>
+
+    <footer>
+      <a
+        href="https://www.canva.com/design/DAGzz8qI7Ew/VyhqHT-CjAWV1A_GHaKL-g/view?utm_content=DAGzz8qI7Ew&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hb289cf084d"
+      >
+        <h2 class="rodape">©PRIVADOLM™</h2>
+      </a>
+    </footer>
+    <script src="/src/js/filme.js"></script>
+  </body>
+</html>

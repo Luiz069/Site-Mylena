@@ -1,0 +1,148 @@
+@import url("https://fonts.googleapis.com/css2?family=Jersey+15&display=swap");
+
+/* font-family: "Jersey 15", sans-serif;
+  font-weight: 400;
+  font-style: normal; */
+
+body {
+  font-family: Arial, sans-serif;
+  /* background: #111; */
+  background-image: url("fundo-velha.png");
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.volta {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  /* position: fixed; */
+  margin: -65% 90% 0 5%;
+}
+
+.volta-foto {
+  width: 85px;
+  height: 85px;
+}
+
+h1 {
+  margin-bottom: 10px;
+
+  color: white;
+  /* font-size: 500em; */
+  text-align: center;
+  /* margin: 15% 0 0 0; */
+  font-size: 7em;
+  padding: 20px;
+  text-shadow: 3px 2px #999;
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  text-transform: uppercase;
+}
+
+#scoreboard {
+  display: flex;
+  gap: 60px;
+  margin-bottom: 20px;
+  font-size: 40px;
+}
+
+.player01,
+.player02 {
+  font-family: "Jersey 15", sans-serif;
+  font-weight: 100;
+}
+
+hr {
+  border: 0;
+  background-color: #fff;
+  height: 50px;
+  width: 5px;
+  margin: 0;
+}
+
+#board {
+  display: grid;
+  grid-template-columns: repeat(3, 250px);
+  grid-template-rows: repeat(3, 250px);
+  gap: 5px;
+}
+
+.cell {
+  width: 250px;
+  height: 250px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 80px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.3s;
+}
+
+.cell:hover {
+  background: #d9d9d9;
+}
+
+#message {
+  margin-top: 20px;
+  font-size: 30px;
+}
+
+#resetScore {
+  margin-top: 18px;
+  padding: 10px 18px;
+  font-size: 35px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #008b8b;
+  color: white;
+  transition: background 0.3s;
+}
+
+/* #resetScore:hover {
+  background: #009f9f;
+} */
+@media (max-width: 425px) {
+  h1 {
+    font-size: 58px; /* Aumentado */
+    margin-bottom: 8px; /* Ajustado */
+  }
+
+  #scoreboard {
+    flex-direction: column;
+    gap: 12px; /* Aumentado */
+    margin-bottom: 18px; /* Aumentado */
+    font-size: 18px; /* Aumentado */
+  }
+
+  #board {
+    /* Tentando deixar um pouco maior, mas ainda cabendo */
+    grid-template-columns: repeat(3, 90px); /* Aumentado de 80px para 90px */
+    grid-template-rows: repeat(3, 90px); /* Aumentado de 80px para 90px */
+    gap: 5px; /* Manter o gap original ou ligeiramente maior */
+  }
+
+  .cell {
+    width: 90px; /* Aumentado */
+    height: 90px; /* Aumentado */
+    font-size: 36px; /* Aumentado */
+  }
+
+  #message {
+    margin-top: 18px; /* Aumentado */
+    font-size: 17px; /* Aumentado */
+  }
+
+  #resetScore {
+    margin-top: 12px; /* Aumentado */
+    padding: 7px 14px; /* Aumentado */
+    font-size: 15px; /* Aumentado */
+  }
+}

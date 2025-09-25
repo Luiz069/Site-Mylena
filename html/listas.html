@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="/src/img/favcon/lista.png" />
+    <title>Document</title>
+    <link rel="stylesheet" href="/src/css/style.css" />
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1/index.js"
+    ></script>
+  </head>
+  <body>
+    <header class="volta">
+      <a href="menu.html">
+        <svg
+          class="volta-foto"
+          xmlns="http://www.w3.org/3000/svg"
+          width="16"
+          height="16"
+          fill="white"
+          class="bi bi-arrow-left"
+          viewBox="0 0 16 16"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"
+          />
+        </svg>
+      </a>
+    </header>
+
+    <main>
+      <div class="titulo-jogos">
+        <h1 class="titulo-game">LISTAS</h1>
+      </div>
+
+      <div class="lista">
+        <img class="lista-img" src="/src/img/itens/fundoDeFrase.png" alt="" />
+        <h4 class="lista-descricao">
+          Para colocarmos tudo que possamos nos esquecer
+        </h4>
+      </div>
+
+      <hr class="linha" />
+
+      <div class="container ideas-section">
+        <div class="header-container">
+          <h1 class="lista-titulo">Ideias</h1>
+          <button id="toggle-ideas-button">Esconder Lista</button>
+        </div>
+        <div class="input-container">
+          <button id="emoji-button">
+            <span id="selected-emoji" class="emoji-input-value">😀</span>
+          </button>
+          <textarea
+            id="idea-input"
+            placeholder="Digite sua nova ideia aqui..."
+          ></textarea>
+          <button id="save-button" onclick="saveIdea()">
+            <img
+              class="save-button-img"
+              src="/src/img/itens/iconEnvio.png"
+              alt="Salvar"
+            />
+          </button>
+          <emoji-picker></emoji-picker>
+        </div>
+        <div id="ideas-list-wrapper">
+          <div class="ideias-container" id="ideias-container"></div>
+        </div>
+      </div>
+
+      <hr class="linha" />
+
+      <div class="container shopping-section">
+        <div class="header-container">
+          <h1 class="lista-titulo">Lista de Compras</h1>
+          <button id="toggle-shopping-button">Esconder Lista</button>
+        </div>
+        <div class="input-container shopping-input">
+          <div>
+            <label for="quantity-input">Qtd.</label>
+            <input type="number" id="quantity-input" value="1" min="1" />
+          </div>
+          <div>
+            <label for="product-name-input">Produto</label>
+            <input
+              type="text"
+              id="product-name-input"
+              placeholder="Ex: Arroz"
+            />
+          </div>
+          <div>
+            <label for="price-input">P. Uni.</label>
+            <input
+              type="number"
+              id="price-input"
+              placeholder="0.00"
+              step="0.01"
+            />
+          </div>
+          <button id="add-button" onclick="addItem()">Adicionar</button>
+        </div>
+        <div id="shopping-list-wrapper">
+          <div class="list-header">
+            <span>Qtd.</span>
+            <span>Produto</span>
+            <span>Preço</span>
+            <span>Total</span>
+          </div>
+          <div id="item-list-container" class="item-list-container"></div>
+        </div>
+        <div id="total-container">
+          Valor Total da Compra: <span id="total-price">R$ 0,00</span>
+        </div>
+      </div>
+
+      <hr class="linha" />
+
+      <div class="container travel-section">
+        <div class="header-container">
+          <h1 class="lista-titulo">Viagens</h1>
+          <button id="toggle-trip-button">Esconder Lista</button>
+        </div>
+        <div class="input-container travel-input">
+          <div>
+            <label for="trip-date-input">Data</label>
+            <input type="date" id="trip-date-input" />
+          </div>
+          <div>
+            <label for="trip-location-input">Local</label>
+            <input
+              type="text"
+              id="trip-location-input"
+              placeholder="Ex: Paris"
+            />
+          </div>
+          <button id="add-trip-button" onclick="saveTrip()">Adicionar</button>
+        </div>
+        <div id="trip-list-wrapper">
+          <div id="trip-list-container"></div>
+        </div>
+      </div>
+    </main>
+    <footer>
+      <h2 class="rodape">©PRIVADOLM™</h2>
+    </footer>
+    <script src="/src/js/listas/lista.js"></script>
+  </body>
+</html>

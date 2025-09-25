@@ -1,0 +1,123 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background: #f0f8ff;
+  margin: 0;
+  padding: 20px;
+  background-image: url("taça.png");
+  background-repeat: no-repeat;
+  background-size: 90vh;
+  /* background-position: center; */
+}
+
+.volta {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  /* position: fixed; */
+  margin: 10px 0 0 20px;
+}
+
+.volta-foto {
+  width: 75px;
+  height: 75px;
+}
+
+.titulo {
+  font-size: 75px;
+  width: 70%;
+  height: 70%;
+  /* background-color: rgb(255, 255, 255, 0.2); */
+}
+
+.menu-game input,
+button {
+  font-size: 25px;
+}
+
+.tempo-game {
+  font-size: 50px;
+  margin: 40px 0;
+}
+
+.trofeu {
+  font-size: 40px;
+}
+
+.lista-ranking {
+  font-size: 35px;
+}
+
+#menu {
+  margin-bottom: 20px;
+}
+
+#playerName {
+  padding: 8px;
+  border: 2px solid #007bff;
+  border-radius: 6px;
+}
+
+#startGame {
+  padding: 8px 15px;
+  margin-left: 5px;
+  border: none;
+  background: #007bff;
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#game-area {
+  position: relative;
+  width: 850px;
+  height: 700px;
+  margin: 20px auto;
+  border: 3px solid #007bff;
+  background: #e6f0ff;
+  overflow: hidden;
+  border-radius: 10px;
+  display: none;
+}
+
+#target {
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  background: #ff4d6d;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.1s;
+}
+
+#scoreboard {
+  margin-top: 20px;
+  text-align: center;
+}
+
+#rankingList {
+  list-style: none;
+  padding: 0;
+}
+
+#rankingList li {
+  padding: 16px;
+  margin: 4px auto;
+  width: 65%;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+/* 📱 Responsividade */
+@media (max-width: 425px) {
+  #game-area {
+    width: 90%;
+    height: 50vh;
+  }
+
+  #target {
+    width: 70px;
+    height: 70px;
+  }
+}

@@ -1,0 +1,333 @@
+.container {
+  /* background-color: #fff; */
+  background-image: url("/src/img/plano-de-fundo/fundo-patinhas.png");
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  margin: 10px;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.lista-titulo {
+  color: var(--branco);
+}
+
+h1 {
+  line-height: 25px;
+  font-size: 25px;
+  /* margin-top: -15px; */
+}
+
+#toggle-ideas-button,
+#toggle-shopping-button,
+#toggle-trip-button {
+  padding: 8px 12px;
+  border: none;
+  background-color: #555;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+#toggle-ideas-button:hover,
+#toggle-shopping-button:hover,
+#toggle-trip-button:hover {
+  background-color: #333;
+}
+
+.input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.shopping-input {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr auto;
+  gap: 10px;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.travel-input {
+  display: grid;
+  grid-template-columns: 1fr 2fr auto;
+  gap: 10px;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.input-container label {
+  font-size: 14px;
+  color: #666;
+  font-weight: bold;
+}
+
+.input-container input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+textarea {
+  flex-grow: 1;
+  height: 46px;
+  padding: 10px;
+  border: none;
+  font-size: 16px;
+  resize: none;
+  background-color: transparent;
+}
+
+textarea:focus,
+input:focus {
+  outline: none;
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+#add-button,
+#add-trip-button {
+  background-color: #28a745;
+}
+
+#add-button:hover,
+#add-trip-button:hover {
+  background-color: #218838;
+}
+
+#emoji-button,
+#save-button {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background-color: transparent;
+  color: #777;
+  border: none;
+  font-size: 24px;
+  margin-left: 18px;
+}
+
+#save-button {
+  background-color: #007bff;
+  color: white;
+  border-radius: 50%;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 18px;
+}
+
+.save-button-img {
+  width: 18px;
+  height: 18px;
+}
+
+#emoji-button:hover,
+#save-button:hover {
+  opacity: 0.8;
+  background-color: transparent;
+}
+
+emoji-picker {
+  position: absolute;
+  top: 100%;
+  margin-top: 10px;
+  left: 0;
+  z-index: 1000;
+  --emoji-picker-border-radius: 8px;
+  display: none;
+}
+
+.ideia-item {
+  background-color: #f8f8f8;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ideia-content {
+  display: flex;
+  align-items: center;
+}
+
+.ideia-item .emoji {
+  font-size: 24px;
+  margin-right: 15px;
+}
+
+.delete-button {
+  background-color: #dc3545;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+.delete-button:hover {
+  background-color: #c82333;
+}
+
+.separator {
+  margin: 40px 0;
+  border: 0;
+  border-top: 1px solid #ddd;
+}
+
+/* Estilos da lista de compras */
+.list-header {
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: 0.8fr 2fr 1fr 1fr;
+  gap: 10px;
+  padding: 10px 15px;
+  margin: -10px;
+  margin-bottom: 15px;
+  font-weight: bold;
+  color: #555;
+  border-bottom: 2px solid #ccc;
+  text-align: center;
+}
+
+.item-list-container {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.item-list {
+  background-color: #f8f8f8;
+  padding: 15px;
+  border-radius: 8px;
+  display: grid;
+  grid-template-columns: 0.8fr 2fr 1fr 1fr;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.item-list .delete-button {
+  grid-column: 4 / 5;
+  justify-self: end;
+}
+
+#total-container {
+  text-align: right;
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--branco);
+  margin-top: 20px;
+}
+
+#shopping-list-wrapper {
+  transition: all 0.3s ease;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  height: 400px;
+  overflow-y: auto;
+}
+
+/* -------------------------------------------------- */
+.lista {
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  display: inline-block;
+}
+
+.lista-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.lista-descricao {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--vermelho);
+  text-align: center;
+  font-size: 25px;
+  margin: 0;
+}
+
+/* New CSS for the travel list */
+.travel-section {
+  background-color: #f0f4f8; /* A light, calming color for the new section */
+}
+
+#trip-list-container {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 10px;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.trip-item {
+  background-color: #e3f2fd;
+  padding: 15px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.trip-item p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.trip-item strong {
+  color: #007bff;
+}
+
+.trip-list-wrapper {
+  transition: all 0.3s ease;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  height: 400px;
+  overflow-y: auto;
+}
