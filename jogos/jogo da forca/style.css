@@ -128,7 +128,7 @@ h1 {
 }
 
 .theme-info {
-  font-size: 1.25rem;
+  font-size: 1.4rem;
   font-weight: 700;
   margin-bottom: 1rem;
 }
@@ -217,7 +217,7 @@ h1 {
 
 .key {
   padding: 0.75rem 0.5rem;
-  font-size: 1rem;
+  font-size: 1.5rem;
   font-weight: 700;
   background-color: #e5e7eb;
   border: 2px solid #d1d5db;
@@ -453,7 +453,7 @@ h1 {
     font-family: cursive;
     font-weight: 200;
     margin: 0;
-    font-size: 1.1rem;
+    font-size: 1.5rem;
     color: white;
   }
 
@@ -466,7 +466,7 @@ h1 {
     flex-wrap: wrap;
     justify-content: center;
     column-gap: 8px;
-    margin: 0.5rem 0;
+    margin: 0.5rem;
   }
 
   .word-display {
