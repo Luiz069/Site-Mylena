@@ -29,6 +29,10 @@ body {
   font-family: cursive;
 }
 
+.key {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
 /* ------------------------------------------------ */
 .menu-hamburguer {
   /* position: fixed; A chave para mantê-lo na tela */
