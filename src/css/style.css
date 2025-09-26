@@ -27,6 +27,7 @@ body {
   --branco: #fff;
   --azul: #8ae0e9;
   --preto: #000;
+  --cinza: rgb(99, 99, 99);
 }
 
 .rodape {
