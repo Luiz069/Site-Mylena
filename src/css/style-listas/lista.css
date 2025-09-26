@@ -331,3 +331,9 @@ emoji-picker {
   height: 400px;
   overflow-y: auto;
 }
+
+@media (min-width: 768px) {
+  .lista {
+    margin: auto 15%;
+  }
+}
