@@ -15,6 +15,11 @@
   margin-bottom: 20px;
 }
 
+.mensagem {
+  display: flex;
+  justify-content: center;
+}
+
 .lista-titulo {
   color: var(--branco);
 }
@@ -173,7 +178,7 @@ emoji-picker {
   padding: 15px;
   margin-bottom: 10px;
   border-radius: 8px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 3px 4px rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -334,6 +339,6 @@ emoji-picker {
 
 @media (min-width: 768px) {
   .lista {
-    margin: auto 15%;
+    /* margin: auto 15%; */
   }
 }
