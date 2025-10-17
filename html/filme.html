@@ -111,18 +111,17 @@
       // ------------------------------------------------------------------
       import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
       import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-analytics.js";
-      import { 
-        getFirestore, 
-        collection, 
-        addDoc, 
-        getDocs, 
-        deleteDoc, 
-        doc, 
+      import {
+        getFirestore,
+        collection,
+        addDoc,
+        getDocs,
+        deleteDoc,
+        doc,
         updateDoc,
         query,
-        where
+        where,
       } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
-
 
       // Sua configuração do Firebase
       const firebaseConfig = {
@@ -132,19 +131,18 @@
         storageBucket: "filmes-salvos.firebasestorage.app",
         messagingSenderId: "155114516613",
         appId: "1:155114516613:web:f0333b9391a7851ad1b9ec",
-        measurementId: "G-3DGF10JWEN"
+        measurementId: "G-3DGF10JWEN",
       };
 
       // Inicializa o Firebase
       const app = initializeApp(firebaseConfig);
       const analytics = getAnalytics(app);
-      
+
       // Inicializa o Firestore
       const db = getFirestore(app);
 
       // Define um ID de usuário fixo (PARA DEMONSTRAÇÃO SEM LOGIN)
-      const USER_ID = "USER_ID_DEMO"; 
-
+      const USER_ID = "USER_ID_DEMO";
 
       // ------------------------------------------------------------------
       // CÓDIGO PRINCIPAL (Antigo script)
@@ -161,7 +159,7 @@
 
       // ================== INICIALIZAÇÃO ==================
       document.addEventListener("DOMContentLoaded", () => {
-        renderUserList(); 
+        renderUserList();
         loadDarkModePreference();
       });
 
@@ -277,52 +275,69 @@
       }
 
       // ------------------ ADD MOVIE (MODIFICADO para Firebase) ------------------
-      document.getElementById("add-button").addEventListener("click", async () => {
-        if (!selectedMovie) {
-          alert("Por favor, selecione um filme da lista de busca.");
-          return;
-        }
-
-        const newMovie = {
-          // Usamos o ID do filme do TMDB como parte dos dados
-          tmdb_id: selectedMovie.id, 
-          cover: selectedMovie.cover,
-          name: selectedMovie.name,
-          status: document.getElementById("status-select").value,
-          rating: parseInt(document.getElementById("rating-input").value),
-          userId: USER_ID // Usando a constante importada
-        };
-
-        try {
-          // 1. Verifica se o filme já existe na lista do usuário
-          const q = query(
-            collection(db, "user_movies"),
-            where("userId", "==", USER_ID),
-            where("tmdb_id", "==", newMovie.tmdb_id)
+      document
+        .getElementById("add-button")
+        .addEventListener("click", async (evt) => {
+          evt.preventDefault && evt.preventDefault();
+          console.log(
+            "[DEBUG] Add button clicked. selectedMovie =",
+            selectedMovie
           );
-          const existingDocs = await getDocs(q);
 
-          if (!existingDocs.empty) {
-            alert("Este filme já está na sua lista.");
+          if (!selectedMovie) {
+            alert("Por favor, selecione um filme da lista de busca.");
             return;
           }
 
-          // 2. Adiciona o novo filme ao Firestore
-          await addDoc(collection(db, "user_movies"), newMovie);
-          
-          alert("Filme adicionado com sucesso!");
+          const newMovie = {
+            tmdb_id: selectedMovie.id,
+            cover: selectedMovie.cover,
+            name: selectedMovie.name,
+            status: document.getElementById("status-select").value,
+            rating:
+              parseInt(document.getElementById("rating-input").value) || 0,
+            userId: USER_ID,
+          };
 
-          document.getElementById("name-input").value = "";
-          selectedMovie = null;
-          document.getElementById("rating-input").value = "5";
+          try {
+            // Query para checar existência
+            const qCheck = query(
+              collection(db, "user_movies"),
+              where("userId", "==", USER_ID),
+              where("tmdb_id", "==", newMovie.tmdb_id)
+            );
 
-          // 3. Recarrega a lista
-          renderUserList(); 
-        } catch (error) {
-          console.error("Erro ao adicionar filme:", error);
-          alert("Falha ao adicionar o filme. Verifique o console para detalhes.");
-        }
-      });
+            console.log(
+              "[DEBUG] Executando getDocs para verificar duplicata..."
+            );
+            const snapshotCheck = await getDocs(qCheck);
+            console.log("[DEBUG] snapshotCheck.empty =", snapshotCheck.empty);
+
+            if (!snapshotCheck.empty) {
+              alert("Este filme já está na sua lista.");
+              return;
+            }
+
+            console.log(
+              "[DEBUG] Adicionando novo documento ao Firestore:",
+              newMovie
+            );
+            const added = await addDoc(collection(db, "user_movies"), newMovie);
+            console.log("[DEBUG] Documento adicionado com id:", added.id);
+
+            alert("Filme adicionado com sucesso!");
+            // Limpa UI
+            document.getElementById("name-input").value = "";
+            selectedMovie = null;
+            document.getElementById("rating-input").value = "5";
+
+            // Recarrega lista
+            await renderUserList();
+          } catch (err) {
+            console.error("[ERROR] Falha ao adicionar filme:", err);
+            alert("Falha ao adicionar o filme. Veja o console para detalhes.");
+          }
+        });
 
       // ------------------ FILTER ------------------
       const filterIcon = document.getElementById("filterIcon");
@@ -342,8 +357,8 @@
 
           const filter = button.getAttribute("data-filter");
           currentFilter = filter === "all" ? null : filter;
-          
-          renderUserList(); 
+
+          renderUserList();
           dropdown.classList.remove("open");
         });
       });
@@ -352,7 +367,7 @@
       const searchListInput = document.getElementById("search-list-input");
       searchListInput.addEventListener("input", (event) => {
         currentSearchQuery = event.target.value.toLowerCase();
-        renderUserList(); 
+        renderUserList();
       });
 
       document.getElementById("toggle-search").addEventListener("click", () => {
@@ -366,7 +381,7 @@
         } else {
           searchListInput.value = "";
           currentSearchQuery = null;
-          renderUserList(); 
+          renderUserList();
         }
       });
 
@@ -377,11 +392,14 @@
 
         try {
           // 1. Cria a query inicial filtrada pelo usuário
-          let q = query(collection(db, "user_movies"), where("userId", "==", USER_ID));
-          
+          let q = query(
+            collection(db, "user_movies"),
+            where("userId", "==", USER_ID)
+          );
+
           // 2. Aplica filtro de status se houver
           if (currentFilter) {
-             q = query(q, where("status", "==", currentFilter));
+            q = query(q, where("status", "==", currentFilter));
           }
 
           // 3. Busca os documentos no Firestore
@@ -389,9 +407,9 @@
           const movieList = [];
 
           // 4. Mapeia os documentos para um array de objetos, incluindo o ID do documento
-          movieSnapshot.forEach(doc => {
+          movieSnapshot.forEach((doc) => {
             // doc.id é crucial para deletar/atualizar no Firestore
-            movieList.push({ id: doc.id, ...doc.data() }); 
+            movieList.push({ id: doc.id, ...doc.data() });
           });
 
           // 5. Aplica filtro de busca local (por nome)
@@ -409,9 +427,8 @@
               const movieCard = document.createElement("div");
               movieCard.className = "movie-card";
               // Converte o rating para inteiro, se não for
-              const rating = parseInt(movie.rating) || 0; 
-              const ratingStars =
-                "★".repeat(rating) + "☆".repeat(5 - rating);
+              const rating = parseInt(movie.rating) || 0;
+              const ratingStars = "★".repeat(rating) + "☆".repeat(5 - rating);
 
               movieCard.innerHTML = `
                 <img src="${movie.cover}" alt="Capa do filme ${movie.name}">
@@ -426,22 +443,22 @@
                   <div class="movie-controls">
                     <select id="status-edit-${movie.id}">
                       <option value="assistido" ${
-                movie.status === "assistido" ? "selected" : ""
-              }>Assistido</option>
+                        movie.status === "assistido" ? "selected" : ""
+                      }>Assistido</option>
                       <option value="assistindo" ${
-                movie.status === "assistindo" ? "selected" : ""
-              }>Assistindo</option>
+                        movie.status === "assistindo" ? "selected" : ""
+                      }>Assistindo</option>
                       <option value="proximo" ${
-                movie.status === "proximo" ? "selected" : ""
-              }>Quero Assistir</option>
+                        movie.status === "proximo" ? "selected" : ""
+                      }>Quero Assistir</option>
                     </select>
                     <div class="button-group">
                       <button class="edit-button" data-id="${
-                movie.id
-              }">Atualizar</button>
+                        movie.id
+                      }">Atualizar</button>
                       <button class="remove-button" data-id="${
-                movie.id
-              }">Remover</button>
+                        movie.id
+                      }">Remover</button>
                     </div>
                   </div>
                 </div>
@@ -476,7 +493,7 @@
           // Deleta o documento pelo ID gerado pelo Firestore
           await deleteDoc(doc(db, "user_movies", firestoreDocId));
           alert("Filme removido com sucesso!");
-          renderUserList(); 
+          renderUserList();
         } catch (error) {
           console.error("Erro ao deletar filme:", error);
           alert("Falha ao remover o filme. Tente novamente.");
@@ -485,17 +502,19 @@
 
       // ------------------ UPDATE MOVIE (Firebase) ------------------
       async function updateMovie(firestoreDocId) {
-        const status = document.getElementById(`status-edit-${firestoreDocId}`).value;
+        const status = document.getElementById(
+          `status-edit-${firestoreDocId}`
+        ).value;
 
         try {
           const docRef = doc(db, "user_movies", firestoreDocId);
           // Atualiza apenas o campo 'status'
           await updateDoc(docRef, {
-            status: status
+            status: status,
           });
-          
+
           alert("Status atualizado com sucesso!");
-          renderUserList(); 
+          renderUserList();
         } catch (error) {
           console.error("Erro ao atualizar filme:", error);
           alert("Falha ao atualizar o status. Tente novamente.");
