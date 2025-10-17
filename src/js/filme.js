@@ -1,119 +1,17 @@
-/* * Este código assume que você tem os arquivos HTML e CSS
- * para os elementos com os IDs referenciados.
- * * Lembre-se de substituir os dados em 'firebaseConfig' pelos seus.
- */
-
-// ================== CONFIGURAÇÕES INICIAIS ==================
-const API_KEY = "29fa8018e3a64630c52814108ebee6fb"; // Chave TMDB
+const API_KEY = "29fa8018e3a64630c52814108ebee6fb";
 const BASE_IMAGE_URL = "https://image.tmdb.org/t/p/w300";
 
 let searchTimeout;
 let selectedMovie = null;
 
-// ================== FIREBASE SETUP (Firestore) ==================
-// Importa as funções do Firebase (requer <script type="module"> no HTML)
-// Estas imports estão no final do arquivo, como o user propôs, para garantir que as funções sejam acessíveis globalmente
-/*
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-*/
-
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyCJQZ3Pswe6sdsE35wJux8Dgbw_2PaNNOA",
-  authDomain: "filmes-salvos.firebaseapp.com",
-  projectId: "filmes-salvos",
-  storageBucket: "filmes-salvos.firebasestorage.app",
-  messagingSenderId: "155114516613",
-  appId: "1:155114516613:web:f0333b9391a7851ad1b9ec",
-  measurementId: "G-3DGF10JWEN",
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-
-// ================== FUNÇÕES DE SINC. FIREBASE ==================
-
-/**
- * Carrega a lista de filmes do Firestore.
- * @returns {Promise<Array>} A lista de filmes ou um array vazio em caso de falha.
- */
-async function loadMovieListFromFirebase() {
-  if (!db) return [];
-  try {
-    const docRef = doc(db, FIREBASE_COLLECTION_NAME, FIREBASE_DOC_ID);
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists() && docSnap.data().movies) {
-      console.log("Lista de filmes carregada do Firestore.");
-      return docSnap.data().movies;
-    } else {
-      console.log(
-        "Documento no Firestore não existe ou está vazio. Inicializando com lista vazia."
-      );
-      return [];
-    }
-  } catch (error) {
-    console.error("Erro ao carregar lista do Firestore:", error);
-    // Em caso de erro, retorna lista vazia para não travar a aplicação
-    return [];
-  }
-}
-
-/**
- * Salva a lista de filmes completa no Firestore.
- * @param {Array} movieList O array de filmes a ser salvo.
- */
-async function saveMovieListToFirebase(movieList) {
-  if (!db) return;
-  try {
-    const docRef = doc(db, FIREBASE_COLLECTION_NAME, FIREBASE_DOC_ID);
-    // Salva a lista como um campo 'movies' dentro do documento
-    await setDoc(docRef, { movies: movieList });
-    console.log("Lista de filmes salva no Firestore com sucesso.");
-  } catch (error) {
-    console.error("Erro ao salvar lista no Firestore:", error);
-  }
-}
-
-// ================== INICIALIZAÇÃO ==================
-
 document.addEventListener("DOMContentLoaded", () => {
-  // Inicializa o Firebase e carrega a lista
-  initializeFirebaseAndLoadList();
+  renderUserList();
   loadDarkModePreference();
 });
-
-async function initializeFirebaseAndLoadList() {
-  // Estas variáveis globais (initializeApp, getFirestore, doc, etc.)
-  // serão injetadas pelo <script type="module"> no HTML.
-  try {
-    const app = initializeApp(firebaseConfig);
-    db = getFirestore(app);
-    // Garante que a primeira renderização use os dados da nuvem
-    await renderUserList();
-  } catch (error) {
-    console.error(
-      "Falha ao inicializar o Firebase. Os dados não serão sincronizados.",
-      error
-    );
-    // Se o Firebase falhar, renderiza a lista vazia
-    await renderUserList();
-  }
-}
 
 // ------------------ DARK MODE ------------------
 function loadDarkModePreference() {
   const isDarkMode = localStorage.getItem("darkMode") === "true";
-  // O restante da lógica de Dark Mode que usa localStorage permanece, pois é preferência local.
   if (isDarkMode) {
     document.body.classList.remove("light-mode");
   } else {
@@ -217,8 +115,8 @@ function selectMovie(movie) {
   document.getElementById("status-select").focus();
 }
 
-// ------------------ ADD MOVIE (MODIFICADO) ------------------
-document.getElementById("add-button").addEventListener("click", async () => {
+// ------------------ ADD MOVIE ------------------
+document.getElementById("add-button").addEventListener("click", () => {
   if (!selectedMovie) {
     alert("Por favor, selecione um filme da lista de busca.");
     return;
@@ -232,8 +130,7 @@ document.getElementById("add-button").addEventListener("click", async () => {
     rating: document.getElementById("rating-input").value,
   };
 
-  // Carrega a lista atual do Firestore
-  let movieList = await loadMovieListFromFirebase();
+  let movieList = JSON.parse(localStorage.getItem("movieList")) || [];
   const exists = movieList.some((m) => m.id === newMovie.id);
 
   if (exists) {
@@ -242,16 +139,13 @@ document.getElementById("add-button").addEventListener("click", async () => {
   }
 
   movieList.push(newMovie);
-
-  // Salva a lista atualizada no Firestore
-  await saveMovieListToFirebase(movieList);
+  localStorage.setItem("movieList", JSON.stringify(movieList));
 
   document.getElementById("name-input").value = "";
   selectedMovie = null;
   document.getElementById("rating-input").value = "5";
 
-  // Renderiza a lista (agora carrega do Firestore)
-  await renderUserList();
+  renderUserList();
 });
 
 // ------------------ FILTER (via ícone + dropdown) ------------------
@@ -271,7 +165,6 @@ filterButtons.forEach((button) => {
     button.classList.add("active");
 
     const filter = button.getAttribute("data-filter");
-    // Chama renderUserList com o novo filtro
     renderUserList(filter === "all" ? null : filter);
 
     // fecha menu automaticamente ao escolher filtro
@@ -283,7 +176,6 @@ filterButtons.forEach((button) => {
 const searchListInput = document.getElementById("search-list-input");
 searchListInput.addEventListener("input", (event) => {
   const query = event.target.value.toLowerCase();
-  // Chama renderUserList com a query de busca
   renderUserList(null, query);
 });
 
@@ -295,20 +187,14 @@ document.getElementById("toggle-search").addEventListener("click", () => {
     searchListInput.focus();
   } else {
     searchListInput.value = "";
-    // Reseta a lista ao fechar a busca
     renderUserList();
   }
 });
 
-// ------------------ RENDER MOVIE LIST (MODIFICADO) ------------------
-/**
- * Renderiza a lista de filmes, aplicando filtros e busca,
- * carregando os dados do Firestore.
- */
-async function renderUserList(filter = null, searchQuery = null) {
+// ------------------ RENDER MOVIE LIST ------------------
+function renderUserList(filter = null, searchQuery = null) {
   const container = document.getElementById("movie-grid");
-  // Carrega a lista do Firestore
-  let movieList = await loadMovieListFromFirebase();
+  let movieList = JSON.parse(localStorage.getItem("movieList")) || [];
   container.innerHTML = "";
 
   let filteredList = movieList;
@@ -365,18 +251,15 @@ async function renderUserList(filter = null, searchQuery = null) {
       container.appendChild(movieCard);
     });
 
-    // Adiciona event listeners dinamicamente
     document.querySelectorAll(".remove-button").forEach((button) => {
-      button.addEventListener("click", async (event) => {
-        // Agora é assíncrono
-        await deleteMovie(event.target.dataset.id);
+      button.addEventListener("click", (event) => {
+        deleteMovie(event.target.dataset.id);
       });
     });
 
     document.querySelectorAll(".edit-button").forEach((button) => {
-      button.addEventListener("click", async (event) => {
-        // Agora é assíncrono
-        await updateMovie(event.target.dataset.id);
+      button.addEventListener("click", (event) => {
+        updateMovie(event.target.dataset.id);
       });
     });
   } else {
@@ -384,33 +267,21 @@ async function renderUserList(filter = null, searchQuery = null) {
   }
 }
 
-// ------------------ DELETE MOVIE (MODIFICADO) ------------------
-async function deleteMovie(movieId) {
-  // Carrega a lista do Firestore
-  let movieList = await loadMovieListFromFirebase();
+function deleteMovie(movieId) {
+  let movieList = JSON.parse(localStorage.getItem("movieList")) || [];
   const updatedList = movieList.filter((movie) => movie.id != movieId);
-
-  // Salva a lista atualizada no Firestore
-  await saveMovieListToFirebase(updatedList);
-
-  // Renderiza novamente a lista
-  await renderUserList();
+  localStorage.setItem("movieList", JSON.stringify(updatedList));
+  renderUserList();
 }
 
-// ------------------ UPDATE MOVIE (MODIFICADO) ------------------
-async function updateMovie(movieId) {
-  // Carrega a lista do Firestore
-  let movieList = await loadMovieListFromFirebase();
+function updateMovie(movieId) {
+  let movieList = JSON.parse(localStorage.getItem("movieList")) || [];
   const status = document.getElementById(`status-edit-${movieId}`).value;
 
   const movieIndex = movieList.findIndex((m) => m.id == movieId);
   if (movieIndex > -1) {
     movieList[movieIndex].status = status;
-
-    // Salva a lista atualizada no Firestore
-    await saveMovieListToFirebase(movieList);
-
-    // Renderiza novamente a lista
-    await renderUserList();
+    localStorage.setItem("movieList", JSON.stringify(movieList));
+    renderUserList();
   }
 }
