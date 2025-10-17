@@ -18,6 +18,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebas
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 */
 
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyCILMzoCK10j5YDcVfOT_bk74VFlQ77TZg",
   authDomain: "notificacoes-site-5fcbb.firebaseapp.com",
@@ -44,9 +45,17 @@ async function loadMovieListFromFirebase() {
     const docRef = doc(db, FIREBASE_COLLECTION_NAME, FIREBASE_DOC_ID);
     const docSnap = await getDoc(docRef);
 
-    if (docSnap.exists() && docSnap.data().movies) {
-      console.log("Lista de filmes carregada do Firestore.");
-      return docSnap.data().movies;
+    if (!docSnap.exists() || !docSnap.data().movies) {
+      console.log("Retornando lista de teste...");
+      return [
+        {
+          id: 999,
+          name: "Filme de Teste",
+          cover: "https://via.placeholder.com/200x300?text=TESTE",
+          status: "assistido",
+          rating: "4",
+        },
+      ];
     } else {
       console.log(
         "Documento no Firestore não existe ou está vazio. Inicializando com lista vazia."
