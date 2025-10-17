@@ -18,20 +18,27 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebas
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 */
 
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyCILMzoCK10j5YDcVfOT_bk74VFlQ77TZg",
-  authDomain: "notificacoes-site-5fcbb.firebaseapp.com",
-  projectId: "notificacoes-site-5fcbb",
-  storageBucket: "notificacoes-site-5fcbb.firebasestorage.app",
-  messagingSenderId: "1052991669929",
-  appId: "1:1052991669929:web:60c540a41f29b8b8378bb8",
-  measurementId: "G-6BN27S55CB",
+  apiKey: "AIzaSyCJQZ3Pswe6sdsE35wJux8Dgbw_2PaNNOA",
+  authDomain: "filmes-salvos.firebaseapp.com",
+  projectId: "filmes-salvos",
+  storageBucket: "filmes-salvos.firebasestorage.app",
+  messagingSenderId: "155114516613",
+  appId: "1:155114516613:web:f0333b9391a7851ad1b9ec",
+  measurementId: "G-3DGF10JWEN",
 };
 
-let db; // Variável para a instância do Firestore
-const FIREBASE_COLLECTION_NAME = "user_movie_list"; // Nome da coleção no Firestore
-const FIREBASE_DOC_ID = "myList"; // ID fixo do documento que conterá o array de filmes
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
 // ================== FUNÇÕES DE SINC. FIREBASE ==================
 
@@ -45,17 +52,9 @@ async function loadMovieListFromFirebase() {
     const docRef = doc(db, FIREBASE_COLLECTION_NAME, FIREBASE_DOC_ID);
     const docSnap = await getDoc(docRef);
 
-    if (!docSnap.exists() || !docSnap.data().movies) {
-      console.log("Retornando lista de teste...");
-      return [
-        {
-          id: 999,
-          name: "Filme de Teste",
-          cover: "https://via.placeholder.com/200x300?text=TESTE",
-          status: "assistido",
-          rating: "4",
-        },
-      ];
+    if (docSnap.exists() && docSnap.data().movies) {
+      console.log("Lista de filmes carregada do Firestore.");
+      return docSnap.data().movies;
     } else {
       console.log(
         "Documento no Firestore não existe ou está vazio. Inicializando com lista vazia."
