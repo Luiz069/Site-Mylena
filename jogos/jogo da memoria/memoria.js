@@ -12,7 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
     "gato01.png",
     "gato02.png",
     "gato03.png",
-    "jungkook.png",
     "max-peruca.png",
     "max-sid.png",
     "meme-ney.png",
