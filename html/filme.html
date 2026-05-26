@@ -3,19 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Minha Lista de Filmes (Firebase)</title>
+    <title>Minha Lista de Filmes</title>
+
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
     />
-    <link rel="stylesheet" href="/src/css/filme.css" />
+
+    <link rel="stylesheet" href="filme.css" />
+    
   </head>
+
   <body>
+
     <header class="cabecalho">
+
       <div class="search-box">
+
         <button id="toggle-search">
           <i class="fa-solid fa-magnifying-glass"></i>
         </button>
+
         <div id="search-list-container" class="hidden">
           <input
             type="text"
@@ -23,93 +31,137 @@
             placeholder="Buscar na sua lista..."
           />
         </div>
+
       </div>
 
       <button id="dark-light-toggle" class="dark-light-toggle">
         <i id="mode-icon" class="fa-solid fa-sun"></i>
       </button>
+
     </header>
 
     <main>
+
       <div class="titulo">
-        <img src="/src/img/itens/titulo-filme.png" alt="Título Filmes" />
+        <h1>Minha Biblioteca de Filmes</h1>
       </div>
 
       <div class="container">
+
         <div class="control-panel">
+
           <div class="form-field form-select">
-            <label for="name-input">Digite o nome do filme</label>
-            <input type="text" id="name-input" placeholder="Buscar..." />
+
+            <label for="name-input">
+              Digite o nome do filme
+            </label>
+
+            <input
+              type="text"
+              id="name-input"
+              placeholder="Buscar..."
+            />
+
             <div id="movie-search-results"></div>
+
           </div>
 
           <div class="container_painel">
+
             <div class="form-field form-status">
+
               <label for="status-select">Status</label>
+
               <select id="status-select">
                 <option value="assistido">Assistido</option>
                 <option value="assistindo">Assistindo</option>
                 <option value="proximo">Quero Assistir</option>
               </select>
+
             </div>
+
             <div class="form-field form-nota">
+
               <label for="rating-input">Nota</label>
+
               <input
                 type="number"
                 id="rating-input"
                 min="1"
                 max="5"
-                value="0"
+                value="5"
               />
+
             </div>
-            <button id="add-button">Adicionar</button>
+
+            <button id="add-button">
+              Adicionar
+            </button>
+
           </div>
+
         </div>
 
         <div class="filter-icon" id="filterIcon">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            class="bi bi-funnel"
-            viewBox="0 0 16 16"
-          >
-            <path
-              d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2z"
-            />
-          </svg>
+          <i class="fa-solid fa-filter"></i>
         </div>
 
         <div class="dropdown" id="dropdown">
-          <button class="filter-button active" data-filter="all">Todos</button>
+
+          <button class="filter-button active" data-filter="all">
+            Todos
+          </button>
+
           <button class="filter-button" data-filter="assistido">
             Assistidos
           </button>
+
           <button class="filter-button" data-filter="assistindo">
             Assistindo
           </button>
+
           <button class="filter-button" data-filter="proximo">
             Quero Assistir
           </button>
+
         </div>
 
         <div id="movie-grid" class="movie-grid"></div>
+
       </div>
+
     </main>
 
-    <footer>
-      <a
-        href="https://www.canva.com/design/DAGzz8qI7Ew/VyhqHT-CjAWV1A_GHaKL-g/view?utm_content=DAGzz8qI7Ew&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hb289cf084d"
-      >
-        <h2 class="rodape">©PRIVADOLM™</h2>
-      </a>
-    </footer>
+    <!-- PLAYER -->
+
+    <div id="playerModal" class="player-modal">
+
+      <div class="player-content">
+
+        <span id="closePlayer">&times;</span>
+
+        <iframe
+          id="movieFrame"
+          width="100%"
+          height="700"
+          allow="autoplay"
+          allowfullscreen
+        ></iframe>
+
+      </div>
+
+    </div>
 
     <script type="module">
-      // ------------------------------------------------------------------
-      // FIREBASE IMPORTS E SETUP (Realtime Database)
-      // ------------------------------------------------------------------
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+
+      // =============================================
+      // FIREBASE
+      // =============================================
+
+      import {
+        initializeApp
+      } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+
       import {
         getDatabase,
         ref,
@@ -117,129 +169,209 @@
         set,
         get,
         update,
-        remove,
-        child,
+        remove
       } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
 
-      // Sua configuração do Firebase
       const firebaseConfig = {
         apiKey: "AIzaSyCJQZ3Pswe6sdsE35wJux8Dgbw_2PaNNOA",
         authDomain: "filmes-salvos.firebaseapp.com",
-        databaseURL: "https://filmes-salvos-default-rtdb.firebaseio.com", // 👈 importante: adicione o link do Realtime Database aqui
+        databaseURL: "https://filmes-salvos-default-rtdb.firebaseio.com",
         projectId: "filmes-salvos",
         storageBucket: "filmes-salvos.firebasestorage.app",
         messagingSenderId: "155114516613",
         appId: "1:155114516613:web:f0333b9391a7851ad1b9ec",
       };
 
-      // Inicializa o Firebase
       const app = initializeApp(firebaseConfig);
+
       const db = getDatabase(app);
 
-      // ID de usuário fixo (sem login)
       const USER_ID = "USER_ID_DEMO";
 
-      // ================== CONFIGURAÇÕES TMDB ==================
+      // =============================================
+      // TMDB
+      // =============================================
+
       const API_KEY = "29fa8018e3a64630c52814108ebee6fb";
-      const BASE_IMAGE_URL = "https://image.tmdb.org/t/p/w300";
+
+      const BASE_IMAGE_URL =
+        "https://image.tmdb.org/t/p/w300";
+
+      // =============================================
+      // GOOGLE DRIVE
+      // =============================================
+
+      const GOOGLE_API_KEY =
+        "AIzaSyCfx8jZZ9PBUmIdl3OVPNf65SzGWGaCqr0";
+
+      const FOLDER_ID =
+        "1jZa8K1YZ76-DyPiAIuAxOHR15IDiUUiI";
+
+      // =============================================
+      // VARIÁVEIS
+      // =============================================
 
       let searchTimeout;
+
       let selectedMovie = null;
+
       let currentFilter = null;
+
       let currentSearchQuery = null;
 
-      // ================== INICIALIZAÇÃO ==================
+      // =============================================
+      // INICIAR
+      // =============================================
+
       document.addEventListener("DOMContentLoaded", () => {
+
         renderUserList();
+
         loadDarkModePreference();
       });
 
-      // ------------------ DARK MODE ------------------
+      // =============================================
+      // DARK MODE
+      // =============================================
+
       function loadDarkModePreference() {
-        const isDarkMode = localStorage.getItem("darkMode") === "true";
-        if (isDarkMode) document.body.classList.remove("light-mode");
-        else document.body.classList.add("light-mode");
+
+        const isDarkMode =
+          localStorage.getItem("darkMode") === "true";
+
+        if (isDarkMode)
+          document.body.classList.remove("light-mode");
+
+        else
+          document.body.classList.add("light-mode");
+
         updateModeIcon();
       }
 
       function updateModeIcon() {
-        const isLightMode = document.body.classList.contains("light-mode");
-        const icon = document.getElementById("mode-icon");
-        icon.classList.add("animate");
-        setTimeout(() => {
-          icon.classList.remove("fa-moon", "fa-sun");
-          icon.classList.add(isLightMode ? "fa-sun" : "fa-moon");
-          icon.classList.remove("animate");
-        }, 150);
+
+        const isLightMode =
+          document.body.classList.contains("light-mode");
+
+        const icon =
+          document.getElementById("mode-icon");
+
+        icon.classList.remove("fa-moon", "fa-sun");
+
+        icon.classList.add(
+          isLightMode ? "fa-sun" : "fa-moon"
+        );
       }
 
       document
         .getElementById("dark-light-toggle")
         .addEventListener("click", () => {
+
           document.body.classList.toggle("light-mode");
-          const isLightMode = document.body.classList.contains("light-mode");
-          localStorage.setItem("darkMode", !isLightMode);
+
+          const isLightMode =
+            document.body.classList.contains("light-mode");
+
+          localStorage.setItem(
+            "darkMode",
+            !isLightMode
+          );
+
           updateModeIcon();
         });
 
-      // ------------------ SEARCH TMDB ------------------
-      document.getElementById("name-input").addEventListener("input", () => {
-        clearTimeout(searchTimeout);
-        const query = document.getElementById("name-input").value;
-        if (query.length > 2) {
-          searchTimeout = setTimeout(() => searchMovies(query), 300);
-        } else {
-          document.getElementById("movie-search-results").style.display =
-            "none";
-        }
-      });
+      // =============================================
+      // BUSCAR TMDB
+      // =============================================
+
+      document
+        .getElementById("name-input")
+        .addEventListener("input", () => {
+
+          clearTimeout(searchTimeout);
+
+          const query =
+            document.getElementById("name-input").value;
+
+          if (query.length > 2) {
+
+            searchTimeout =
+              setTimeout(() => searchMovies(query), 300);
+
+          } else {
+
+            document.getElementById(
+              "movie-search-results"
+            ).style.display = "none";
+          }
+        });
 
       async function searchMovies(query) {
-        const url = `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(
-          query
-        )}&language=pt-BR`;
+
+        const url =
+          `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=pt-BR`;
+
         try {
+
           const response = await fetch(url);
+
           const data = await response.json();
+
           renderSearchMoviesResults(data.results);
+
         } catch (error) {
-          console.error("Falha na busca:", error);
+
+          console.error(error);
         }
       }
 
       function renderSearchMoviesResults(movies) {
-        const resultsContainer = document.getElementById(
-          "movie-search-results"
-        );
+
+        const resultsContainer =
+          document.getElementById(
+            "movie-search-results"
+          );
+
         resultsContainer.innerHTML = "";
-        const inputRect = document
-          .getElementById("name-input")
-          .getBoundingClientRect();
-        resultsContainer.style.top = `${inputRect.bottom}px`;
-        resultsContainer.style.left = `${inputRect.left}px`;
-        resultsContainer.style.width = `${inputRect.width}px`;
 
         if (movies && movies.length > 0) {
+
           movies.forEach((movie) => {
-            const movieItem = document.createElement("div");
-            movieItem.className = "search-result-item";
+
+            const movieItem =
+              document.createElement("div");
+
+            movieItem.className =
+              "search-result-item";
+
             const cover = movie.poster_path
               ? `${BASE_IMAGE_URL}${movie.poster_path}`
               : "https://via.placeholder.com/40x60?text=Sem+Capa";
+
             const year = movie.release_date
               ? `(${movie.release_date.substring(0, 4)})`
               : "";
-            movieItem.innerHTML = `<img src="${cover}" alt="Capa"><span>${movie.title} ${year}</span>`;
+
+            movieItem.innerHTML = `
+              <img src="${cover}">
+              <span>${movie.title} ${year}</span>
+            `;
+
             movieItem.onclick = () => selectMovie(movie);
+
             resultsContainer.appendChild(movieItem);
           });
+
           resultsContainer.style.display = "block";
+
         } else {
+
           resultsContainer.style.display = "none";
         }
       }
 
       function selectMovie(movie) {
+
         selectedMovie = {
           id: movie.id,
           name: movie.title,
@@ -247,18 +379,66 @@
             ? `${BASE_IMAGE_URL}${movie.poster_path}`
             : "https://via.placeholder.com/200x300?text=Sem+Capa",
         };
-        document.getElementById("name-input").value = movie.title;
-        document.getElementById("movie-search-results").style.display = "none";
-        document.getElementById("status-select").focus();
+
+        document.getElementById("name-input").value =
+          movie.title;
+
+        document.getElementById(
+          "movie-search-results"
+        ).style.display = "none";
       }
 
-      // ------------------ ADD MOVIE (Realtime DB) ------------------
+      // =============================================
+      // GOOGLE DRIVE
+      // =============================================
+
+      async function buscarFilmeNoDrive(nomeFilme) {
+
+        const query =
+          `name='${nomeFilme}.mp4' and '${FOLDER_ID}' in parents`;
+
+        const url =
+          `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&key=${GOOGLE_API_KEY}&fields=files(id,name)`;
+
+        try {
+
+          const response = await fetch(url);
+
+          const data = await response.json();
+
+          if (data.files.length > 0) {
+
+            return data.files[0].id;
+
+          } else {
+
+            alert("Filme não encontrado no Google Drive.");
+
+            return null;
+          }
+
+        } catch (error) {
+
+          console.error(error);
+
+          return null;
+        }
+      }
+
+      // =============================================
+      // ADICIONAR FILME
+      // =============================================
+
       document
         .getElementById("add-button")
         .addEventListener("click", async (evt) => {
+
           evt.preventDefault();
+
           if (!selectedMovie) {
-            alert("Por favor, selecione um filme da lista de busca.");
+
+            alert("Selecione um filme.");
+
             return;
           }
 
@@ -267,14 +447,18 @@
             cover: selectedMovie.cover,
             name: selectedMovie.name,
             status: document.getElementById("status-select").value,
-            rating:
-              parseInt(document.getElementById("rating-input").value) || 0,
+            rating: parseInt(document.getElementById("rating-input").value) || 0,
             userId: USER_ID,
           };
 
           try {
-            const userMoviesRef = ref(db, "user_movies/" + USER_ID);
-            const snapshot = await get(userMoviesRef);
+
+            const userMoviesRef =
+              ref(db, "user_movies/" + USER_ID);
+
+            const snapshot =
+              await get(userMoviesRef);
+
             const existing = snapshot.exists()
               ? Object.values(snapshot.val()).find(
                   (m) => m.tmdb_id === newMovie.tmdb_id
@@ -282,42 +466,67 @@
               : null;
 
             if (existing) {
-              alert("Este filme já está na sua lista.");
+
+              alert("Esse filme já foi adicionado.");
+
               return;
             }
 
             const newMovieRef = push(userMoviesRef);
+
             await set(newMovieRef, newMovie);
-            alert("Filme adicionado com sucesso!");
+
+            alert("Filme adicionado.");
+
             document.getElementById("name-input").value = "";
-            selectedMovie = null;
+
             document.getElementById("rating-input").value = "5";
-            await renderUserList();
-          } catch (err) {
-            console.error("Erro ao adicionar:", err);
-            alert("Falha ao adicionar filme.");
+
+            selectedMovie = null;
+
+            renderUserList();
+
+          } catch (error) {
+
+            console.error(error);
           }
         });
 
-      // ------------------ RENDER MOVIE LIST (Realtime DB) ------------------
+      // =============================================
+      // RENDER FILMES
+      // =============================================
+
       async function renderUserList() {
-        const container = document.getElementById("movie-grid");
-        container.innerHTML = `<p class="loading-message">Carregando filmes...</p>`;
+
+        const container =
+          document.getElementById("movie-grid");
+
+        container.innerHTML =
+          `<p class="loading-message">Carregando filmes...</p>`;
 
         try {
-          const snapshot = await get(ref(db, "user_movies/" + USER_ID));
+
+          const snapshot =
+            await get(ref(db, "user_movies/" + USER_ID));
+
           if (!snapshot.exists()) {
-            container.innerHTML = `<p class="no-movies-message">Nenhum filme encontrado.</p>`;
+
+            container.innerHTML =
+              `<p class="no-movies-message">Nenhum filme encontrado.</p>`;
+
             return;
           }
 
-          let movies = Object.entries(snapshot.val()).map(([id, data]) => ({
-            id,
-            ...data,
-          }));
+          let movies =
+            Object.entries(snapshot.val()).map(([id, data]) => ({
+              id,
+              ...data,
+            }));
 
           if (currentFilter)
-            movies = movies.filter((m) => m.status === currentFilter);
+            movies = movies.filter(
+              (m) => m.status === currentFilter
+            );
 
           if (currentSearchQuery)
             movies = movies.filter((m) =>
@@ -326,53 +535,100 @@
 
           container.innerHTML = "";
 
-          if (movies.length === 0) {
-            container.innerHTML = `<p class="no-movies-message">Nenhum filme encontrado.</p>`;
-            return;
-          }
-
           movies.forEach((movie) => {
+
             const rating = parseInt(movie.rating) || 0;
-            const ratingStars = "★".repeat(rating) + "☆".repeat(5 - rating);
-            const movieCard = document.createElement("div");
+
+            const ratingStars =
+              "★".repeat(rating) +
+              "☆".repeat(5 - rating);
+
+            const movieCard =
+              document.createElement("div");
+
             movieCard.className = "movie-card";
+
             movieCard.innerHTML = `
-          <img src="${movie.cover}" alt="Capa do filme ${movie.name}">
-          <div class="movie-info">
-            <h3>${movie.name}</h3>
-            <p class="movie-rating">${ratingStars}</p>
-            <p>Status: ${
-              movie.status === "proximo"
-                ? "Quero Assistir"
-                : movie.status.charAt(0).toUpperCase() + movie.status.slice(1)
-            }</p>
-            <div class="movie-controls">
-              <select id="status-edit-${movie.id}">
-                <option value="assistido" ${
-                  movie.status === "assistido" ? "selected" : ""
-                }>Assistido</option>
-                <option value="assistindo" ${
-                  movie.status === "assistindo" ? "selected" : ""
-                }>Assistindo</option>
-                <option value="proximo" ${
-                  movie.status === "proximo" ? "selected" : ""
-                }>Quero Assistir</option>
-              </select>
-              <div class="button-group">
-                <button class="edit-button" data-id="${
-                  movie.id
-                }">Atualizar</button>
-                <button class="remove-button" data-id="${
-                  movie.id
-                }">Remover</button>
+
+              <img src="${movie.cover}" alt="${movie.name}">
+
+              <div class="movie-info">
+
+                <h3>${movie.name}</h3>
+
+                <p class="movie-rating">
+                  ${ratingStars}
+                </p>
+
+                <p>
+                  Status:
+                  ${movie.status === "proximo"
+                    ? "Quero Assistir"
+                    : movie.status}
+                </p>
+
+                <div class="movie-controls">
+
+                  <select id="status-edit-${movie.id}">
+
+                    <option
+                      value="assistido"
+                      ${movie.status === "assistido" ? "selected" : ""}
+                    >
+                      Assistido
+                    </option>
+
+                    <option
+                      value="assistindo"
+                      ${movie.status === "assistindo" ? "selected" : ""}
+                    >
+                      Assistindo
+                    </option>
+
+                    <option
+                      value="proximo"
+                      ${movie.status === "proximo" ? "selected" : ""}
+                    >
+                      Quero Assistir
+                    </option>
+
+                  </select>
+
+                  <div class="button-group">
+
+                    <button
+                      class="edit-button"
+                      data-id="${movie.id}"
+                    >
+                      Atualizar
+                    </button>
+
+                    <button
+                      class="remove-button"
+                      data-id="${movie.id}"
+                    >
+                      Remover
+                    </button>
+
+                    <button
+                      class="watch-button"
+                      data-name="${movie.name}"
+                    >
+                      ▶ Assistir
+                    </button>
+
+                  </div>
+
+                </div>
+
               </div>
-            </div>
-          </div>
-        `;
+            `;
+
             container.appendChild(movieCard);
           });
 
-          // Eventos
+          // REMOVER
+
           document
             .querySelectorAll(".remove-button")
             .forEach((btn) =>
@@ -381,6 +637,8 @@
               )
             );
 
+          // EDITAR
+
           document
             .querySelectorAll(".edit-button")
             .forEach((btn) =>
@@ -388,82 +646,199 @@
                 updateMovie(e.target.dataset.id)
               )
             );
+
+          // ASSISTIR
+
+          document
+            .querySelectorAll(".watch-button")
+            .forEach((btn) => {
+
+              btn.addEventListener("click", async () => {
+
+                const movieName =
+                  btn.dataset.name;
+
+                btn.innerHTML = "Carregando...";
+
+                const driveId =
+                  await buscarFilmeNoDrive(movieName);
+
+                btn.innerHTML = "▶ Assistir";
+
+                if (!driveId) return;
+
+                const iframe =
+                  document.getElementById("movieFrame");
+
+                iframe.src =
+                  `https://drive.google.com/file/d/${driveId}/preview`;
+
+                document.getElementById(
+                  "playerModal"
+                ).style.display = "flex";
+              });
+            });
+
         } catch (error) {
-          console.error("Erro ao carregar:", error);
-          container.innerHTML = `<p class="error-message">Erro ao carregar filmes.</p>`;
+
+          console.error(error);
         }
       }
 
-      // ------------------ UPDATE MOVIE (Realtime DB) ------------------
+      // =============================================
+      // UPDATE
+      // =============================================
+
       async function updateMovie(id) {
-        const newStatus = document.getElementById(`status-edit-${id}`).value;
-        const movieRef = ref(db, `user_movies/${USER_ID}/${id}`);
+
+        const newStatus =
+          document.getElementById(
+            `status-edit-${id}`
+          ).value;
+
+        const movieRef =
+          ref(db, `user_movies/${USER_ID}/${id}`);
+
         try {
-          await update(movieRef, { status: newStatus });
-          alert("Status atualizado!");
+
+          await update(movieRef, {
+            status: newStatus,
+          });
+
+          alert("Status atualizado.");
+
           renderUserList();
+
         } catch (error) {
-          console.error("Erro ao atualizar:", error);
-          alert("Falha ao atualizar status.");
+
+          console.error(error);
         }
       }
 
-      // ------------------ DELETE MOVIE (Realtime DB) ------------------
+      // =============================================
+      // DELETE
+      // =============================================
+
       async function deleteMovie(id) {
-        const movieRef = ref(db, `user_movies/${USER_ID}/${id}`);
+
+        const movieRef =
+          ref(db, `user_movies/${USER_ID}/${id}`);
+
         try {
+
           await remove(movieRef);
-          alert("Filme removido!");
+
+          alert("Filme removido.");
+
           renderUserList();
+
         } catch (error) {
-          console.error("Erro ao remover:", error);
-          alert("Falha ao remover filme.");
+
+          console.error(error);
         }
       }
 
-      // ------------------ SEARCH LIST ------------------
-      const searchListInput = document.getElementById("search-list-input");
+      // =============================================
+      // SEARCH LIST
+      // =============================================
+
+      const searchListInput =
+        document.getElementById("search-list-input");
+
       searchListInput.addEventListener("input", (event) => {
-        currentSearchQuery = event.target.value.toLowerCase();
+
+        currentSearchQuery =
+          event.target.value.toLowerCase();
+
         renderUserList();
       });
 
-      document.getElementById("toggle-search").addEventListener("click", () => {
-        const searchContainer = document.getElementById(
-          "search-list-container"
-        );
-        searchContainer.classList.toggle("hidden");
-        searchContainer.classList.toggle("visible");
-        if (searchContainer.classList.contains("visible")) {
-          searchListInput.focus();
-        } else {
-          searchListInput.value = "";
-          currentSearchQuery = null;
-          renderUserList();
-        }
-      });
+      document
+        .getElementById("toggle-search")
+        .addEventListener("click", () => {
 
-      // ------------------ FILTER ------------------
-      const filterIcon = document.getElementById("filterIcon");
-      const dropdown = document.getElementById("dropdown");
-      const filterButtons = document.querySelectorAll(".filter-button");
+          const searchContainer =
+            document.getElementById(
+              "search-list-container"
+            );
+
+          searchContainer.classList.toggle("hidden");
+
+          searchContainer.classList.toggle("visible");
+
+          if (
+            searchContainer.classList.contains("visible")
+          ) {
+
+            searchListInput.focus();
+
+          } else {
+
+            searchListInput.value = "";
+
+            currentSearchQuery = null;
+
+            renderUserList();
+          }
+        });
+
+      // =============================================
+      // FILTER
+      // =============================================
+
+      const filterIcon =
+        document.getElementById("filterIcon");
+
+      const dropdown =
+        document.getElementById("dropdown");
+
+      const filterButtons =
+        document.querySelectorAll(".filter-button");
 
       filterIcon.addEventListener("click", () =>
         dropdown.classList.toggle("open")
       );
 
       filterButtons.forEach((button) => {
+
         button.addEventListener("click", () => {
-          filterButtons.forEach((b) => b.classList.remove("active"));
+
+          filterButtons.forEach((b) =>
+            b.classList.remove("active")
+          );
+
           button.classList.add("active");
+
           currentFilter =
             button.getAttribute("data-filter") === "all"
               ? null
               : button.getAttribute("data-filter");
+
           renderUserList();
+
           dropdown.classList.remove("open");
         });
       });
+
+      // =============================================
+      // FECHAR PLAYER
+      // =============================================
+
+      document
+        .getElementById("closePlayer")
+        .addEventListener("click", () => {
+
+          const iframe =
+            document.getElementById("movieFrame");
+
+          iframe.src = "";
+
+          document.getElementById(
+            "playerModal"
+          ).style.display = "none";
+        });
+
     </script>
+
   </body>
 </html>
