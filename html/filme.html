@@ -132,26 +132,6 @@
 
     </main>
 
-    <!-- PLAYER -->
-
-    <div id="playerModal" class="player-modal">
-
-      <div class="player-content">
-
-        <span id="closePlayer">&times;</span>
-
-        <iframe
-          id="movieFrame"
-          width="100%"
-          height="700"
-          allow="autoplay"
-          allowfullscreen
-        ></iframe>
-
-      </div>
-
-    </div>
-
     <script type="module">
 
       // =============================================
@@ -649,36 +629,33 @@
 
           // ASSISTIR
 
-          document
-            .querySelectorAll(".watch-button")
-            .forEach((btn) => {
+document
+  .querySelectorAll(".watch-button")
+  .forEach((btn) => {
 
-              btn.addEventListener("click", async () => {
+    btn.addEventListener("click", async () => {
 
-                const movieName =
-                  btn.dataset.name;
+      const movieName = btn.dataset.name;
 
-                btn.innerHTML = "Carregando...";
+      btn.innerHTML = "Carregando...";
 
-                const driveId =
-                  await buscarFilmeNoDrive(movieName);
+      const driveId =
+        await buscarFilmeNoDrive(movieName);
 
-                btn.innerHTML = "▶ Assistir";
+      btn.innerHTML = "▶ Assistir";
 
-                if (!driveId) return;
+      if (!driveId) return;
 
-                const iframe =
-                  document.getElementById("movieFrame");
+      // ABRIR DIRETO NO GOOGLE DRIVE
 
-                iframe.src =
-                  `https://drive.google.com/file/d/${driveId}/preview`;
+      window.open(
+        `https://drive.google.com/file/d/${driveId}/view`,
+        "_blank"
+      );
 
-                document.getElementById(
-                  "playerModal"
-                ).style.display = "flex";
-              });
-            });
+    });
 
+  });
         } catch (error) {
 
           console.error(error);
