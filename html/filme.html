@@ -1,821 +1,989 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Minha Lista de Filmes</title>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CineCasal - Dashboard</title>
+  
+  <!-- Fontes e Ícones -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-    />
+  <style>
+    /* =========================================================
+       VARIÁVEIS E TEMA (SUPORTE A DARK/LIGHT)
+       ========================================================= */
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0d0b18 0%, #050409 100%);
+      --card-bg: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --input-bg: rgba(255, 255, 255, 0.05);
+      --text-main: #ffffff;
+      --text-muted: #9e9ea0;
+      --accent: #ff3c00;
+      --accent-hover: #ff5522;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
 
-    <link rel="stylesheet" href="/src/css/filme.css" />
-    
-  </head>
+    body.light-mode {
+      --bg-gradient: linear-gradient(135deg, #f4f5f9 0%, #e2e4ed 100%);
+      --card-bg: #ffffff;
+      --glass-border: rgba(0, 0, 0, 0.08);
+      --input-bg: #f0f2f5;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --shadow: 0 8px 20px rgba(0,0,0,0.06);
+    }
 
-  <body>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-    <header class="cabecalho">
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding-bottom: 40px;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
 
-      <div class="search-box">
+    .wrapper {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
 
-        <button id="toggle-search">
-          <i class="fa-solid fa-magnifying-glass"></i>
+    /* =========================================================
+       NAVBAR / COMPACT DASHBOARD HEADER
+       ========================================================= */
+    nav {
+      background: rgba(13, 11, 24, 0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--glass-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      margin-bottom: 24px;
+    }
+
+    body.light-mode nav {
+      background: rgba(244, 245, 249, 0.85);
+    }
+
+    .nav-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+    }
+
+    .logo {
+      font-weight: 800;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-main);
+      letter-spacing: -0.5px;
+    }
+
+    .logo i {
+      color: var(--accent);
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--input-bg);
+      padding: 4px;
+      border-radius: 30px;
+      border: 1px solid var(--glass-border);
+    }
+
+    .nav-tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.82rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-tab-btn.active {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(255, 60, 0, 0.3);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      background: var(--input-bg);
+      border: 1px solid var(--glass-border);
+      color: var(--text-main);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+    }
+
+    .icon-btn:hover {
+      transform: scale(1.05);
+    }
+
+    /* =========================================================
+       SEÇÕES DO DASHBOARD (LISTA x DESCOBRIR)
+       ========================================================= */
+    .dashboard-view {
+      display: none;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+
+    .dashboard-view.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* =========================================================
+       PAINEL DE ADIÇÃO E FILTROS
+       ========================================================= */
+    .add-movie-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 20px;
+      position: relative;
+      box-shadow: var(--shadow);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 150px 80px 120px;
+      gap: 10px;
+      position: relative;
+    }
+
+    .input-group {
+      position: relative;
+    }
+
+    input, select {
+      width: 100%;
+      height: 40px;
+      background: var(--input-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-sm);
+      padding: 0 12px;
+      color: var(--text-main);
+      font-size: 0.88rem;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+      height: 40px;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+    }
+
+    /* Auto-complete Dropdown */
+    .search-results-dropdown {
+      position: absolute;
+      top: 46px;
+      left: 0;
+      right: 0;
+      background: var(--card-bg);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-sm);
+      max-height: 240px;
+      overflow-y: auto;
+      z-index: 50;
+      display: none;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    .search-result-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--glass-border);
+      font-size: 0.85rem;
+    }
+
+    .search-result-item:hover {
+      background: var(--input-bg);
+    }
+
+    .search-result-item img {
+      width: 30px;
+      height: 44px;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+
+    /* Controles de Filtro da Lista */
+    .list-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .filter-buttons {
+      display: flex;
+      gap: 6px;
+    }
+
+    .filter-btn {
+      background: var(--input-bg);
+      border: 1px solid var(--glass-border);
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .filter-btn.active {
+      background: var(--text-main);
+      color: #000;
+      border-color: var(--text-main);
+    }
+
+    .search-bar-list {
+      position: relative;
+      width: 220px;
+    }
+
+    .search-bar-list input {
+      height: 34px;
+      font-size: 0.82rem;
+    }
+
+    /* =========================================================
+       GRID E CARDS COMPACTOS COM EDIÇÃO
+       ========================================================= */
+    .movie-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+      gap: 16px;
+    }
+
+    .movie-card {
+      background: var(--card-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .movie-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .poster-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 2 / 3;
+      overflow: hidden;
+      background: var(--input-bg);
+    }
+
+    .poster-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .movie-info {
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex-grow: 1;
+      justify-content: space-between;
+    }
+
+    .movie-info h3 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      line-height: 1.25;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .movie-rating-stars {
+      color: gold;
+      font-size: 0.75rem;
+      margin-top: 2px;
+      letter-spacing: 1px;
+    }
+
+    .movie-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .edit-inputs-row {
+      display: flex;
+      gap: 4px;
+    }
+
+    .edit-inputs-row select {
+      flex: 1;
+      height: 30px;
+      font-size: 0.75rem;
+      padding: 0 4px;
+      border-radius: 6px;
+    }
+
+    .edit-inputs-row input[type="number"] {
+      width: 50px;
+      height: 30px;
+      font-size: 0.75rem;
+      padding: 0 4px;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 4px;
+    }
+
+    .btn-card {
+      flex: 1;
+      height: 30px;
+      border-radius: 6px;
+      border: 1px solid var(--glass-border);
+      background: var(--input-bg);
+      color: var(--text-main);
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .btn-card.edit:hover { background: #28a745; color: white; border-color: #28a745; }
+    .btn-card.watch { background: var(--accent); border: none; color: white; }
+    .btn-card.remove:hover { background: #dc3545; color: white; border-color: #dc3545; }
+
+    /* Estilo de Botão para Itens Desabilitados/Já na lista */
+    .btn-already-added {
+      background: #28a745 !important;
+      color: white !important;
+      opacity: 0.85;
+      cursor: default !important;
+    }
+
+    /* =========================================================
+       ABA 2: DESCOBRIR
+       ========================================================= */
+    .genres-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .genre-chip {
+      background: var(--input-bg);
+      border: 1px solid var(--glass-border);
+      color: var(--text-main);
+      padding: 8px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.78rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+
+    .genre-chip.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .status-box {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .status-box i { font-size: 2rem; margin-bottom: 8px; opacity: 0.5; }
+
+    @media (max-width: 768px) {
+      .form-grid { grid-template-columns: 1fr 1fr; }
+      .btn-primary { grid-column: span 2; }
+      .nav-container { height: 54px; }
+      .search-bar-list { width: 100%; }
+      .list-controls { flex-direction: column; align-items: stretch; }
+      .movie-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <div class="wrapper nav-container">
+      <div class="logo">
+        <i class="fa-solid fa-film"></i> CineCasal
+      </div>
+
+      <div class="nav-tabs">
+        <button class="nav-tab-btn active" data-tab="tab-minha-lista">
+          <i class="fa-solid fa-list-check"></i> Lista
         </button>
-
-        <div id="search-list-container" class="hidden">
-          <input
-            type="text"
-            id="search-list-input"
-            placeholder="Buscar na sua lista..."
-          />
-        </div>
-
+        <button class="nav-tab-btn" data-tab="tab-descobrir">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> Descobrir
+        </button>
       </div>
 
-      <button id="dark-light-toggle" class="dark-light-toggle">
-        <i id="mode-icon" class="fa-solid fa-sun"></i>
-      </button>
-
-    </header>
-
-    <main>
-
-      <div class="titulo">
-        <h1>Minha Biblioteca de Filmes</h1>
+      <div class="nav-actions">
+        <button class="icon-btn" id="dark-light-toggle" title="Alternar Tema">
+          <i class="fa-solid fa-moon" id="mode-icon"></i>
+        </button>
       </div>
+    </div>
+  </nav>
 
-      <div class="container">
+  <main class="wrapper">
 
-        <div class="control-panel">
-
-          <div class="form-field form-select">
-
-            <label for="name-input">
-              Digite o nome do filme
-            </label>
-
-            <input
-              type="text"
-              id="name-input"
-              placeholder="Buscar..."
-            />
-
-            <div id="movie-search-results"></div>
-
+    <!-- ABA 1: MINHA LISTA -->
+    <section id="tab-minha-lista" class="dashboard-view active">
+      
+      <div class="add-movie-panel">
+        <form id="add-movie-form" class="form-grid" onsubmit="return false;">
+          <div class="input-group">
+            <input type="text" id="name-input" placeholder="Buscar título do filme..." autocomplete="off">
+            <div id="movie-search-results" class="search-results-dropdown"></div>
           </div>
 
-          <div class="container_painel">
+          <select id="status-select">
+            <option value="proximo">Quero Assistir</option>
+            <option value="assistindo">Assistindo</option>
+            <option value="assistido">Assistido</option>
+          </select>
 
-            <div class="form-field form-status">
+          <input type="number" id="rating-input" placeholder="Nota" min="0" max="5" value="0" title="Sua nota (0 a 5)">
 
-              <label for="status-select">Status</label>
-
-              <select id="status-select">
-                <option value="assistido">Assistido</option>
-                <option value="assistindo">Assistindo</option>
-                <option value="proximo">Quero Assistir</option>
-              </select>
-
-            </div>
-
-            <div class="form-field form-nota">
-
-              <label for="rating-input">Nota</label>
-
-              <input
-                type="number"
-                id="rating-input"
-                min="1"
-                max="5"
-                value="5"
-              />
-
-            </div>
-
-            <button id="add-button">
-              Adicionar
-            </button>
-
-          </div>
-
-        </div>
-
-        <div class="filter-icon" id="filterIcon">
-          <i class="fa-solid fa-filter"></i>
-        </div>
-
-        <div class="dropdown" id="dropdown">
-
-          <button class="filter-button active" data-filter="all">
-            Todos
+          <button class="btn-primary" id="add-button">
+            <i class="fa-solid fa-plus"></i> Adicionar
           </button>
-
-          <button class="filter-button" data-filter="assistido">
-            Assistidos
-          </button>
-
-          <button class="filter-button" data-filter="assistindo">
-            Assistindo
-          </button>
-
-          <button class="filter-button" data-filter="proximo">
-            Quero Assistir
-          </button>
-
-        </div>
-
-        <div id="movie-grid" class="movie-grid"></div>
-
+        </form>
       </div>
 
-    </main>
+      <div class="list-controls">
+        <div class="filter-buttons">
+          <button class="filter-btn active" data-filter="all">Todos</button>
+          <button class="filter-btn" data-filter="proximo">Quero Assistir</button>
+          <button class="filter-btn" data-filter="assistindo">Assistindo</button>
+          <button class="filter-btn" data-filter="assistido">Assistidos</button>
+        </div>
 
-    <script type="module">
+        <div class="search-bar-list">
+          <input type="text" id="search-list-input" placeholder="Filtrar minha lista...">
+        </div>
+      </div>
 
-      // =============================================
-      // FIREBASE
-      // =============================================
+      <div class="movie-grid" id="movie-grid"></div>
+    </section>
 
-      import {
-        initializeApp
-      } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+    <!-- ABA 2: DESCOBRIR -->
+    <section id="tab-descobrir" class="dashboard-view">
+      <div class="add-movie-panel">
+        <h3 style="margin-bottom: 12px; font-size: 0.95rem;">Selecione os gêneros combinados:</h3>
+        
+        <div class="genres-grid">
+          <div class="genre-chip" data-id="28"><i class="fa-solid fa-gun"></i>Ação</div>
+          <div class="genre-chip" data-id="12"><i class="fa-solid fa-compass"></i>Aventura</div>
+          <div class="genre-chip" data-id="16"><i class="fa-solid fa-child"></i>Animação</div>
+          <div class="genre-chip" data-id="35"><i class="fa-solid fa-face-laugh-beam"></i>Comédia</div>
+          <div class="genre-chip" data-id="80"><i class="fa-solid fa-mask"></i>Crime</div>
+          <div class="genre-chip" data-id="99"><i class="fa-solid fa-video"></i>Doc</div>
+          <div class="genre-chip" data-id="18"><i class="fa-solid fa-masks-theater"></i>Drama</div>
+          <div class="genre-chip" data-id="10751"><i class="fa-solid fa-people-roof"></i>Família</div>
+          <div class="genre-chip" data-id="14"><i class="fa-solid fa-wand-magic-sparkles"></i>Fantasia</div>
+          <div class="genre-chip" data-id="27"><i class="fa-solid fa-ghost"></i>Terror</div>
+          <div class="genre-chip" data-id="9648"><i class="fa-solid fa-magnifying-glass"></i>Mistério</div>
+          <div class="genre-chip" data-id="10749"><i class="fa-solid fa-heart"></i>Romance</div>
+          <div class="genre-chip" data-id="878"><i class="fa-solid fa-shuttle-space"></i>Ficção</div>
+          <div class="genre-chip" data-id="53"><i class="fa-solid fa-skull"></i>Suspense</div>
+        </div>
 
-      import {
-        getDatabase,
-        ref,
-        push,
-        set,
-        get,
-        update,
-        remove
-      } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+        <button class="btn-primary" id="find-discover-btn" style="width: 100%;">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> Buscar Sugestões
+        </button>
+      </div>
 
-      const firebaseConfig = {
-        apiKey: "AIzaSyCJQZ3Pswe6sdsE35wJux8Dgbw_2PaNNOA",
-        authDomain: "filmes-salvos.firebaseapp.com",
-        databaseURL: "https://filmes-salvos-default-rtdb.firebaseio.com",
-        projectId: "filmes-salvos",
-        storageBucket: "filmes-salvos.firebasestorage.app",
-        messagingSenderId: "155114516613",
-        appId: "1:155114516613:web:f0333b9391a7851ad1b9ec",
-      };
+      <div id="discover-status" class="status-box">
+        <i class="fa-solid fa-popcorn"></i>
+        <p>Escolha os gêneros acima para ver opções de filmes.</p>
+      </div>
 
-      const app = initializeApp(firebaseConfig);
+      <div class="movie-grid" id="discover-results-grid"></div>
+    </section>
 
-      const db = getDatabase(app);
+  </main>
 
-      const USER_ID = "USER_ID_DEMO";
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+    import { 
+      getDatabase, ref, push, set, get, update, remove 
+    } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
 
-      // =============================================
-      // TMDB
-      // =============================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyCJQZ3Pswe6sdsE35wJux8Dgbw_2PaNNOA",
+      authDomain: "filmes-salvos.firebaseapp.com",
+      databaseURL: "https://filmes-salvos-default-rtdb.firebaseio.com",
+      projectId: "filmes-salvos",
+      storageBucket: "filmes-salvos.firebasestorage.app",
+      messagingSenderId: "155114516613",
+      appId: "1:155114516613:web:f0333b9391a7851ad1b9ec",
+    };
 
-      const API_KEY = "29fa8018e3a64630c52814108ebee6fb";
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
 
-      const BASE_IMAGE_URL =
-        "https://image.tmdb.org/t/p/w300";
+    const USER_ID = "USER_ID_DEMO";
+    const API_KEY = "29fa8018e3a64630c52814108ebee6fb";
+    const BASE_IMAGE_URL = "https://image.tmdb.org/t/p/w300";
+    const GOOGLE_API_KEY = "AIzaSyCfx8jZZ9PBUmIdl3OVPNf65SzGWGaCqr0";
+    const FOLDER_ID = "1jZa8K1YZ76-DyPiAIuAxOHR15IDiUUiI";
 
-      // =============================================
-      // GOOGLE DRIVE
-      // =============================================
+    let searchTimeout;
+    let selectedMovie = null;
+    let currentFilter = null;
+    let currentSearchQuery = null;
+    const selectedGenres = new Set();
 
-      const GOOGLE_API_KEY =
-        "AIzaSyCfx8jZZ9PBUmIdl3OVPNf65SzGWGaCqr0";
+    // NAVEGAÇÃO DE ABAS
+    document.querySelectorAll('.nav-tab-btn').forEach(tabBtn => {
+      tabBtn.addEventListener('click', () => {
+        document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.dashboard-view').forEach(v => v.classList.remove('active'));
 
-      const FOLDER_ID =
-        "1jZa8K1YZ76-DyPiAIuAxOHR15IDiUUiI";
-
-      // =============================================
-      // VARIÁVEIS
-      // =============================================
-
-      let searchTimeout;
-
-      let selectedMovie = null;
-
-      let currentFilter = null;
-
-      let currentSearchQuery = null;
-
-      // =============================================
-      // INICIAR
-      // =============================================
-
-      document.addEventListener("DOMContentLoaded", () => {
-
-        renderUserList();
-
-        loadDarkModePreference();
+        tabBtn.classList.add('active');
+        const targetView = tabBtn.getAttribute('data-tab');
+        document.getElementById(targetView).classList.add('active');
       });
-
-      // =============================================
-      // DARK MODE
-      // =============================================
-
-      function loadDarkModePreference() {
-
-        const isDarkMode =
-          localStorage.getItem("darkMode") === "true";
-
-        if (isDarkMode)
-          document.body.classList.remove("light-mode");
-
-        else
-          document.body.classList.add("light-mode");
-
-        updateModeIcon();
-      }
-
-      function updateModeIcon() {
-
-        const isLightMode =
-          document.body.classList.contains("light-mode");
-
-        const icon =
-          document.getElementById("mode-icon");
-
-        icon.classList.remove("fa-moon", "fa-sun");
-
-        icon.classList.add(
-          isLightMode ? "fa-sun" : "fa-moon"
-        );
-      }
-
-      document
-        .getElementById("dark-light-toggle")
-        .addEventListener("click", () => {
-
-          document.body.classList.toggle("light-mode");
-
-          const isLightMode =
-            document.body.classList.contains("light-mode");
-
-          localStorage.setItem(
-            "darkMode",
-            !isLightMode
-          );
-
-          updateModeIcon();
-        });
-
-      // =============================================
-      // BUSCAR TMDB
-      // =============================================
-
-      document
-        .getElementById("name-input")
-        .addEventListener("input", () => {
-
-          clearTimeout(searchTimeout);
-
-          const query =
-            document.getElementById("name-input").value;
-
-          if (query.length > 2) {
-
-            searchTimeout =
-              setTimeout(() => searchMovies(query), 300);
-
-          } else {
-
-            document.getElementById(
-              "movie-search-results"
-            ).style.display = "none";
-          }
-        });
-
-      async function searchMovies(query) {
-
-        const url =
-          `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=pt-BR`;
-
-        try {
-
-          const response = await fetch(url);
-
-          const data = await response.json();
-
-          renderSearchMoviesResults(data.results);
-
-        } catch (error) {
-
-          console.error(error);
-        }
-      }
-
-      function renderSearchMoviesResults(movies) {
-
-        const resultsContainer =
-          document.getElementById(
-            "movie-search-results"
-          );
-
-        resultsContainer.innerHTML = "";
-
-        if (movies && movies.length > 0) {
-
-          movies.forEach((movie) => {
-
-            const movieItem =
-              document.createElement("div");
-
-            movieItem.className =
-              "search-result-item";
-
-            const cover = movie.poster_path
-              ? `${BASE_IMAGE_URL}${movie.poster_path}`
-              : "https://via.placeholder.com/40x60?text=Sem+Capa";
-
-            const year = movie.release_date
-              ? `(${movie.release_date.substring(0, 4)})`
-              : "";
-
-            movieItem.innerHTML = `
-              <img src="${cover}">
-              <span>${movie.title} ${year}</span>
-            `;
-
-            movieItem.onclick = () => selectMovie(movie);
-
-            resultsContainer.appendChild(movieItem);
-          });
-
-          resultsContainer.style.display = "block";
-
-        } else {
-
-          resultsContainer.style.display = "none";
-        }
-      }
-
-      function selectMovie(movie) {
-
-        selectedMovie = {
-          id: movie.id,
-          name: movie.title,
-          cover: movie.poster_path
-            ? `${BASE_IMAGE_URL}${movie.poster_path}`
-            : "https://via.placeholder.com/200x300?text=Sem+Capa",
-        };
-
-        document.getElementById("name-input").value =
-          movie.title;
-
-        document.getElementById(
-          "movie-search-results"
-        ).style.display = "none";
-      }
-
-      // =============================================
-      // GOOGLE DRIVE
-      // =============================================
-
-      async function buscarFilmeNoDrive(nomeFilme) {
-
-        const query =
-          `name='${nomeFilme}.mp4' and '${FOLDER_ID}' in parents`;
-
-        const url =
-          `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&key=${GOOGLE_API_KEY}&fields=files(id,name)`;
-
-        try {
-
-          const response = await fetch(url);
-
-          const data = await response.json();
-
-          if (data.files.length > 0) {
-
-            return data.files[0].id;
-
-          } else {
-
-            alert("Filme não encontrado no Google Drive.");
-
-            return null;
-          }
-
-        } catch (error) {
-
-          console.error(error);
-
-          return null;
-        }
-      }
-
-      // =============================================
-      // ADICIONAR FILME
-      // =============================================
-
-      document
-        .getElementById("add-button")
-        .addEventListener("click", async (evt) => {
-
-          evt.preventDefault();
-
-          if (!selectedMovie) {
-
-            alert("Selecione um filme.");
-
-            return;
-          }
-
-          const newMovie = {
-            tmdb_id: selectedMovie.id,
-            cover: selectedMovie.cover,
-            name: selectedMovie.name,
-            status: document.getElementById("status-select").value,
-            rating: parseInt(document.getElementById("rating-input").value) || 0,
-            userId: USER_ID,
-          };
-
-          try {
-
-            const userMoviesRef =
-              ref(db, "user_movies/" + USER_ID);
-
-            const snapshot =
-              await get(userMoviesRef);
-
-            const existing = snapshot.exists()
-              ? Object.values(snapshot.val()).find(
-                  (m) => m.tmdb_id === newMovie.tmdb_id
-                )
-              : null;
-
-            if (existing) {
-
-              alert("Esse filme já foi adicionado.");
-
-              return;
-            }
-
-            const newMovieRef = push(userMoviesRef);
-
-            await set(newMovieRef, newMovie);
-
-            alert("Filme adicionado.");
-
-            document.getElementById("name-input").value = "";
-
-            document.getElementById("rating-input").value = "5";
-
-            selectedMovie = null;
-
-            renderUserList();
-
-          } catch (error) {
-
-            console.error(error);
-          }
-        });
-
-      // =============================================
-      // RENDER FILMES
-      // =============================================
-
-      async function renderUserList() {
-
-        const container =
-          document.getElementById("movie-grid");
-
-        container.innerHTML =
-          `<p class="loading-message">Carregando filmes...</p>`;
-
-        try {
-
-          const snapshot =
-            await get(ref(db, "user_movies/" + USER_ID));
-
-          if (!snapshot.exists()) {
-
-            container.innerHTML =
-              `<p class="no-movies-message">Nenhum filme encontrado.</p>`;
-
-            return;
-          }
-
-          let movies =
-            Object.entries(snapshot.val()).map(([id, data]) => ({
-              id,
-              ...data,
-            }));
-
-          if (currentFilter)
-            movies = movies.filter(
-              (m) => m.status === currentFilter
-            );
-
-          if (currentSearchQuery)
-            movies = movies.filter((m) =>
-              m.name.toLowerCase().includes(currentSearchQuery)
-            );
-
-          container.innerHTML = "";
-
-          movies.forEach((movie) => {
-
-            const rating = parseInt(movie.rating) || 0;
-
-            const ratingStars =
-              "★".repeat(rating) +
-              "☆".repeat(5 - rating);
-
-            const movieCard =
-              document.createElement("div");
-
-            movieCard.className = "movie-card";
-
-            movieCard.innerHTML = `
-
-              <img src="${movie.cover}" alt="${movie.name}">
-
-              <div class="movie-info">
-
-                <h3>${movie.name}</h3>
-
-                <p class="movie-rating">
-                  ${ratingStars}
-                </p>
-
-                <p>
-                  Status:
-                  ${movie.status === "proximo"
-                    ? "Quero Assistir"
-                    : movie.status}
-                </p>
-
-                <div class="movie-controls">
-
-                  <select id="status-edit-${movie.id}">
-
-                    <option
-                      value="assistido"
-                      ${movie.status === "assistido" ? "selected" : ""}
-                    >
-                      Assistido
-                    </option>
-
-                    <option
-                      value="assistindo"
-                      ${movie.status === "assistindo" ? "selected" : ""}
-                    >
-                      Assistindo
-                    </option>
-
-                    <option
-                      value="proximo"
-                      ${movie.status === "proximo" ? "selected" : ""}
-                    >
-                      Quero Assistir
-                    </option>
-
-                  </select>
-
-                  <div class="button-group">
-
-                    <button
-                      class="edit-button"
-                      data-id="${movie.id}"
-                    >
-                      Atualizar
-                    </button>
-
-                    <button
-                      class="remove-button"
-                      data-id="${movie.id}"
-                    >
-                      Remover
-                    </button>
-
-                    <button
-                      class="watch-button"
-                      data-name="${movie.name}"
-                    >
-                      ▶ Assistir
-                    </button>
-
-                  </div>
-
-                </div>
-
-              </div>
-            `;
-
-            container.appendChild(movieCard);
-          });
-
-          // REMOVER
-
-          document
-            .querySelectorAll(".remove-button")
-            .forEach((btn) =>
-              btn.addEventListener("click", (e) =>
-                deleteMovie(e.target.dataset.id)
-              )
-            );
-
-          // EDITAR
-
-          document
-            .querySelectorAll(".edit-button")
-            .forEach((btn) =>
-              btn.addEventListener("click", (e) =>
-                updateMovie(e.target.dataset.id)
-              )
-            );
-
-          // ASSISTIR
-
-document
-  .querySelectorAll(".watch-button")
-  .forEach((btn) => {
-
-    btn.addEventListener("click", async () => {
-
-      const movieName = btn.dataset.name;
-
-      btn.innerHTML = "Carregando...";
-
-      const driveId =
-        await buscarFilmeNoDrive(movieName);
-
-      btn.innerHTML = "▶ Assistir";
-
-      if (!driveId) return;
-
-      // ABRIR DIRETO NO GOOGLE DRIVE
-
-      window.open(
-        `https://drive.google.com/file/d/${driveId}/view`,
-        "_blank"
-      );
-
     });
 
-  });
-        } catch (error) {
+    // DARK MODE TOGGLE
+    document.getElementById("dark-light-toggle").addEventListener("click", () => {
+      document.body.classList.toggle("light-mode");
+      const isLight = document.body.classList.contains("light-mode");
+      localStorage.setItem("darkMode", !isLight);
+      document.getElementById("mode-icon").className = isLight ? "fa-solid fa-sun" : "fa-solid fa-moon";
+    });
 
-          console.error(error);
-        }
+    document.addEventListener("DOMContentLoaded", () => {
+      renderUserList();
+      if (localStorage.getItem("darkMode") === "false") {
+        document.body.classList.add("light-mode");
+        document.getElementById("mode-icon").className = "fa-solid fa-sun";
       }
+    });
 
-      // =============================================
-      // UPDATE
-      // =============================================
+    // BUSCA AUTOCOMPLETE TMDB
+    document.getElementById("name-input").addEventListener("input", (e) => {
+      clearTimeout(searchTimeout);
+      const query = e.target.value;
+      if (query.length > 2) {
+        searchTimeout = setTimeout(() => searchMoviesTMDB(query), 300);
+      } else {
+        document.getElementById("movie-search-results").style.display = "none";
+      }
+    });
 
-      async function updateMovie(id) {
+    async function searchMoviesTMDB(query) {
+      const url = `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=pt-BR`;
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        const resultsContainer = document.getElementById("movie-search-results");
+        resultsContainer.innerHTML = "";
 
-        const newStatus =
-          document.getElementById(
-            `status-edit-${id}`
-          ).value;
-
-        const movieRef =
-          ref(db, `user_movies/${USER_ID}/${id}`);
-
-        try {
-
-          await update(movieRef, {
-            status: newStatus,
+        if (data.results && data.results.length > 0) {
+          data.results.slice(0, 5).forEach((movie) => {
+            const item = document.createElement("div");
+            item.className = "search-result-item";
+            const cover = movie.poster_path ? `${BASE_IMAGE_URL}${movie.poster_path}` : "https://via.placeholder.com/40x60?text=Sem+Capa";
+            item.innerHTML = `<img src="${cover}"><span>${movie.title}</span>`;
+            item.onclick = () => {
+              selectedMovie = { id: movie.id, name: movie.title, cover };
+              document.getElementById("name-input").value = movie.title;
+              resultsContainer.style.display = "none";
+            };
+            resultsContainer.appendChild(item);
           });
-
-          alert("Status atualizado.");
-
-          renderUserList();
-
-        } catch (error) {
-
-          console.error(error);
+          resultsContainer.style.display = "block";
         }
-      }
+      } catch (err) { console.error(err); }
+    }
 
-      // =============================================
-      // DELETE
-      // =============================================
+    // ADICIONAR FILME
+    document.getElementById("add-button").addEventListener("click", async (e) => {
+      e.preventDefault();
+      const inputName = document.getElementById("name-input").value;
+      if (!inputName) return alert("Digite o nome de um filme!");
 
-      async function deleteMovie(id) {
+      const newMovie = {
+        tmdb_id: selectedMovie ? selectedMovie.id : Date.now(),
+        cover: selectedMovie ? selectedMovie.cover : "https://via.placeholder.com/200x300?text=Sem+Capa",
+        name: inputName,
+        status: document.getElementById("status-select").value,
+        rating: parseInt(document.getElementById("rating-input").value) || 0,
+        userId: USER_ID
+      };
 
-        const movieRef =
-          ref(db, `user_movies/${USER_ID}/${id}`);
-
-        try {
-
-          await remove(movieRef);
-
-          alert("Filme removido.");
-
-          renderUserList();
-
-        } catch (error) {
-
-          console.error(error);
+      try {
+        const userMoviesRef = ref(db, "user_movies/" + USER_ID);
+        const snapshot = await get(userMoviesRef);
+        
+        if (snapshot.exists()) {
+          const duplicate = Object.values(snapshot.val()).find(m => m.tmdb_id === newMovie.tmdb_id);
+          if (duplicate) return alert("Este filme já está na sua lista!");
         }
-      }
 
-      // =============================================
-      // SEARCH LIST
-      // =============================================
-
-      const searchListInput =
-        document.getElementById("search-list-input");
-
-      searchListInput.addEventListener("input", (event) => {
-
-        currentSearchQuery =
-          event.target.value.toLowerCase();
-
+        await set(push(userMoviesRef), newMovie);
+        document.getElementById("name-input").value = "";
+        document.getElementById("rating-input").value = "0";
+        selectedMovie = null;
         renderUserList();
-      });
+      } catch (err) { console.error(err); }
+    });
 
-      document
-        .getElementById("toggle-search")
-        .addEventListener("click", () => {
+    // RENDERIZAR LISTA COM EDIÇÃO DE STATUS E AVALIAÇÃO
+    async function renderUserList() {
+      const container = document.getElementById("movie-grid");
+      container.innerHTML = `<p style="grid-column: 1/-1; text-align:center; font-size: 0.85rem;">Carregando...</p>`;
 
-          const searchContainer =
-            document.getElementById(
-              "search-list-container"
-            );
+      try {
+        const snapshot = await get(ref(db, "user_movies/" + USER_ID));
+        if (!snapshot.exists()) {
+          container.innerHTML = `<p style="grid-column: 1/-1; text-align:center; opacity:0.6; font-size: 0.85rem;">Nenhum filme salvo ainda.</p>`;
+          return;
+        }
 
-          searchContainer.classList.toggle("hidden");
+        let movies = Object.entries(snapshot.val()).map(([id, data]) => ({ id, ...data }));
 
-          searchContainer.classList.toggle("visible");
+        if (currentFilter) movies = movies.filter(m => m.status === currentFilter);
+        if (currentSearchQuery) movies = movies.filter(m => m.name.toLowerCase().includes(currentSearchQuery));
 
-          if (
-            searchContainer.classList.contains("visible")
-          ) {
+        container.innerHTML = "";
 
-            searchListInput.focus();
+        movies.forEach((movie) => {
+          const currentRating = Math.min(Math.max(movie.rating || 0, 0), 5);
+          const stars = "★".repeat(currentRating) + "☆".repeat(5 - currentRating);
+          
+          const card = document.createElement("div");
+          card.className = "movie-card";
+          card.innerHTML = `
+            <div class="poster-container">
+              <img src="${movie.cover}" alt="${movie.name}">
+            </div>
+            <div class="movie-info">
+              <div>
+                <h3>${movie.name}</h3>
+                <div class="movie-rating-stars">${stars}</div>
+              </div>
+              <div class="movie-controls">
+                <div class="edit-inputs-row">
+                  <select id="status-edit-${movie.id}">
+                    <option value="proximo" ${movie.status === "proximo" ? "selected" : ""}>Quero</option>
+                    <option value="assistindo" ${movie.status === "assistindo" ? "selected" : ""}>Vendo</option>
+                    <option value="assistido" ${movie.status === "assistido" ? "selected" : ""}>Visto</option>
+                  </select>
+                  <input type="number" id="rating-edit-${movie.id}" min="0" max="5" value="${currentRating}" title="Nota de 0 a 5">
+                </div>
+                <div class="button-group">
+                  <button class="btn-card edit" data-id="${movie.id}" title="Salvar Alterações"><i class="fa-solid fa-floppy-disk"></i></button>
+                  <button class="btn-card remove" data-id="${movie.id}" title="Remover"><i class="fa-solid fa-trash"></i></button>
+                  <button class="btn-card watch" data-name="${movie.name}" title="Assistir no Drive"><i class="fa-solid fa-play"></i></button>
+                </div>
+              </div>
+            </div>
+          `;
+          container.appendChild(card);
+        });
 
-          } else {
+        container.querySelectorAll('.edit').forEach(b => b.onclick = (e) => updateMovie(e.currentTarget.dataset.id));
+        container.querySelectorAll('.remove').forEach(b => b.onclick = (e) => deleteMovie(e.currentTarget.dataset.id));
+        container.querySelectorAll('.watch').forEach(b => b.onclick = (e) => assistiNoDrive(e.currentTarget.dataset.name, e.currentTarget));
 
-            searchListInput.value = "";
+      } catch (err) { console.error(err); }
+    }
 
-            currentSearchQuery = null;
+    // ATUALIZAR STATUS E AVALIAÇÃO JUNTOS NO FIREBASE
+    async function updateMovie(id) {
+      const newStatus = document.getElementById(`status-edit-${id}`).value;
+      const rawRating = parseInt(document.getElementById(`rating-edit-${id}`).value);
+      const newRating = isNaN(rawRating) ? 0 : rawRating;
 
-            renderUserList();
+      const validRating = Math.min(Math.max(newRating, 0), 5);
+
+      try {
+        await update(ref(db, `user_movies/${USER_ID}/${id}`), { 
+          status: newStatus,
+          rating: validRating
+        });
+        renderUserList();
+      } catch(err) {
+        console.error(err);
+      }
+    }
+
+    async function deleteMovie(id) {
+      if (confirm("Deseja remover este filme?")) {
+        await remove(ref(db, `user_movies/${USER_ID}/${id}`));
+        renderUserList();
+      }
+    }
+
+    async function assistiNoDrive(nome, btn) {
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
+      const query = `name='${nome}.mp4' and '${FOLDER_ID}' in parents`;
+      const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&key=${GOOGLE_API_KEY}&fields=files(id,name)`;
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        btn.innerHTML = `<i class="fa-solid fa-play"></i>`;
+        if (data.files && data.files.length > 0) {
+          window.open(`https://drive.google.com/file/d/${data.files[0].id}/view`, "_blank");
+        } else {
+          alert("Filme não encontrado no Google Drive.");
+        }
+      } catch (err) { console.error(err); btn.innerHTML = `<i class="fa-solid fa-play"></i>`; }
+    }
+
+    // FILTROS E PESQUISA DA LISTA
+    document.querySelectorAll(".filter-btn").forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentFilter = btn.dataset.filter === "all" ? null : btn.dataset.filter;
+        renderUserList();
+      };
+    });
+
+    document.getElementById("search-list-input").addEventListener("input", (e) => {
+      currentSearchQuery = e.target.value.toLowerCase();
+      renderUserList();
+    });
+
+    // DESCOBRIR FILMES POR GÊNERO (COM SUPORTE A MÚLTIPLAS PÁGINAS)
+    document.querySelectorAll('.genre-chip').forEach(chip => {
+      chip.onclick = () => {
+        const id = chip.dataset.id;
+        if (selectedGenres.has(id)) {
+          selectedGenres.delete(id);
+          chip.classList.remove('active');
+        } else {
+          selectedGenres.add(id);
+          chip.classList.add('active');
+        }
+      };
+    });
+
+    document.getElementById('find-discover-btn').onclick = async () => {
+      if (selectedGenres.size === 0) return alert("Selecione pelo menos uma categoria!");
+      
+      const grid = document.getElementById('discover-results-grid');
+      const status = document.getElementById('discover-status');
+      grid.innerHTML = "";
+      status.style.display = "block";
+      status.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><p>Buscando dezenas de sugestões...</p>`;
+
+      const ids = Array.from(selectedGenres).join(',');
+
+      try {
+        // Busca os filmes já salvos no Firebase do Usuário
+        const userMoviesRef = ref(db, "user_movies/" + USER_ID);
+        const userMoviesSnapshot = await get(userMoviesRef);
+        const savedIds = new Set();
+
+        if (userMoviesSnapshot.exists()) {
+          Object.values(userMoviesSnapshot.val()).forEach(m => {
+            if (m.tmdb_id) savedIds.add(Number(m.tmdb_id));
+          });
+        }
+
+        // Faz chamadas assíncronas paralelas das 4 primeiras páginas da API (80 resultados no total)
+        const totalPagesToFetch = 4;
+        const fetchPromises = [];
+
+        for (let page = 1; page <= totalPagesToFetch; page++) {
+          const url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${ids}&language=pt-BR&sort_by=popularity.desc&include_adult=false&page=${page}`;
+          fetchPromises.push(fetch(url).then(r => r.json()));
+        }
+
+        const responses = await Promise.all(fetchPromises);
+        let allResults = [];
+
+        responses.forEach(data => {
+          if (data.results) {
+            allResults = allResults.concat(data.results);
           }
         });
 
-      // =============================================
-      // FILTER
-      // =============================================
-
-      const filterIcon =
-        document.getElementById("filterIcon");
-
-      const dropdown =
-        document.getElementById("dropdown");
-
-      const filterButtons =
-        document.querySelectorAll(".filter-button");
-
-      filterIcon.addEventListener("click", () =>
-        dropdown.classList.toggle("open")
-      );
-
-      filterButtons.forEach((button) => {
-
-        button.addEventListener("click", () => {
-
-          filterButtons.forEach((b) =>
-            b.classList.remove("active")
-          );
-
-          button.classList.add("active");
-
-          currentFilter =
-            button.getAttribute("data-filter") === "all"
-              ? null
-              : button.getAttribute("data-filter");
-
-          renderUserList();
-
-          dropdown.classList.remove("open");
-        });
-      });
-
-      // =============================================
-      // FECHAR PLAYER
-      // =============================================
-
-      document
-        .getElementById("closePlayer")
-        .addEventListener("click", () => {
-
-          const iframe =
-            document.getElementById("movieFrame");
-
-          iframe.src = "";
-
-          document.getElementById(
-            "playerModal"
-          ).style.display = "none";
+        // Remove itens duplicados que possam vir da API e itens sem poster
+        const uniqueMoviesMap = new Map();
+        allResults.forEach(m => {
+          if (m.poster_path && !uniqueMoviesMap.has(m.id)) {
+            uniqueMoviesMap.set(m.id, m);
+          }
         });
 
-    </script>
+        let finalResults = Array.from(uniqueMoviesMap.values());
 
-  </body>
+        if (finalResults.length === 0) {
+          status.innerHTML = `<i class="fa-solid fa-frown"></i><p>Nenhum filme encontrado para essas categorias.</p>`;
+          return;
+        }
+
+        status.style.display = "none";
+
+        finalResults.forEach(movie => {
+          const card = document.createElement("div");
+          card.className = "movie-card";
+          const cover = `${BASE_IMAGE_URL}${movie.poster_path}`;
+
+          // Verifica se o filme já está na lista
+          const isSaved = savedIds.has(Number(movie.id));
+
+          card.innerHTML = `
+            <div class="poster-container">
+              <img src="${cover}">
+            </div>
+            <div class="movie-info">
+              <h3>${movie.title}</h3>
+              ${
+                isSaved 
+                ? `<button class="btn-primary btn-already-added" style="width:100%; height: 32px; font-size:0.75rem;" disabled>
+                    <i class="fa-solid fa-check"></i> Na Lista
+                   </button>`
+                : `<button class="btn-primary add-discover-btn" style="width:100%; height: 32px; font-size:0.75rem;" 
+                        data-id="${movie.id}" data-title="${movie.title.replace(/"/g, '&quot;')}" data-cover="${cover}">
+                    <i class="fa-solid fa-plus"></i> Adicionar
+                   </button>`
+              }
+            </div>
+          `;
+
+          const addBtn = card.querySelector('.add-discover-btn');
+          if (addBtn) {
+            addBtn.onclick = async (e) => {
+              const btn = e.currentTarget;
+              btn.disabled = true;
+              btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
+
+              const movieObj = {
+                tmdb_id: Number(btn.dataset.id),
+                name: btn.dataset.title,
+                cover: btn.dataset.cover,
+                status: "proximo",
+                rating: 0,
+                userId: USER_ID
+              };
+
+              // Re-verifica duplicidade no Firebase antes de inserir
+              const currentSnapshot = await get(userMoviesRef);
+              if (currentSnapshot.exists()) {
+                const duplicate = Object.values(currentSnapshot.val()).find(m => m.tmdb_id === movieObj.tmdb_id);
+                if (duplicate) {
+                  alert("Este filme já está na sua lista!");
+                  btn.className = "btn-primary btn-already-added";
+                  btn.innerHTML = `<i class="fa-solid fa-check"></i> Na Lista`;
+                  return;
+                }
+              }
+
+              await set(push(userMoviesRef), movieObj);
+              btn.className = "btn-primary btn-already-added";
+              btn.innerHTML = `<i class="fa-solid fa-check"></i> Na Lista`;
+              renderUserList();
+            };
+          }
+
+          grid.appendChild(card);
+        });
+
+      } catch (err) { console.error(err); }
+    };
+  </script>
+</body>
 </html>
