@@ -64,7 +64,7 @@
     }
 
     /* =========================================================
-       NAVBAR / HEADER COM LOGO
+       NAVBAR / HEADER
        ========================================================= */
     nav {
       background: rgba(13, 11, 24, 0.8);
@@ -85,20 +85,20 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 64px;
+      height: 60px;
     }
 
     .logo {
+      font-weight: 800;
+      font-size: 1.2rem;
       display: flex;
       align-items: center;
-      height: 100%;
+      gap: 8px;
+      color: var(--text-main);
+      letter-spacing: -0.5px;
     }
 
-    .logo img {
-      max-height: 40px;
-      width: auto;
-      object-fit: contain;
-    }
+    .logo i { color: var(--accent); }
 
     .nav-tabs {
       display: flex;
@@ -453,7 +453,6 @@
       .search-bar-list { width: 100%; }
       .list-controls { flex-direction: column; align-items: stretch; }
       .movie-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
-      .logo img { max-height: 32px; }
     }
   </style>
 </head>
@@ -463,7 +462,7 @@
   <nav>
     <div class="wrapper nav-container">
       <div class="logo">
-        <img src="Logo-filme.png" alt="FILME Logo">
+        <i class="fa-solid fa-film"></i> CineCasal
       </div>
 
       <div class="nav-tabs">
