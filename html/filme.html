@@ -13,7 +13,7 @@
 
   <style>
     /* =========================================================
-       VARIÁVEIS E TEMA (SUPORTE A DARK/LIGHT)
+       VARIÁVEIS E TEMA (DARK / LIGHT)
        ========================================================= */
     :root {
       --bg-gradient: linear-gradient(135deg, #0d0b18 0%, #050409 100%);
@@ -64,7 +64,7 @@
     }
 
     /* =========================================================
-       NAVBAR / COMPACT DASHBOARD HEADER
+       NAVBAR / HEADER COM LOGO
        ========================================================= */
     nav {
       background: rgba(13, 11, 24, 0.8);
@@ -85,21 +85,19 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 60px;
+      height: 64px;
     }
 
     .logo {
-      font-weight: 800;
-      font-size: 1.2rem;
       display: flex;
       align-items: center;
-      gap: 8px;
-      color: var(--text-main);
-      letter-spacing: -0.5px;
+      height: 100%;
     }
 
-    .logo i {
-      color: var(--accent);
+    .logo img {
+      max-height: 40px;
+      width: auto;
+      object-fit: contain;
     }
 
     .nav-tabs {
@@ -132,12 +130,6 @@
       box-shadow: 0 4px 12px rgba(255, 60, 0, 0.3);
     }
 
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
     .icon-btn {
       background: var(--input-bg);
       border: 1px solid var(--glass-border);
@@ -153,21 +145,17 @@
       font-size: 0.9rem;
     }
 
-    .icon-btn:hover {
-      transform: scale(1.05);
-    }
+    .icon-btn:hover { transform: scale(1.05); }
 
     /* =========================================================
-       SEÇÕES DO DASHBOARD (LISTA x DESCOBRIR)
+       DASHBOARD VIEWS (ABAS)
        ========================================================= */
     .dashboard-view {
       display: none;
       animation: fadeIn 0.25s ease-in-out;
     }
 
-    .dashboard-view.active {
-      display: block;
-    }
+    .dashboard-view.active { display: block; }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(6px); }
@@ -175,7 +163,7 @@
     }
 
     /* =========================================================
-       PAINEL DE ADIÇÃO E FILTROS
+       PAINÉIS DE FORMULÁRIO E FILTROS
        ========================================================= */
     .add-movie-panel {
       background: var(--card-bg);
@@ -194,9 +182,7 @@
       position: relative;
     }
 
-    .input-group {
-      position: relative;
-    }
+    .input-group { position: relative; }
 
     input, select {
       width: 100%;
@@ -210,9 +196,7 @@
       outline: none;
     }
 
-    input:focus, select:focus {
-      border-color: var(--accent);
-    }
+    input:focus, select:focus { border-color: var(--accent); }
 
     .btn-primary {
       background: var(--accent);
@@ -230,11 +214,9 @@
       height: 40px;
     }
 
-    .btn-primary:hover {
-      background: var(--accent-hover);
-    }
+    .btn-primary:hover { background: var(--accent-hover); }
 
-    /* Auto-complete Dropdown */
+    /* Dropdown Auto-complete */
     .search-results-dropdown {
       position: absolute;
       top: 46px;
@@ -262,9 +244,7 @@
       font-size: 0.85rem;
     }
 
-    .search-result-item:hover {
-      background: var(--input-bg);
-    }
+    .search-result-item:hover { background: var(--input-bg); }
 
     .search-result-item img {
       width: 30px;
@@ -273,7 +253,7 @@
       border-radius: 4px;
     }
 
-    /* Controles de Filtro da Lista */
+    /* Filtros da Lista */
     .list-controls {
       display: flex;
       justify-content: space-between;
@@ -283,10 +263,7 @@
       flex-wrap: wrap;
     }
 
-    .filter-buttons {
-      display: flex;
-      gap: 6px;
-    }
+    .filter-buttons { display: flex; gap: 6px; }
 
     .filter-btn {
       background: var(--input-bg);
@@ -305,18 +282,11 @@
       border-color: var(--text-main);
     }
 
-    .search-bar-list {
-      position: relative;
-      width: 220px;
-    }
-
-    .search-bar-list input {
-      height: 34px;
-      font-size: 0.82rem;
-    }
+    .search-bar-list { position: relative; width: 220px; }
+    .search-bar-list input { height: 34px; font-size: 0.82rem; }
 
     /* =========================================================
-       GRID E CARDS COMPACTOS COM EDIÇÃO
+       GRID E CARDS
        ========================================================= */
     .movie-grid {
       display: grid;
@@ -387,10 +357,7 @@
       margin-top: 4px;
     }
 
-    .edit-inputs-row {
-      display: flex;
-      gap: 4px;
-    }
+    .edit-inputs-row { display: flex; gap: 4px; }
 
     .edit-inputs-row select {
       flex: 1;
@@ -409,10 +376,7 @@
       text-align: center;
     }
 
-    .button-group {
-      display: flex;
-      gap: 4px;
-    }
+    .button-group { display: flex; gap: 4px; }
 
     .btn-card {
       flex: 1;
@@ -434,7 +398,6 @@
     .btn-card.watch { background: var(--accent); border: none; color: white; }
     .btn-card.remove:hover { background: #dc3545; color: white; border-color: #dc3545; }
 
-    /* Estilo de Botão para Itens Desabilitados/Já na lista */
     .btn-already-added {
       background: #28a745 !important;
       color: white !important;
@@ -443,7 +406,7 @@
     }
 
     /* =========================================================
-       ABA 2: DESCOBRIR
+       GÊNEROS / DESCOBRIR
        ========================================================= */
     .genres-grid {
       display: grid;
@@ -487,20 +450,20 @@
     @media (max-width: 768px) {
       .form-grid { grid-template-columns: 1fr 1fr; }
       .btn-primary { grid-column: span 2; }
-      .nav-container { height: 54px; }
       .search-bar-list { width: 100%; }
       .list-controls { flex-direction: column; align-items: stretch; }
       .movie-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+      .logo img { max-height: 32px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- NAVBAR -->
+  <!-- HEADER NAVBAR -->
   <nav>
     <div class="wrapper nav-container">
       <div class="logo">
-        <i class="fa-solid fa-film"></i> CineCasal
+        <img src="logo-filme.png" alt="FILME Logo">
       </div>
 
       <div class="nav-tabs">
@@ -565,7 +528,7 @@
     <!-- ABA 2: DESCOBRIR -->
     <section id="tab-descobrir" class="dashboard-view">
       <div class="add-movie-panel">
-        <h3 style="margin-bottom: 12px; font-size: 0.95rem;">Selecione os gêneros combinados:</h3>
+        <h3 style="margin-bottom: 12px; font-size: 0.95rem;">Selecione os gêneros desejados:</h3>
         
         <div class="genres-grid">
           <div class="genre-chip" data-id="28"><i class="fa-solid fa-gun"></i>Ação</div>
@@ -591,7 +554,7 @@
 
       <div id="discover-status" class="status-box">
         <i class="fa-solid fa-popcorn"></i>
-        <p>Escolha os gêneros acima para ver opções de filmes.</p>
+        <p>Escolha os gêneros acima para ver recomendações.</p>
       </div>
 
       <div class="movie-grid" id="discover-results-grid"></div>
@@ -605,6 +568,7 @@
       getDatabase, ref, push, set, get, update, remove 
     } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
 
+    // CONFIGURAÇÕES E CONSTANTES
     const firebaseConfig = {
       apiKey: "AIzaSyCJQZ3Pswe6sdsE35wJux8Dgbw_2PaNNOA",
       authDomain: "filmes-salvos.firebaseapp.com",
@@ -615,34 +579,52 @@
       appId: "1:155114516613:web:f0333b9391a7851ad1b9ec",
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
     const USER_ID = "USER_ID_DEMO";
     const API_KEY = "29fa8018e3a64630c52814108ebee6fb";
     const BASE_IMAGE_URL = "https://image.tmdb.org/t/p/w300";
     const GOOGLE_API_KEY = "AIzaSyCfx8jZZ9PBUmIdl3OVPNf65SzGWGaCqr0";
     const FOLDER_ID = "1jZa8K1YZ76-DyPiAIuAxOHR15IDiUUiI";
 
-    let searchTimeout;
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    let searchTimeout = null;
     let selectedMovie = null;
     let currentFilter = null;
     let currentSearchQuery = null;
     const selectedGenres = new Set();
 
-    // NAVEGAÇÃO DE ABAS
-    document.querySelectorAll('.nav-tab-btn').forEach(tabBtn => {
-      tabBtn.addEventListener('click', () => {
+    // ELEMENTOS DO DOM
+    const nameInput = document.getElementById("name-input");
+    const searchResultsDropdown = document.getElementById("movie-search-results");
+    const movieGrid = document.getElementById("movie-grid");
+    const discoverGrid = document.getElementById("discover-results-grid");
+    const discoverStatus = document.getElementById("discover-status");
+
+    // HELPER: OBTÉM SET DE IDS SALVOS DO USUÁRIO NO FIREBASE
+    async function getSavedMovieIds() {
+      const snapshot = await get(ref(db, `user_movies/${USER_ID}`));
+      const savedIds = new Set();
+      if (snapshot.exists()) {
+        Object.values(snapshot.val()).forEach(m => {
+          if (m.tmdb_id) savedIds.add(Number(m.tmdb_id));
+        });
+      }
+      return savedIds;
+    }
+
+    // INTERFACE - GERENCIAMENTO DE ABAS
+    document.querySelectorAll('.nav-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
         document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.dashboard-view').forEach(v => v.classList.remove('active'));
 
-        tabBtn.classList.add('active');
-        const targetView = tabBtn.getAttribute('data-tab');
-        document.getElementById(targetView).classList.add('active');
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).classList.add('active');
       });
     });
 
-    // DARK MODE TOGGLE
+    // INTERFACE - TEMA (DARK / LIGHT)
     document.getElementById("dark-light-toggle").addEventListener("click", () => {
       document.body.classList.toggle("light-mode");
       const isLight = document.body.classList.contains("light-mode");
@@ -658,14 +640,14 @@
       }
     });
 
-    // BUSCA AUTOCOMPLETE TMDB
-    document.getElementById("name-input").addEventListener("input", (e) => {
+    // BUSCA DE TÍTULO VIA AUTOCOMPLETE
+    nameInput.addEventListener("input", (e) => {
       clearTimeout(searchTimeout);
-      const query = e.target.value;
+      const query = e.target.value.trim();
       if (query.length > 2) {
         searchTimeout = setTimeout(() => searchMoviesTMDB(query), 300);
       } else {
-        document.getElementById("movie-search-results").style.display = "none";
+        searchResultsDropdown.style.display = "none";
       }
     });
 
@@ -674,8 +656,7 @@
       try {
         const res = await fetch(url);
         const data = await res.json();
-        const resultsContainer = document.getElementById("movie-search-results");
-        resultsContainer.innerHTML = "";
+        searchResultsDropdown.innerHTML = "";
 
         if (data.results && data.results.length > 0) {
           data.results.slice(0, 5).forEach((movie) => {
@@ -685,24 +666,24 @@
             item.innerHTML = `<img src="${cover}"><span>${movie.title}</span>`;
             item.onclick = () => {
               selectedMovie = { id: movie.id, name: movie.title, cover };
-              document.getElementById("name-input").value = movie.title;
-              resultsContainer.style.display = "none";
+              nameInput.value = movie.title;
+              searchResultsDropdown.style.display = "none";
             };
-            resultsContainer.appendChild(item);
+            searchResultsDropdown.appendChild(item);
           });
-          resultsContainer.style.display = "block";
+          searchResultsDropdown.style.display = "block";
         }
-      } catch (err) { console.error(err); }
+      } catch (err) { console.error("Erro no autocomplete:", err); }
     }
 
-    // ADICIONAR FILME
+    // ADICIONAR FILME MANUALMENTE / VIA BUSCA
     document.getElementById("add-button").addEventListener("click", async (e) => {
       e.preventDefault();
-      const inputName = document.getElementById("name-input").value;
+      const inputName = nameInput.value.trim();
       if (!inputName) return alert("Digite o nome de um filme!");
 
       const newMovie = {
-        tmdb_id: selectedMovie ? selectedMovie.id : Date.now(),
+        tmdb_id: selectedMovie ? Number(selectedMovie.id) : Date.now(),
         cover: selectedMovie ? selectedMovie.cover : "https://via.placeholder.com/200x300?text=Sem+Capa",
         name: inputName,
         status: document.getElementById("status-select").value,
@@ -711,31 +692,27 @@
       };
 
       try {
-        const userMoviesRef = ref(db, "user_movies/" + USER_ID);
-        const snapshot = await get(userMoviesRef);
-        
-        if (snapshot.exists()) {
-          const duplicate = Object.values(snapshot.val()).find(m => m.tmdb_id === newMovie.tmdb_id);
-          if (duplicate) return alert("Este filme já está na sua lista!");
+        const savedIds = await getSavedMovieIds();
+        if (savedIds.has(newMovie.tmdb_id)) {
+          return alert("Este filme já está na sua lista!");
         }
 
-        await set(push(userMoviesRef), newMovie);
-        document.getElementById("name-input").value = "";
+        await set(push(ref(db, `user_movies/${USER_ID}`)), newMovie);
+        nameInput.value = "";
         document.getElementById("rating-input").value = "0";
         selectedMovie = null;
         renderUserList();
-      } catch (err) { console.error(err); }
+      } catch (err) { console.error("Erro ao salvar filme:", err); }
     });
 
-    // RENDERIZAR LISTA COM EDIÇÃO DE STATUS E AVALIAÇÃO
+    // RENDERIZAÇÃO DA LISTA DO USUÁRIO
     async function renderUserList() {
-      const container = document.getElementById("movie-grid");
-      container.innerHTML = `<p style="grid-column: 1/-1; text-align:center; font-size: 0.85rem;">Carregando...</p>`;
+      movieGrid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; font-size: 0.85rem;">Carregando...</p>`;
 
       try {
-        const snapshot = await get(ref(db, "user_movies/" + USER_ID));
+        const snapshot = await get(ref(db, `user_movies/${USER_ID}`));
         if (!snapshot.exists()) {
-          container.innerHTML = `<p style="grid-column: 1/-1; text-align:center; opacity:0.6; font-size: 0.85rem;">Nenhum filme salvo ainda.</p>`;
+          movieGrid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; opacity:0.6; font-size: 0.85rem;">Nenhum filme salvo ainda.</p>`;
           return;
         }
 
@@ -744,11 +721,11 @@
         if (currentFilter) movies = movies.filter(m => m.status === currentFilter);
         if (currentSearchQuery) movies = movies.filter(m => m.name.toLowerCase().includes(currentSearchQuery));
 
-        container.innerHTML = "";
+        movieGrid.innerHTML = "";
 
         movies.forEach((movie) => {
-          const currentRating = Math.min(Math.max(movie.rating || 0, 0), 5);
-          const stars = "★".repeat(currentRating) + "☆".repeat(5 - currentRating);
+          const rating = Math.min(Math.max(movie.rating || 0, 0), 5);
+          const stars = "★".repeat(rating) + "☆".repeat(5 - rating);
           
           const card = document.createElement("div");
           card.className = "movie-card";
@@ -768,7 +745,7 @@
                     <option value="assistindo" ${movie.status === "assistindo" ? "selected" : ""}>Vendo</option>
                     <option value="assistido" ${movie.status === "assistido" ? "selected" : ""}>Visto</option>
                   </select>
-                  <input type="number" id="rating-edit-${movie.id}" min="0" max="5" value="${currentRating}" title="Nota de 0 a 5">
+                  <input type="number" id="rating-edit-${movie.id}" min="0" max="5" value="${rating}">
                 </div>
                 <div class="button-group">
                   <button class="btn-card edit" data-id="${movie.id}" title="Salvar Alterações"><i class="fa-solid fa-floppy-disk"></i></button>
@@ -778,35 +755,30 @@
               </div>
             </div>
           `;
-          container.appendChild(card);
+          movieGrid.appendChild(card);
         });
 
-        container.querySelectorAll('.edit').forEach(b => b.onclick = (e) => updateMovie(e.currentTarget.dataset.id));
-        container.querySelectorAll('.remove').forEach(b => b.onclick = (e) => deleteMovie(e.currentTarget.dataset.id));
-        container.querySelectorAll('.watch').forEach(b => b.onclick = (e) => assistiNoDrive(e.currentTarget.dataset.name, e.currentTarget));
+        // Eventos dos botões do card
+        movieGrid.querySelectorAll('.edit').forEach(b => b.onclick = (e) => updateMovie(e.currentTarget.dataset.id));
+        movieGrid.querySelectorAll('.remove').forEach(b => b.onclick = (e) => deleteMovie(e.currentTarget.dataset.id));
+        movieGrid.querySelectorAll('.watch').forEach(b => b.onclick = (e) => assistiNoDrive(e.currentTarget.dataset.name, e.currentTarget));
 
-      } catch (err) { console.error(err); }
+      } catch (err) { console.error("Erro ao renderizar lista:", err); }
     }
 
-    // ATUALIZAR STATUS E AVALIAÇÃO JUNTOS NO FIREBASE
+    // ATUALIZAR STATUS E AVALIAÇÃO
     async function updateMovie(id) {
       const newStatus = document.getElementById(`status-edit-${id}`).value;
       const rawRating = parseInt(document.getElementById(`rating-edit-${id}`).value);
-      const newRating = isNaN(rawRating) ? 0 : rawRating;
-
-      const validRating = Math.min(Math.max(newRating, 0), 5);
+      const validRating = Math.min(Math.max(isNaN(rawRating) ? 0 : rawRating, 0), 5);
 
       try {
-        await update(ref(db, `user_movies/${USER_ID}/${id}`), { 
-          status: newStatus,
-          rating: validRating
-        });
+        await update(ref(db, `user_movies/${USER_ID}/${id}`), { status: newStatus, rating: validRating });
         renderUserList();
-      } catch(err) {
-        console.error(err);
-      }
+      } catch(err) { console.error("Erro ao atualizar filme:", err); }
     }
 
+    // DELETAR FILME
     async function deleteMovie(id) {
       if (confirm("Deseja remover este filme?")) {
         await remove(ref(db, `user_movies/${USER_ID}/${id}`));
@@ -814,23 +786,28 @@
       }
     }
 
+    // REPRODUÇÃO NO GOOGLE DRIVE
     async function assistiNoDrive(nome, btn) {
       btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
       const query = `name='${nome}.mp4' and '${FOLDER_ID}' in parents`;
       const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&key=${GOOGLE_API_KEY}&fields=files(id,name)`;
+      
       try {
         const res = await fetch(url);
         const data = await res.json();
-        btn.innerHTML = `<i class="fa-solid fa-play"></i>`;
         if (data.files && data.files.length > 0) {
           window.open(`https://drive.google.com/file/d/${data.files[0].id}/view`, "_blank");
         } else {
           alert("Filme não encontrado no Google Drive.");
         }
-      } catch (err) { console.error(err); btn.innerHTML = `<i class="fa-solid fa-play"></i>`; }
+      } catch (err) {
+        console.error("Erro ao buscar no Drive:", err);
+      } finally {
+        btn.innerHTML = `<i class="fa-solid fa-play"></i>`;
+      }
     }
 
-    // FILTROS E PESQUISA DA LISTA
+    // FILTROS E BUSCA NA LISTA LOCAL
     document.querySelectorAll(".filter-btn").forEach(btn => {
       btn.onclick = () => {
         document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
@@ -841,11 +818,11 @@
     });
 
     document.getElementById("search-list-input").addEventListener("input", (e) => {
-      currentSearchQuery = e.target.value.toLowerCase();
+      currentSearchQuery = e.target.value.toLowerCase().trim();
       renderUserList();
     });
 
-    // DESCOBRIR FILMES POR GÊNERO (COM SUPORTE A MÚLTIPLAS PÁGINAS)
+    // SELEÇÃO DE GÊNEROS E BUSCA EXPANDIDA DA ABA DESCOBRIR
     document.querySelectorAll('.genre-chip').forEach(chip => {
       chip.onclick = () => {
         const id = chip.dataset.id;
@@ -861,73 +838,54 @@
 
     document.getElementById('find-discover-btn').onclick = async () => {
       if (selectedGenres.size === 0) return alert("Selecione pelo menos uma categoria!");
-      
-      const grid = document.getElementById('discover-results-grid');
-      const status = document.getElementById('discover-status');
-      grid.innerHTML = "";
-      status.style.display = "block";
-      status.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><p>Buscando dezenas de sugestões...</p>`;
+
+      discoverGrid.innerHTML = "";
+      discoverStatus.style.display = "block";
+      discoverStatus.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><p>Buscando dezenas de sugestões...</p>`;
 
       const ids = Array.from(selectedGenres).join(',');
 
       try {
-        // Busca os filmes já salvos no Firebase do Usuário
-        const userMoviesRef = ref(db, "user_movies/" + USER_ID);
-        const userMoviesSnapshot = await get(userMoviesRef);
-        const savedIds = new Set();
+        const savedIds = await getSavedMovieIds();
 
-        if (userMoviesSnapshot.exists()) {
-          Object.values(userMoviesSnapshot.val()).forEach(m => {
-            if (m.tmdb_id) savedIds.add(Number(m.tmdb_id));
-          });
-        }
+        // Faz chamadas concorrentes das 4 primeiras páginas (80 filmes)
+        const totalPages = 4;
+        const requests = Array.from({ length: totalPages }, (_, i) => {
+          const url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${ids}&language=pt-BR&sort_by=popularity.desc&include_adult=false&page=${i + 1}`;
+          return fetch(url).then(r => r.json());
+        });
 
-        // Faz chamadas assíncronas paralelas das 4 primeiras páginas da API (80 resultados no total)
-        const totalPagesToFetch = 4;
-        const fetchPromises = [];
-
-        for (let page = 1; page <= totalPagesToFetch; page++) {
-          const url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${ids}&language=pt-BR&sort_by=popularity.desc&include_adult=false&page=${page}`;
-          fetchPromises.push(fetch(url).then(r => r.json()));
-        }
-
-        const responses = await Promise.all(fetchPromises);
-        let allResults = [];
+        const responses = await Promise.all(requests);
+        const uniqueMovies = new Map();
 
         responses.forEach(data => {
           if (data.results) {
-            allResults = allResults.concat(data.results);
+            data.results.forEach(m => {
+              if (m.poster_path && !uniqueMovies.has(m.id)) {
+                uniqueMovies.set(m.id, m);
+              }
+            });
           }
         });
 
-        // Remove itens duplicados que possam vir da API e itens sem poster
-        const uniqueMoviesMap = new Map();
-        allResults.forEach(m => {
-          if (m.poster_path && !uniqueMoviesMap.has(m.id)) {
-            uniqueMoviesMap.set(m.id, m);
-          }
-        });
+        const results = Array.from(uniqueMovies.values());
 
-        let finalResults = Array.from(uniqueMoviesMap.values());
-
-        if (finalResults.length === 0) {
-          status.innerHTML = `<i class="fa-solid fa-frown"></i><p>Nenhum filme encontrado para essas categorias.</p>`;
+        if (results.length === 0) {
+          discoverStatus.innerHTML = `<i class="fa-solid fa-frown"></i><p>Nenhum filme encontrado para essas categorias.</p>`;
           return;
         }
 
-        status.style.display = "none";
+        discoverStatus.style.display = "none";
 
-        finalResults.forEach(movie => {
+        results.forEach(movie => {
           const card = document.createElement("div");
           card.className = "movie-card";
           const cover = `${BASE_IMAGE_URL}${movie.poster_path}`;
-
-          // Verifica se o filme já está na lista
           const isSaved = savedIds.has(Number(movie.id));
 
           card.innerHTML = `
             <div class="poster-container">
-              <img src="${cover}">
+              <img src="${cover}" alt="${movie.title}">
             </div>
             <div class="movie-info">
               <h3>${movie.title}</h3>
@@ -960,29 +918,26 @@
                 userId: USER_ID
               };
 
-              // Re-verifica duplicidade no Firebase antes de inserir
-              const currentSnapshot = await get(userMoviesRef);
-              if (currentSnapshot.exists()) {
-                const duplicate = Object.values(currentSnapshot.val()).find(m => m.tmdb_id === movieObj.tmdb_id);
-                if (duplicate) {
-                  alert("Este filme já está na sua lista!");
-                  btn.className = "btn-primary btn-already-added";
-                  btn.innerHTML = `<i class="fa-solid fa-check"></i> Na Lista`;
-                  return;
-                }
+              const currentSavedIds = await getSavedMovieIds();
+              if (currentSavedIds.has(movieObj.tmdb_id)) {
+                alert("Este filme já está na sua lista!");
+              } else {
+                await set(push(ref(db, `user_movies/${USER_ID}`)), movieObj);
+                renderUserList();
               }
 
-              await set(push(userMoviesRef), movieObj);
               btn.className = "btn-primary btn-already-added";
               btn.innerHTML = `<i class="fa-solid fa-check"></i> Na Lista`;
-              renderUserList();
             };
           }
 
-          grid.appendChild(card);
+          discoverGrid.appendChild(card);
         });
 
-      } catch (err) { console.error(err); }
+      } catch (err) {
+        console.error("Erro na busca por gêneros:", err);
+        discoverStatus.innerHTML = `<i class="fa-solid fa-exclamation-triangle"></i><p>Ocorreu um erro ao buscar sugestões.</p>`;
+      }
     };
   </script>
 </body>
