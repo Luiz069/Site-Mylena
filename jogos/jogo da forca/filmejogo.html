@@ -190,7 +190,7 @@
       padding: 0 4px;
     }
 
-    /* LAYOUT EM GRID PAR OS CARDS */
+    /* LAYOUT EM GRID PARA OS CARDS */
     .timeline-list {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -219,9 +219,10 @@
       border-color: var(--accent);
     }
 
+    /* ESTILO PROPORCIONAL PARA CARTAZES DE CINEMA */
     .movie-card img {
       width: 100%;
-      height: 110px;
+      height: 160px;
       object-fit: cover;
       border-radius: 6px;
       pointer-events: none;
@@ -229,23 +230,26 @@
     }
 
     .movie-card h4 {
-      font-size: 0.75rem;
-      margin-top: 6px;
+      font-size: 0.8rem;
+      margin-top: 8px;
       text-align: center;
       height: 2.2em;
+      line-height: 1.1;
       overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
+      font-weight: 700;
     }
 
     .year-badge {
       display: none;
-      margin-top: 4px;
+      margin-top: 6px;
       background: var(--accent);
-      padding: 2px 6px;
+      color: #fff;
+      padding: 3px 8px;
       border-radius: 4px;
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       font-weight: 800;
     }
 
@@ -284,7 +288,7 @@
       }
 
       .movie-card img {
-        height: 130px;
+        height: 180px;
       }
     }
   </style>
@@ -386,87 +390,78 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // BANCO DE FILMES COM IDS ÚNICOS DE IMAGENS
+    // BANCO DE FILMES COM LINKS PARA OS CARTAZES OFICIAIS
     const DB_FILMES = [
-      // --- Lista Original (16) ---
-      { title: "Star Wars", year: 1977 },
-      { title: "O Exterminador do Futuro 2", year: 1991 },
-      { title: "Matrix", year: 1999 },
-      { title: "O Cavaleiro das Trevas", year: 2008 },
-      { title: "Vingadores Ultimato", year: 2019 },
-      { title: "Top Gun Maverick", year: 2022 },
-      { title: "O Rei Leão", year: 1994 },
-      { title: "Shrek", year: 2001 },
-      { title: "Toy Story", year: 1995 },
-      { title: "Avatar", year: 2009 },
-      { title: "O Poderoso Chefao", year: 1972 },
-      { title: "Titanic", year: 1997 },
-      { title: "Oppenheimer", year: 2023 },
-      { title: "Jurassic Park", year: 1993 },
-      { title: "Psicose", year: 1960 },
-      { title: "Corra", year: 2017 },
-
-      // --- Adicionados +60 Clássicos e Sucessos ---
-      { title: "A Lista de Schindler", year: 1993 },
-      { title: "Um Sonho de Liberdade", year: 1994 },
-      { title: "Pulp Fiction: Tempo de Violência", year: 1994 },
-      { title: "Forrest Gump: O Contador de Histórias", year: 1994 },
-      { title: "O Senhor dos Anéis: O Retorno do Rei", year: 2003 },
-      { title: "Clube da Luta", year: 1999 },
-      { title: "A Origem", year: 2010 },
-      { title: "Interstellar", year: 2014 },
-      { title: "O Silêncio dos Inocentes", year: 1991 },
-      { title: "De Volta para o Futuro", year: 1985 },
-      { title: "O Iluminado", year: 1980 },
-      { title: "Gladiador", year: 2000 },
-      { title: "Cidade de Deus", year: 2002 },
-      { title: "Parasita", year: 2019 },
-      { title: "A Viagem de Chihiro", year: 2001 },
-      { title: "Whiplash: Em Busca da Perfeição", year: 2014 },
-      { title: "O Resgate do Soldado Ryan", year: 1998 },
-      { title: "Viva: A Vida é uma Festa", year: 2017 },
-      { title: "WALL-E", year: 2008 },
-      { title: "Procurando Nemo", year: 2003 },
-      { title: "Divertida Mente", year: 2015 },
-      { title: "Como Treinar o Seu Dragão", year: 2010 },
-      { title: "Homem-Aranha: No Aranhaverso", year: 2018 },
-      { title: "Pantera Negra", year: 2018 },
-      { title: "Batman: O Cavaleiro das Trevas Ressurge", year: 2012 },
-      { title: "Coringa", year: 2019 },
-      { title: "Mad Max: Estrada da Fúria", year: 2015 },
-      { title: "Bastardos Inglórios", year: 2009 },
-      { title: "Django Livre", year: 2012 },
-      { title: "O Grande Truque", year: 2006 },
-      { title: "Brilho Eterno de uma Mente sem Lembranças", year: 2004 },
-      { title: "O Show de Truman", year: 1998 },
-      { title: "A Espera de um Milagre", year: 1999 },
-      { title: "Os Bons Companheiros", year: 1990 },
-      { title: "Alien, o Oitavo Passageiro", year: 1979 },
-      { title: "Blade Runner: O Caçador de Androides", year: 1982 },
-      { title: "E.T.: O Extraterrestre", year: 1982 },
-      { title: "Indiana Jones e os Caçadores da Arca Perdida", year: 1981 },
-      { title: "Os Caça-Fantasmas", year: 1984 },
-      { title: "O Apanhador de Pesadelos", year: 1990 },
-      { title: "Pânico", year: 1996 },
-      { title: "O Sexto Sentido", year: 1999 },
-      { title: "Invocação do Mal", year: 2013 },
-      { title: "Hereditário", year: 2018 },
-      { title: "Tudo em Todo o Lugar ao Mesmo Tempo", year: 2022 },
-      { title: "Barbie", year: 2023 },
-      { title: "Duna", year: 2021 },
-      { title: "The Batman", year: 2022 },
-      { title: "La La Land: Cantando Estações", year: 2016 },
-      { title: "O Grande Hotel Budapeste", year: 2014 },
-      { title: "1917", year: 2019 },
-      { title: "O Regresso", year: 2015 },
-      { title: "O Lobo de Wall Street", year: 2013 },
-      { title: "A Rede Social", year: 2010 },
-      { title: "Se Beber, Não Case!", year: 2009 },
-      { title: "Superbad: É Hoje", year: 2007 },
-      { title: "Monstros S.A.", year: 2001 },
-      { title: "Os Incríveis", year: 2004 },
-      { title: "Ratatouille", year: 2007 },
-      { title: "Up: Altas Aventuras", year: 2009 }
+      {
+        title: "Star Wars: Episódio IV",
+        year: 1977,
+        poster: "https://upload.wikimedia.org/wikipedia/commons/6/6c/Star_Wars_A_New_Hope_poster.png"
+      },
+      {
+        title: "Exterminador do Futuro 2",
+        year: 1991,
+        poster: "https://upload.wikimedia.org/wikipedia/pt/8/85/Terminator2poster.jpg"
+      },
+      {
+        title: "Matrix",
+        year: 1999,
+        poster: "https://upload.wikimedia.org/wikipedia/pt/c/c1/Matrix-poster.png"
+      },
+      {
+        title: "Batman: O Cavaleiro das Trevas",
+        year: 2008,
+        poster: "https://upload.wikimedia.org/wikipedia/pt/d/d1/The_Dark_Knight.jpg"
+      },
+      {
+        title: "Vingadores: Ultimato",
+        year: 2019,
+        poster: "https://upload.wikimedia.org/wikipedia/pt/9/9b/Avengers_Endgame.jpg"
+      },
+      {
+        title: "Top Gun: Maverick",
+        year: 2022,
+        poster: "https://upload.wikimedia.org/wikipedia/pt/d/d2/Top_Gun_Maverick_Poster.jpg"
+      },
+      {
+        title: "O Rei Leão",
+        year: 1994,
+        poster: "https://upload.wikimedia.org/wikipedia/pt/3/3d/The_Lion_King_poster.jpg"
+      },
+      {
+        title: "Shrek",
+        year: 2001,
+        poster: "https://upload.wikimedia.org/wikipedia/pt/b/b0/Shrek_p%C3%B4ster.jpg"
+      },
+      {
+        title: "Toy Story",
+        year: 1995,
+        poster: "https://upload.wikimedia.org/wikipedia/pt/d/dc/Toy_Story_1995.jpg"
+      },
+      {
+        title: "Avatar",
+        year: 2009,
+        poster: "https://upload.wikimedia.org/wikipedia/pt/b/b0/Avatar-Teaser-Poster.jpg"
+      },
+      {
+        title: "O Poderoso Chefão",
+        year: 1972,
+        poster: "https://upload.wikimedia.org/wikipedia/pt/1/15/Godfather_v_1.jpg"
+      },
+      {
+        title: "Titanic",
+        year: 1997,
+        poster: "https://upload.wikimedia.org/wikipedia/pt/2/22/Titanic_poster.jpg"
+      },
+      {
+        title: "Oppenheimer",
+        year: 2023,
+        poster: "https://upload.wikimedia.org/wikipedia/pt/3/3d/Oppenheimer_poster.jpg"
+      },
+      {
+        title: "Jurassic Park",
+        year: 1993,
+        poster: "https://upload.wikimedia.org/wikipedia/pt/e/e7/Jurassic_Park_poster.jpg"
+      }
     ];
 
     let myPlayerId = 'p_' + Math.random().toString(36).substr(2, 6);
@@ -584,7 +579,7 @@
       });
     }
 
-    // CARREGAMENTO DE IMAGENS CORRIGIDO
+    // RENDERIZAR OS CARDS DAS CAPAS
     function renderCards(movies) {
       const timeline = document.getElementById('timeline');
       timeline.innerHTML = '';
@@ -594,11 +589,8 @@
         card.className = 'movie-card';
         card.dataset.year = movie.year;
 
-        // URL da imagem confiável usando o serviço Picsum
-        const imgUrl = `https://picsum.photos/id/${movie.id || 10}/200/300`;
-
         card.innerHTML = `
-          <img src="${imgUrl}" alt="${movie.title}" loading="lazy">
+          <img src="${movie.poster}" alt="${movie.title}" loading="lazy" crossorigin="anonymous">
           <h4>${movie.title}</h4>
           <span class="year-badge">${movie.year}</span>
         `;
