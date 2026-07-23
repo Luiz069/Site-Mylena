@@ -39,19 +39,19 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px 16px;
+      padding: 16px 12px;
       touch-action: manipulation;
     }
 
-    header { text-align: center; margin-bottom: 20px; }
-    header h1 { font-size: 2rem; color: var(--accent); display: flex; align-items: center; justify-content: center; gap: 10px; }
-    header p { font-size: 0.85rem; color: var(--text-muted); }
+    header { text-align: center; margin-bottom: 16px; }
+    header h1 { font-size: 1.8rem; color: var(--accent); display: flex; align-items: center; justify-content: center; gap: 8px; }
+    header p { font-size: 0.8rem; color: var(--text-muted); }
 
-    .container { width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 16px; }
+    .container { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 14px; }
 
     /* LOBBY / TELA INICIAL */
-    .screen { display: none; background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 20px; }
-    .screen.active { display: flex; flex-direction: column; gap: 14px; }
+    .screen { display: none; background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 18px; }
+    .screen.active { display: flex; flex-direction: column; gap: 12px; }
 
     .input-group { display: flex; flex-direction: column; gap: 6px; }
     .input-group label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
@@ -86,47 +86,59 @@
 
     /* SALA DE ESPERA */
     .room-code-badge { font-size: 1.5rem; font-weight: 800; color: #ffb703; text-align: center; letter-spacing: 2px; }
-    .players-list { list-style: none; display: flex; flex-direction: column; gap: 8px; margin: 10px 0; }
-    .player-item { background: var(--input-bg); padding: 10px 14px; border-radius: var(--radius-md); display: flex; justify-content: space-between; font-weight: 700; }
+    .players-list { list-style: none; display: flex; flex-direction: column; gap: 8px; margin: 8px 0; }
+    .player-item { background: var(--input-bg); padding: 8px 12px; border-radius: var(--radius-md); display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; }
 
     /* JOGO */
-    .hud { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 12px; border-radius: var(--radius-md); }
-    .room-tag { font-weight: 800; color: #ffb703; }
+    .hud { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 10px 14px; border-radius: var(--radius-md); }
+    .room-tag { font-weight: 800; color: #ffb703; font-size: 0.9rem; }
 
-    .timeline-instructions { display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.75rem; font-weight: 800; text-transform: uppercase; padding: 0 8px; }
-    .timeline-list { display: flex; gap: 12px; overflow-x: auto; padding: 10px 0; min-height: 260px; justify-content: center; align-items: center; }
+    .timeline-instructions { display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.7rem; font-weight: 800; text-transform: uppercase; padding: 0 4px; }
+    
+    /* MODIFICAÇÃO PRINCIPAL: GRID EM VEZ DE CARROSSEL */
+    .timeline-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr); /* 2 colunas no celular */
+      gap: 10px;
+      padding: 6px 0;
+      width: 100%;
+    }
 
     .movie-card {
       background: var(--card-bg);
       border: 2px solid var(--glass-border);
-      border-radius: var(--radius-lg);
-      width: 150px;
-      flex-shrink: 0;
+      border-radius: var(--radius-md);
       padding: 8px;
       display: flex;
       flex-direction: column;
       align-items: center;
       touch-action: none;
       user-select: none;
+      position: relative;
+      cursor: grab;
     }
 
-    .movie-card.dragging { opacity: 0.5; transform: scale(1.05); }
-    .movie-card img { width: 100%; height: 180px; object-fit: cover; border-radius: var(--radius-md); pointer-events: none; }
-    .movie-card h4 { font-size: 0.8rem; margin-top: 8px; text-align: center; height: 2.4em; overflow: hidden; }
-    .year-badge { display: none; margin-top: 4px; background: var(--accent); padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 800; }
+    .movie-card.dragging { opacity: 0.4; border-color: var(--accent); }
+    .movie-card img { width: 100%; height: 110px; object-fit: cover; border-radius: 6px; pointer-events: none; }
+    .movie-card h4 { font-size: 0.75rem; margin-top: 6px; text-align: center; height: 2.2em; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+    .year-badge { display: none; margin-top: 4px; background: var(--accent); padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 800; }
 
-    .movie-card.correct { border-color: var(--success); }
-    .movie-card.wrong { border-color: var(--danger); }
+    .movie-card.correct { border-color: var(--success); background: rgba(40, 167, 69, 0.15); }
+    .movie-card.wrong { border-color: var(--danger); background: rgba(220, 53, 69, 0.15); }
     .movie-card.revealed .year-badge { display: block; }
 
     /* RANKING / PLACAR NA TELA DO JOGO */
-    .scoreboard { background: var(--card-bg); border-radius: var(--radius-md); padding: 12px; border: 1px solid var(--glass-border); }
-    .scoreboard h3 { font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+    .scoreboard { background: var(--card-bg); border-radius: var(--radius-md); padding: 10px; border: 1px solid var(--glass-border); }
+    .scoreboard h3 { font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
 
-    @media (max-width: 600px) {
-      .timeline-list { justify-content: flex-start; }
-      .movie-card { width: 130px; }
-      .movie-card img { height: 150px; }
+    /* Em telas um pouco maiores (tablets/PCs), mostra os 4 cards em 1 linha só */
+    @media (min-width: 520px) {
+      .timeline-list {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      .movie-card img {
+        height: 130px;
+      }
     }
   </style>
 </head>
@@ -134,12 +146,12 @@
 
   <header>
     <h1><i class="fa-solid fa-film"></i> CineTimeline</h1>
-    <p>Multiplayer Simultâneo em Tempo Real</p>
+    <p>Multiplayer Simultâneo</p>
   </header>
 
   <div class="container">
 
-    <!-- TELA 1: LOGIN / CONFIGURAÇÃO DE ENTRADA -->
+    <!-- TELA 1: LOGIN -->
     <div id="screen-login" class="screen active">
       <div class="input-group">
         <label>Seu Apelido</label>
@@ -148,7 +160,7 @@
 
       <button class="btn" id="btn-create-room"><i class="fa-solid fa-plus"></i> Criar Nova Sala</button>
 
-      <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; margin: 4px 0;">OU</div>
+      <div style="text-align: center; color: var(--text-muted); font-size: 0.75rem; margin: 2px 0;">OU</div>
 
       <div class="input-group">
         <label>Código da Sala</label>
@@ -157,10 +169,10 @@
       <button class="btn btn-secondary" id="btn-join-room"><i class="fa-solid fa-right-to-bracket"></i> Entrar na Sala</button>
     </div>
 
-    <!-- TELA 2: LOBBY DE ESPERA DA SALA -->
+    <!-- TELA 2: LOBBY -->
     <div id="screen-lobby" class="screen">
       <div style="text-align: center;">
-        <span style="font-size: 0.8rem; color: var(--text-muted);">CÓDIGO DA SALA</span>
+        <span style="font-size: 0.75rem; color: var(--text-muted);">CÓDIGO DA SALA</span>
         <div class="room-code-badge" id="lobby-room-code">----</div>
       </div>
 
@@ -179,26 +191,27 @@
       <ul class="players-list" id="players-list"></ul>
 
       <button class="btn" id="btn-start-game" style="display: none;"><i class="fa-solid fa-play"></i> Iniciar Jogo</button>
-      <div id="waiting-msg" style="text-align: center; color: var(--text-muted); font-size: 0.85rem;">Aguardando o criador iniciar a partida...</div>
+      <div id="waiting-msg" style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">Aguardando o criador iniciar a partida...</div>
     </div>
 
     <!-- TELA 3: ÁREA DE JOGO -->
     <div id="screen-game" class="screen">
       <div class="hud">
         <div class="room-tag" id="hud-room">SALA: ----</div>
-        <div id="status-msg" style="font-size: 0.85rem; font-weight: 700; color: #ffb703;">Valendo!</div>
+        <div id="status-msg" style="font-size: 0.8rem; font-weight: 700; color: #ffb703;">Valendo!</div>
       </div>
 
       <div class="timeline-instructions">
-        <span><i class="fa-solid fa-arrow-left"></i> Mais Antigo</span>
-        <span>Mais Recente <i class="fa-solid fa-arrow-right"></i></span>
+        <span>1º (Mais Antigo)</span>
+        <span>4º (Mais Recente)</span>
       </div>
 
+      <!-- CARDS EXIBIDOS EM GRADE/GRID -->
       <div class="timeline-list" id="timeline"></div>
 
       <button class="btn" id="btn-submit"><i class="fa-solid fa-check"></i> Enviar Minha Ordem</button>
 
-      <!-- RANKING EM TEMPO REAL -->
+      <!-- RANKING AO VIVO -->
       <div class="scoreboard">
         <h3><i class="fa-solid fa-trophy"></i> Placar ao Vivo</h3>
         <ul class="players-list" id="live-scoreboard"></ul>
@@ -212,13 +225,13 @@
     // CONFIGURAÇÃO DO FIREBASE (SUBSTITUA PELOS SEUS DADOS)
     // ====================================================
     const firebaseConfig = {
-      apiKey: "AIzaSyCJQZ3Pswe6sdsE35wJux8Dgbw_2PaNNOA",
-      authDomain: "filmes-salvos.firebaseapp.com",
-      databaseURL: "https://filmes-salvos-default-rtdb.firebaseio.com",
-      projectId: "filmes-salvos",
-      storageBucket: "filmes-salvos.firebasestorage.app",
-      messagingSenderId: "155114516613",
-      appId: "1:155114516613:web:f0333b9391a7851ad1b9ec",
+      apiKey: "SUA_API_KEY",
+      authDomain: "SEU_PROJETO.firebaseapp.com",
+      databaseURL: "https://SEU_PROJETO-default-rtdb.firebaseio.com",
+      projectId: "SEU_PROJETO",
+      storageBucket: "SEU_PROJETO.appspot.com",
+      messagingSenderId: "123456789",
+      appId: "1:123456789:web:abcdef"
     };
 
     firebase.initializeApp(firebaseConfig);
@@ -307,14 +320,12 @@
   { title: "Up: Altas Aventuras", year: 2009 }
 ];
 
-    // ESTADO DO JOGO
     let myPlayerId = 'p_' + Math.random().toString(36).substr(2, 6);
     let myName = '';
     let currentRoomCode = null;
     let isHost = false;
     let draggedItem = null;
 
-    // TELAS
     function showScreen(screenId) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById(screenId).classList.add('active');
@@ -359,7 +370,6 @@
       });
     });
 
-    // ESCUTAR MUDANÇAS NO LOBBY
     function setupLobby() {
       showScreen('screen-lobby');
       document.getElementById('lobby-room-code').textContent = currentRoomCode;
@@ -374,28 +384,24 @@
         document.getElementById('waiting-msg').style.display = 'block';
       }
 
-      // Sincronizar lista de jogadores e status do jogo
       db.ref(`rooms/${currentRoomCode}`).on('value', (snapshot) => {
         const data = snapshot.val();
         if (!data) return;
 
-        // Atualizar lista de jogadores
         const list = document.getElementById('players-list');
         list.innerHTML = '';
         Object.values(data.players || {}).forEach(p => {
-          list.innerHTML += `<li class="player-item"><span>${p.name}</span><span> Pontos: ${p.score || 0}</span></li>`;
+          list.innerHTML += `<li class="player-item"><span>${p.name}</span><span>Pontos: ${p.score || 0}</span></li>`;
         });
 
-        // Se o host iniciou o jogo
         if (data.status === 'playing') {
           setupGameScreen(data.currentRound);
         }
       });
     }
 
-    // INICIAR PARTIDA (HOST)
+    // INICIAR PARTIDA
     document.getElementById('btn-start-game').addEventListener('click', () => {
-      // Sortear 4 filmes para a rodada
       const roundMovies = [...DB_FILMES].sort(() => 0.5 - Math.random()).slice(0, 4);
 
       db.ref(`rooms/${currentRoomCode}`).update({
@@ -407,17 +413,14 @@
       });
     });
 
-    // TELA DE JOGO
     function setupGameScreen(roundData) {
       showScreen('screen-game');
       document.getElementById('hud-room').textContent = `SALA: ${currentRoomCode}`;
       document.getElementById('btn-submit').disabled = false;
       document.getElementById('status-msg').textContent = "Ordene o mais rápido possível!";
 
-      // Renderiza os cards para todos
       renderCards(roundData.movies);
 
-      // Atualiza placar ao vivo
       db.ref(`rooms/${currentRoomCode}/players`).on('value', (snapshot) => {
         const players = snapshot.val() || {};
         const scoreboard = document.getElementById('live-scoreboard');
@@ -452,10 +455,17 @@
       });
     }
 
-    // ARRASTAR E SOLTAR (DESKTOP E MOBILE)
+    // REORDENAR POR TOUCH (ARRASTAR CARD)
     function attachDragAndTouch(card) {
-      card.addEventListener('touchstart', () => { draggedItem = card; card.classList.add('dragging'); }, {passive: true});
-      card.addEventListener('touchend', () => { if(draggedItem) draggedItem.classList.remove('dragging'); draggedItem = null; });
+      card.addEventListener('touchstart', () => { 
+        draggedItem = card; 
+        card.classList.add('dragging'); 
+      }, {passive: true});
+
+      card.addEventListener('touchend', () => { 
+        if(draggedItem) draggedItem.classList.remove('dragging'); 
+        draggedItem = null; 
+      });
 
       card.addEventListener('touchmove', (e) => {
         if (!draggedItem) return;
@@ -473,7 +483,7 @@
       }, {passive: true});
     }
 
-    // ENVIAR RESPOSTA DA RODADA
+    // ENVIAR RESPOSTA
     document.getElementById('btn-submit').addEventListener('click', () => {
       const cards = [...document.querySelectorAll('.movie-card')];
       const years = cards.map(c => parseInt(c.dataset.year));
@@ -489,7 +499,6 @@
 
       document.getElementById('btn-submit').disabled = true;
 
-      // Se acertou, incrementa pontos no Firebase
       if (correct) {
         db.ref(`rooms/${currentRoomCode}/players/${myPlayerId}`).transaction(player => {
           if (player) {
