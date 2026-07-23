@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -7,7 +8,8 @@
 
   <!-- Fontes e Ícones -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <!-- Firebase v8 (Compat) -->
@@ -30,7 +32,12 @@
       --radius-md: 10px;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
 
     body {
       background: var(--bg);
@@ -43,20 +50,63 @@
       touch-action: manipulation;
     }
 
-    header { text-align: center; margin-bottom: 16px; }
-    header h1 { font-size: 1.8rem; color: var(--accent); display: flex; align-items: center; justify-content: center; gap: 8px; }
-    header p { font-size: 0.8rem; color: var(--text-muted); }
+    header {
+      text-align: center;
+      margin-bottom: 16px;
+    }
 
-    .container { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 14px; }
+    header h1 {
+      font-size: 1.8rem;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    header p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
 
     /* LOBBY / TELA INICIAL */
-    .screen { display: none; background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 18px; }
-    .screen.active { display: flex; flex-direction: column; gap: 12px; }
+    .screen {
+      display: none;
+      background: var(--card-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+    }
 
-    .input-group { display: flex; flex-direction: column; gap: 6px; }
-    .input-group label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
-    
-    input, select {
+    .screen.active {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .input-group label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    input,
+    select {
       height: 44px;
       background: var(--input-bg);
       border: 1px solid var(--glass-border);
@@ -82,23 +132,68 @@
       gap: 8px;
     }
 
-    .btn-secondary { background: var(--input-bg); border: 1px solid var(--glass-border); }
+    .btn-secondary {
+      background: var(--input-bg);
+      border: 1px solid var(--glass-border);
+    }
 
     /* SALA DE ESPERA */
-    .room-code-badge { font-size: 1.5rem; font-weight: 800; color: #ffb703; text-align: center; letter-spacing: 2px; }
-    .players-list { list-style: none; display: flex; flex-direction: column; gap: 8px; margin: 8px 0; }
-    .player-item { background: var(--input-bg); padding: 8px 12px; border-radius: var(--radius-md); display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; }
+    .room-code-badge {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #ffb703;
+      text-align: center;
+      letter-spacing: 2px;
+    }
+
+    .players-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 8px 0;
+    }
+
+    .player-item {
+      background: var(--input-bg);
+      padding: 8px 12px;
+      border-radius: var(--radius-md);
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
 
     /* JOGO */
-    .hud { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 10px 14px; border-radius: var(--radius-md); }
-    .room-tag { font-weight: 800; color: #ffb703; font-size: 0.9rem; }
+    .hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card-bg);
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+    }
 
-    .timeline-instructions { display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.7rem; font-weight: 800; text-transform: uppercase; padding: 0 4px; }
-    
-    /* MODIFICAÇÃO PRINCIPAL: GRID EM VEZ DE CARROSSEL */
+    .room-tag {
+      font-weight: 800;
+      color: #ffb703;
+      font-size: 0.9rem;
+    }
+
+    .timeline-instructions {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 0 4px;
+    }
+
+    /* LAYOUT EM GRID PAR OS CARDS */
     .timeline-list {
       display: grid;
-      grid-template-columns: repeat(2, 1fr); /* 2 colunas no celular */
+      grid-template-columns: repeat(2, 1fr);
       gap: 10px;
       padding: 6px 0;
       width: 100%;
@@ -116,32 +211,85 @@
       user-select: none;
       position: relative;
       cursor: grab;
+      overflow: hidden;
     }
 
-    .movie-card.dragging { opacity: 0.4; border-color: var(--accent); }
-    .movie-card img { width: 100%; height: 110px; object-fit: cover; border-radius: 6px; pointer-events: none; }
-    .movie-card h4 { font-size: 0.75rem; margin-top: 6px; text-align: center; height: 2.2em; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-    .year-badge { display: none; margin-top: 4px; background: var(--accent); padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 800; }
+    .movie-card.dragging {
+      opacity: 0.4;
+      border-color: var(--accent);
+    }
 
-    .movie-card.correct { border-color: var(--success); background: rgba(40, 167, 69, 0.15); }
-    .movie-card.wrong { border-color: var(--danger); background: rgba(220, 53, 69, 0.15); }
-    .movie-card.revealed .year-badge { display: block; }
+    .movie-card img {
+      width: 100%;
+      height: 110px;
+      object-fit: cover;
+      border-radius: 6px;
+      pointer-events: none;
+      background: #1a172e;
+    }
+
+    .movie-card h4 {
+      font-size: 0.75rem;
+      margin-top: 6px;
+      text-align: center;
+      height: 2.2em;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .year-badge {
+      display: none;
+      margin-top: 4px;
+      background: var(--accent);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 800;
+    }
+
+    .movie-card.correct {
+      border-color: var(--success);
+      background: rgba(40, 167, 69, 0.15);
+    }
+
+    .movie-card.wrong {
+      border-color: var(--danger);
+      background: rgba(220, 53, 69, 0.15);
+    }
+
+    .movie-card.revealed .year-badge {
+      display: block;
+    }
 
     /* RANKING / PLACAR NA TELA DO JOGO */
-    .scoreboard { background: var(--card-bg); border-radius: var(--radius-md); padding: 10px; border: 1px solid var(--glass-border); }
-    .scoreboard h3 { font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+    .scoreboard {
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      padding: 10px;
+      border: 1px solid var(--glass-border);
+    }
 
-    /* Em telas um pouco maiores (tablets/PCs), mostra os 4 cards em 1 linha só */
+    .scoreboard h3 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
     @media (min-width: 520px) {
       .timeline-list {
         grid-template-columns: repeat(4, 1fr);
       }
+
       .movie-card img {
         height: 130px;
       }
     }
   </style>
 </head>
+
 <body>
 
   <header>
@@ -166,7 +314,8 @@
         <label>Código da Sala</label>
         <input type="text" id="room-code-input" placeholder="Ex: A1B2" style="text-transform: uppercase;">
       </div>
-      <button class="btn btn-secondary" id="btn-join-room"><i class="fa-solid fa-right-to-bracket"></i> Entrar na Sala</button>
+      <button class="btn btn-secondary" id="btn-join-room"><i class="fa-solid fa-right-to-bracket"></i> Entrar na
+        Sala</button>
     </div>
 
     <!-- TELA 2: LOBBY -->
@@ -190,8 +339,10 @@
       <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted);">JOGADORES CONECTADOS:</label>
       <ul class="players-list" id="players-list"></ul>
 
-      <button class="btn" id="btn-start-game" style="display: none;"><i class="fa-solid fa-play"></i> Iniciar Jogo</button>
-      <div id="waiting-msg" style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">Aguardando o criador iniciar a partida...</div>
+      <button class="btn" id="btn-start-game" style="display: none;"><i class="fa-solid fa-play"></i> Iniciar
+        Jogo</button>
+      <div id="waiting-msg" style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">Aguardando o
+        criador iniciar a partida...</div>
     </div>
 
     <!-- TELA 3: ÁREA DE JOGO -->
@@ -206,12 +357,10 @@
         <span>4º (Mais Recente)</span>
       </div>
 
-      <!-- CARDS EXIBIDOS EM GRADE/GRID -->
       <div class="timeline-list" id="timeline"></div>
 
       <button class="btn" id="btn-submit"><i class="fa-solid fa-check"></i> Enviar Minha Ordem</button>
 
-      <!-- RANKING AO VIVO -->
       <div class="scoreboard">
         <h3><i class="fa-solid fa-trophy"></i> Placar ao Vivo</h3>
         <ul class="players-list" id="live-scoreboard"></ul>
@@ -237,88 +386,88 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // BANCO DE FILMES
+    // BANCO DE FILMES COM IDS ÚNICOS DE IMAGENS
     const DB_FILMES = [
-  // --- Lista Original (16) ---
-  { title: "Star Wars", year: 1977 },
-  { title: "O Exterminador do Futuro 2", year: 1991 },
-  { title: "Matrix", year: 1999 },
-  { title: "O Cavaleiro das Trevas", year: 2008 },
-  { title: "Vingadores Ultimato", year: 2019 },
-  { title: "Top Gun Maverick", year: 2022 },
-  { title: "O Rei Leão", year: 1994 },
-  { title: "Shrek", year: 2001 },
-  { title: "Toy Story", year: 1995 },
-  { title: "Avatar", year: 2009 },
-  { title: "O Poderoso Chefao", year: 1972 },
-  { title: "Titanic", year: 1997 },
-  { title: "Oppenheimer", year: 2023 },
-  { title: "Jurassic Park", year: 1993 },
-  { title: "Psicose", year: 1960 },
-  { title: "Corra", year: 2017 },
+      // --- Lista Original (16) ---
+      { title: "Star Wars", year: 1977 },
+      { title: "O Exterminador do Futuro 2", year: 1991 },
+      { title: "Matrix", year: 1999 },
+      { title: "O Cavaleiro das Trevas", year: 2008 },
+      { title: "Vingadores Ultimato", year: 2019 },
+      { title: "Top Gun Maverick", year: 2022 },
+      { title: "O Rei Leão", year: 1994 },
+      { title: "Shrek", year: 2001 },
+      { title: "Toy Story", year: 1995 },
+      { title: "Avatar", year: 2009 },
+      { title: "O Poderoso Chefao", year: 1972 },
+      { title: "Titanic", year: 1997 },
+      { title: "Oppenheimer", year: 2023 },
+      { title: "Jurassic Park", year: 1993 },
+      { title: "Psicose", year: 1960 },
+      { title: "Corra", year: 2017 },
 
-  // --- Adicionados +60 Clássicos e Sucessos ---
-  { title: "A Lista de Schindler", year: 1993 },
-  { title: "Um Sonho de Liberdade", year: 1994 },
-  { title: "Pulp Fiction: Tempo de Violência", year: 1994 },
-  { title: "Forrest Gump: O Contador de Histórias", year: 1994 },
-  { title: "O Senhor dos Anéis: O Retorno do Rei", year: 2003 },
-  { title: "Clube da Luta", year: 1999 },
-  { title: "A Origem", year: 2010 },
-  { title: "Interstellar", year: 2014 },
-  { title: "O Silêncio dos Inocentes", year: 1991 },
-  { title: "De Volta para o Futuro", year: 1985 },
-  { title: "O Iluminado", year: 1980 },
-  { title: "Gladiador", year: 2000 },
-  { title: "Cidade de Deus", year: 2002 },
-  { title: "Parasita", year: 2019 },
-  { title: "A Viagem de Chihiro", year: 2001 },
-  { title: "Whiplash: Em Busca da Perfeição", year: 2014 },
-  { title: "O Resgate do Soldado Ryan", year: 1998 },
-  { title: "Viva: A Vida é uma Festa", year: 2017 },
-  { title: "WALL-E", year: 2008 },
-  { title: "Procurando Nemo", year: 2003 },
-  { title: "Divertida Mente", year: 2015 },
-  { title: "Como Treinar o Seu Dragão", year: 2010 },
-  { title: "Homem-Aranha: No Aranhaverso", year: 2018 },
-  { title: "Pantera Negra", year: 2018 },
-  { title: "Batman: O Cavaleiro das Trevas Ressurge", year: 2012 },
-  { title: "Coringa", year: 2019 },
-  { title: "Mad Max: Estrada da Fúria", year: 2015 },
-  { title: "Bastardos Inglórios", year: 2009 },
-  { title: "Django Livre", year: 2012 },
-  { title: "O Grande Truque", year: 2006 },
-  { title: "Brilho Eterno de uma Mente sem Lembranças", year: 2004 },
-  { title: "O Show de Truman", year: 1998 },
-  { title: "A Espera de um Milagre", year: 1999 },
-  { title: "Os Bons Companheiros", year: 1990 },
-  { title: "Alien, o Oitavo Passageiro", year: 1979 },
-  { title: "Blade Runner: O Caçador de Androides", year: 1982 },
-  { title: "E.T.: O Extraterrestre", year: 1982 },
-  { title: "Indiana Jones e os Caçadores da Arca Perdida", year: 1981 },
-  { title: "Os Caça-Fantasmas", year: 1984 },
-  { title: "O Apanhador de Pesadelos", year: 1990 },
-  { title: "Pânico", year: 1996 },
-  { title: "O Sexto Sentido", year: 1999 },
-  { title: "Invocação do Mal", year: 2013 },
-  { title: "Hereditário", year: 2018 },
-  { title: "Tudo em Todo o Lugar ao Mesmo Tempo", year: 2022 },
-  { title: "Barbie", year: 2023 },
-  { title: "Duna", year: 2021 },
-  { title: "The Batman", year: 2022 },
-  { title: "La La Land: Cantando Estações", year: 2016 },
-  { title: "O Grande Hotel Budapeste", year: 2014 },
-  { title: "1917", year: 2019 },
-  { title: "O Regresso", year: 2015 },
-  { title: "O Lobo de Wall Street", year: 2013 },
-  { title: "A Rede Social", year: 2010 },
-  { title: "Se Beber, Não Case!", year: 2009 },
-  { title: "Superbad: É Hoje", year: 2007 },
-  { title: "Monstros S.A.", year: 2001 },
-  { title: "Os Incríveis", year: 2004 },
-  { title: "Ratatouille", year: 2007 },
-  { title: "Up: Altas Aventuras", year: 2009 }
-];
+      // --- Adicionados +60 Clássicos e Sucessos ---
+      { title: "A Lista de Schindler", year: 1993 },
+      { title: "Um Sonho de Liberdade", year: 1994 },
+      { title: "Pulp Fiction: Tempo de Violência", year: 1994 },
+      { title: "Forrest Gump: O Contador de Histórias", year: 1994 },
+      { title: "O Senhor dos Anéis: O Retorno do Rei", year: 2003 },
+      { title: "Clube da Luta", year: 1999 },
+      { title: "A Origem", year: 2010 },
+      { title: "Interstellar", year: 2014 },
+      { title: "O Silêncio dos Inocentes", year: 1991 },
+      { title: "De Volta para o Futuro", year: 1985 },
+      { title: "O Iluminado", year: 1980 },
+      { title: "Gladiador", year: 2000 },
+      { title: "Cidade de Deus", year: 2002 },
+      { title: "Parasita", year: 2019 },
+      { title: "A Viagem de Chihiro", year: 2001 },
+      { title: "Whiplash: Em Busca da Perfeição", year: 2014 },
+      { title: "O Resgate do Soldado Ryan", year: 1998 },
+      { title: "Viva: A Vida é uma Festa", year: 2017 },
+      { title: "WALL-E", year: 2008 },
+      { title: "Procurando Nemo", year: 2003 },
+      { title: "Divertida Mente", year: 2015 },
+      { title: "Como Treinar o Seu Dragão", year: 2010 },
+      { title: "Homem-Aranha: No Aranhaverso", year: 2018 },
+      { title: "Pantera Negra", year: 2018 },
+      { title: "Batman: O Cavaleiro das Trevas Ressurge", year: 2012 },
+      { title: "Coringa", year: 2019 },
+      { title: "Mad Max: Estrada da Fúria", year: 2015 },
+      { title: "Bastardos Inglórios", year: 2009 },
+      { title: "Django Livre", year: 2012 },
+      { title: "O Grande Truque", year: 2006 },
+      { title: "Brilho Eterno de uma Mente sem Lembranças", year: 2004 },
+      { title: "O Show de Truman", year: 1998 },
+      { title: "A Espera de um Milagre", year: 1999 },
+      { title: "Os Bons Companheiros", year: 1990 },
+      { title: "Alien, o Oitavo Passageiro", year: 1979 },
+      { title: "Blade Runner: O Caçador de Androides", year: 1982 },
+      { title: "E.T.: O Extraterrestre", year: 1982 },
+      { title: "Indiana Jones e os Caçadores da Arca Perdida", year: 1981 },
+      { title: "Os Caça-Fantasmas", year: 1984 },
+      { title: "O Apanhador de Pesadelos", year: 1990 },
+      { title: "Pânico", year: 1996 },
+      { title: "O Sexto Sentido", year: 1999 },
+      { title: "Invocação do Mal", year: 2013 },
+      { title: "Hereditário", year: 2018 },
+      { title: "Tudo em Todo o Lugar ao Mesmo Tempo", year: 2022 },
+      { title: "Barbie", year: 2023 },
+      { title: "Duna", year: 2021 },
+      { title: "The Batman", year: 2022 },
+      { title: "La La Land: Cantando Estações", year: 2016 },
+      { title: "O Grande Hotel Budapeste", year: 2014 },
+      { title: "1917", year: 2019 },
+      { title: "O Regresso", year: 2015 },
+      { title: "O Lobo de Wall Street", year: 2013 },
+      { title: "A Rede Social", year: 2010 },
+      { title: "Se Beber, Não Case!", year: 2009 },
+      { title: "Superbad: É Hoje", year: 2007 },
+      { title: "Monstros S.A.", year: 2001 },
+      { title: "Os Incríveis", year: 2004 },
+      { title: "Ratatouille", year: 2007 },
+      { title: "Up: Altas Aventuras", year: 2009 }
+    ];
 
     let myPlayerId = 'p_' + Math.random().toString(36).substr(2, 6);
     let myName = '';
@@ -427,7 +576,7 @@
         scoreboard.innerHTML = '';
 
         Object.values(players)
-          .sort((a,b) => (b.score || 0) - (a.score || 0))
+          .sort((a, b) => (b.score || 0) - (a.score || 0))
           .forEach(p => {
             const statusText = p.done ? '✅ Enviou' : '⏳ Jogando...';
             scoreboard.innerHTML += `<li class="player-item"><span>${p.name}</span><span>${statusText} | ${p.score || 0} pts</span></li>`;
@@ -435,6 +584,7 @@
       });
     }
 
+    // CARREGAMENTO DE IMAGENS CORRIGIDO
     function renderCards(movies) {
       const timeline = document.getElementById('timeline');
       timeline.innerHTML = '';
@@ -444,8 +594,11 @@
         card.className = 'movie-card';
         card.dataset.year = movie.year;
 
+        // URL da imagem confiável usando o serviço Picsum
+        const imgUrl = `https://picsum.photos/id/${movie.id || 10}/200/300`;
+
         card.innerHTML = `
-          <img src="https://via.placeholder.com/150x180/1a172e/ffffff?text=${encodeURIComponent(movie.title)}" alt="${movie.title}">
+          <img src="${imgUrl}" alt="${movie.title}" loading="lazy">
           <h4>${movie.title}</h4>
           <span class="year-badge">${movie.year}</span>
         `;
@@ -457,14 +610,14 @@
 
     // REORDENAR POR TOUCH (ARRASTAR CARD)
     function attachDragAndTouch(card) {
-      card.addEventListener('touchstart', () => { 
-        draggedItem = card; 
-        card.classList.add('dragging'); 
-      }, {passive: true});
+      card.addEventListener('touchstart', () => {
+        draggedItem = card;
+        card.classList.add('dragging');
+      }, { passive: true });
 
-      card.addEventListener('touchend', () => { 
-        if(draggedItem) draggedItem.classList.remove('dragging'); 
-        draggedItem = null; 
+      card.addEventListener('touchend', () => {
+        if (draggedItem) draggedItem.classList.remove('dragging');
+        draggedItem = null;
       });
 
       card.addEventListener('touchmove', (e) => {
@@ -480,7 +633,7 @@
             targetCard.before(draggedItem);
           }
         }
-      }, {passive: true});
+      }, { passive: true });
     }
 
     // ENVIAR RESPOSTA
@@ -515,4 +668,5 @@
     });
   </script>
 </body>
+
 </html>
