@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🍿 CineDuelo: Pôster Pixelado</title>
+
+    <!-- Fontes & Ícones -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;700;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Firebase v8 -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <style>
+        :root {
+            --bg: #0d0c1d;
+            --card-bg: #16152b;
+            --primary: #ff2a6d;
+            --accent: #05d9e8;
+            --gold: #ffb703;
+            --text: #ffffff;
+            --text-muted: #a0a0a8;
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --pixel-font: 'Press Start 2P', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        header h1 {
+            font-family: var(--pixel-font);
+            font-size: 1.2rem;
+            color: var(--accent);
+            text-shadow: 2px 2px #ff2a6d;
+            margin-bottom: 6px;
+        }
+
+        header p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .screen {
+            display: none;
+            background: var(--card-bg);
+            border: 2px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        input {
+            height: 48px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid var(--glass-border);
+            border-radius: 8px;
+            color: #fff;
+            padding: 0 16px;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+        }
+
+        .btn {
+            height: 48px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* ÁREA DO PÔSTER PIXELADO */
+        .poster-container {
+            position: relative;
+            width: 100%;
+            height: 320px;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid var(--accent);
+        }
+
+        .poster-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: filter 1s linear;
+        }
+
+        /* BARRA DE PONTOS DINÂMICA */
+        .score-meter {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-weight: 800;
+        }
+
+        .points-badge {
+            font-family: var(--pixel-font);
+            color: var(--gold);
+            font-size: 0.9rem;
+        }
+
+        /* CHAT DE PALPITES EM TEMPO REAL */
+        .guess-box {
+            display: flex;
+            gap: 8px;
+        }
+
+        .guess-box input {
+            flex: 1;
+        }
+
+        .feed-list {
+            max-height: 100px;
+            overflow-y: auto;
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 0.8rem;
+        }
+
+        .feed-item {
+            padding: 6px 10px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 6px;
+        }
+
+        .feed-item.correct {
+            background: rgba(5, 217, 232, 0.2);
+            color: var(--accent);
+            font-weight: 800;
+        }
+
+        /* MODAL DE DICA DA IA */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-card {
+            background: var(--card-bg);
+            border: 2px solid var(--accent);
+            border-radius: 16px;
+            padding: 20px;
+            max-width: 400px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>🎬 CineDuelo</h1>
+        <p>Pôster Pixelado — Adivinhe antes que revele!</p>
+    </header>
+
+    <div class="container">
+
+        <!-- TELA 1: LOGIN -->
+        <div id="screen-login" class="screen active">
+            <input type="text" id="player-name" placeholder="Seu apelido no jogo" maxlength="12">
+            <button class="btn" id="btn-create"><i class="fa-solid fa-plus"></i> Criar Sala</button>
+            <input type="text" id="room-code-input" placeholder="Código da Sala" style="text-transform: uppercase;">
+            <button class="btn btn-secondary" id="btn-join"><i class="fa-solid fa-right-to-bracket"></i> Entrar na
+                Sala</button>
+        </div>
+
+        <!-- TELA 2: LOBBY -->
+        <div id="screen-lobby" class="screen">
+            <h2 style="text-align: center; color: var(--accent); font-family: var(--pixel-font); font-size: 1rem;"
+                id="lobby-code">----</h2>
+            <ul id="players-list" style="list-style: none; display: flex; flex-direction: column; gap: 6px;"></ul>
+            <button class="btn" id="btn-start" style="display: none;"><i class="fa-solid fa-play"></i> Começar
+                Duelo</button>
+        </div>
+
+        <!-- TELA 3: DUELO -->
+        <div id="screen-game" class="screen">
+            <div class="score-meter">
+                <span>SALA: <strong id="hud-code" style="color:var(--accent);">----</strong></span>
+                <span class="points-badge" id="hud-points">100 PTS</span>
+            </div>
+
+            <div class="poster-container">
+                <img id="poster-img" class="poster-img" src="" alt="Pôster do filme">
+            </div>
+
+            <button class="btn btn-secondary" id="btn-hint" style="font-size:0.8rem; height:36px;">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Pedir Dica da IA
+            </button>
+
+            <div class="guess-box">
+                <input type="text" id="guess-input" placeholder="Qual é o filme?">
+                <button class="btn" id="btn-send"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+
+            <ul class="feed-list" id="feed-list"></ul>
+        </div>
+
+    </div>
+
+    <!-- MODAL DICA IA -->
+    <div class="modal-overlay" id="modal-hint">
+        <div class="modal-card">
+            <h3 style="color: var(--accent);"><i class="fa-solid fa-robot"></i> Dica da Época</h3>
+            <p id="modal-hint-text" style="font-size:0.9rem; line-height:1.4; color:#ddd;"></p>
+            <button class="btn btn-secondary"
+                onclick="document.getElementById('modal-hint').classList.remove('active')">Fechar</button>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURAÇÃO DO SEU FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyCJQZ3Pswe6sdsE35wJux8Dgbw_2PaNNOA",
+            authDomain: "filmes-salvos.firebaseapp.com",
+            databaseURL: "https://filmes-salvos-default-rtdb.firebaseio.com",
+            projectId: "filmes-salvos",
+            storageBucket: "filmes-salvos.firebasestorage.app",
+            messagingSenderId: "155114516613",
+            appId: "1:155114516613:web:f0333b9391a7851ad1b9ec",
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const BANCO_FILMES = [
+            { title: "Star Wars", poster: "https://upload.wikimedia.org/wikipedia/pt/0/06/Star_Wars_Epis%C3%B3dio_IV_Uma_Nova_Esperan%C3%A7a.jpg" },
+            { title: "Matrix", poster: "https://upload.wikimedia.org/wikipedia/pt/c/c1/The_Matrix_Poster.jpg" },
+            { title: "Exterminador do Futuro 2", poster: "https://upload.wikimedia.org/wikipedia/pt/8/85/Terminator2poster.jpg" },
+            { title: "O Rei Leao", poster: "https://upload.wikimedia.org/wikipedia/pt/3/3d/The_Lion_King_1994.jpg" },
+            { title: "Titanic", poster: "https://upload.wikimedia.org/wikipedia/pt/2/22/Titanic_poster.jpg" },
+            { title: "Jurassic Park", poster: "https://upload.wikimedia.org/wikipedia/pt/e/e7/Jurassic_Park_poster.jpg" },
+            { title: "Vingadores Ultimato", poster: "https://upload.wikimedia.org/wikipedia/pt/9/9b/Avengers_Endgame.jpg" },
+            { title: "De Volta para o Futuro", poster: "https://upload.wikimedia.org/wikipedia/pt/9/97/BackToTheFuturePoster.replica.jpg" }
+        ];
+
+        let myPlayerId = 'p_' + Math.random().toString(36).substr(2, 6);
+        let myName = '';
+        let roomCode = null;
+        let isHost = false;
+        let blurInterval = null;
+        let currentBlur = 40;
+        let currentPoints = 100;
+        let activeMovie = null;
+        let roundAnswered = false;
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        // CRIAR SALA
+        document.getElementById('btn-create').addEventListener('click', () => {
+            myName = document.getElementById('player-name').value.trim() || 'Jogador';
+            roomCode = Math.random().toString(36).substring(2, 6).toUpperCase();
+            isHost = true;
+
+            db.ref(`duelos/${roomCode}`).set({
+                status: 'waiting',
+                host: myPlayerId,
+                round: 0,
+                totalRounds: 6,
+                usedMovies: [],
+                players: { [myPlayerId]: { name: myName, score: 0 } }
+            });
+
+            setupLobby();
+        });
+
+        // ENTRAR NA SALA
+        document.getElementById('btn-join').addEventListener('click', () => {
+            myName = document.getElementById('player-name').value.trim() || 'Jogador';
+            roomCode = document.getElementById('room-code-input').value.trim().toUpperCase();
+
+            if (!roomCode) return alert('Digite o código da sala!');
+
+            db.ref(`duelos/${roomCode}/players/${myPlayerId}`).set({ name: myName, score: 0 });
+            setupLobby();
+        });
+
+        function setupLobby() {
+            showScreen('screen-lobby');
+            document.getElementById('lobby-code').textContent = `SALA: ${roomCode}`;
+            if (isHost) document.getElementById('btn-start').style.display = 'flex';
+
+            db.ref(`duelos/${roomCode}`).on('value', snap => {
+                const data = snap.val();
+                if (!data) return;
+
+                // Lista de jogadores no Lobby
+                const list = document.getElementById('players-list');
+                list.innerHTML = '';
+                Object.values(data.players || {}).forEach(p => {
+                    list.innerHTML += `<li style="padding:8px; background:rgba(255,255,255,0.05); border-radius:6px; display:flex; justify-shadow:space-between;">
+          <span>${p.name}</span>
+          <strong style="color:var(--gold);">${p.score || 0} pts</strong>
+        </li>`;
+                });
+
+                // Gerenciamento de Status da Partida
+                if (data.status === 'playing') {
+                    iniciarRodadaLocal(data);
+                } else if (data.status === 'finished') {
+                    exibirResultadoFinal(data.players);
+                }
+            });
+        }
+
+        // INICIAR PARTIDA (O Host avança as rodadas)
+        document.getElementById('btn-start').addEventListener('click', proximaRodada);
+
+        function proximaRodada() {
+            if (!isHost) return;
+
+            db.ref(`duelos/${roomCode}`).once('value', snap => {
+                const data = snap.val();
+                const currentRound = (data.round || 0) + 1;
+
+                // Se passou de 6 rodadas, encerra o jogo
+                if (currentRound > 6) {
+                    db.ref(`duelos/${roomCode}`).update({ status: 'finished' });
+                    return;
+                }
+
+                // Sorteia filme que ainda não foi usado
+                const usedIndexes = data.usedMovies || [];
+                let availableIndexes = BANCO_FILMES.map((_, i) => i).filter(i => !usedIndexes.includes(i));
+
+                if (availableIndexes.length === 0) availableIndexes = BANCO_FILMES.map((_, i) => i);
+
+                const randomIndex = availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
+                const filmeSorteado = BANCO_FILMES[randomIndex];
+
+                // Limpa os palpites anteriores e atualiza a rodada
+                db.ref(`duelos/${roomCode}/guesses`).remove();
+                db.ref(`duelos/${roomCode}`).update({
+                    status: 'playing',
+                    round: currentRound,
+                    currentMovie: filmeSorteado,
+                    usedMovies: [...usedIndexes, randomIndex],
+                    roundActive: true
+                });
+            });
+        }
+
+        function iniciarRodadaLocal(roomData) {
+            activeMovie = roomData.currentMovie;
+            roundAnswered = false;
+            showScreen('screen-game');
+
+            // Atualiza HUD da Rodada (Ex: RODADA 2/6)
+            document.getElementById('hud-code').textContent = `RODADA ${roomData.round}/6`;
+
+            const img = document.getElementById('poster-img');
+            img.src = activeMovie.poster;
+
+            // Configuração inicial do Blur e Pontuação
+            currentBlur = 40;
+            currentPoints = 100;
+            img.style.filter = `blur(${currentBlur}px)`;
+            document.getElementById('hud-points').textContent = `${currentPoints} PTS`;
+
+            if (blurInterval) clearInterval(blurInterval);
+
+            // Redução gradual do Blur
+            blurInterval = setInterval(() => {
+                if (currentBlur > 0 && !roundAnswered) {
+                    currentBlur -= 4;
+                    currentPoints -= 8;
+                    if (currentPoints < 10) currentPoints = 10;
+
+                    img.style.filter = `blur(${currentBlur}px)`;
+                    document.getElementById('hud-points').textContent = `${currentPoints} PTS`;
+                } else {
+                    clearInterval(blurInterval);
+                }
+            }, 2500);
+
+            // Escuta em tempo real os palpites da rodada
+            document.getElementById('feed-list').innerHTML = '';
+            db.ref(`duelos/${roomCode}/guesses`).off(); // Remove ouvintes antigos
+            db.ref(`duelos/${roomCode}/guesses`).on('child_added', snap => {
+                const g = snap.val();
+                const feed = document.getElementById('feed-list');
+                const item = document.createElement('li');
+                item.className = `feed-item ${g.correct ? 'correct' : ''}`;
+                item.textContent = `${g.author}: ${g.text} ${g.correct ? '🎉 ACERTOU!' : ''}`;
+                feed.prepend(item);
+
+                if (g.correct) {
+                    roundAnswered = true;
+                    img.style.filter = 'blur(0px)';
+                    clearInterval(blurInterval);
+
+                    // Se for Host, aguarda 4 segundos e passa para a próxima rodada automaticamente
+                    if (isHost) {
+                        setTimeout(() => {
+                            proximaRodada();
+                        }, 4000);
+                    }
+                }
+            });
+        }
+
+        // TESTAR PALPITE
+        document.getElementById('btn-send').addEventListener('click', testarPalpite);
+        document.getElementById('guess-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') testarPalpite();
+        });
+
+        async function testarPalpite() {
+            if (roundAnswered) return;
+
+            const input = document.getElementById('guess-input');
+            const palpite = input.value.trim();
+            if (!palpite || !activeMovie) return;
+
+            input.value = '';
+
+            try {
+                const response = await fetch('http://localhost:3000/api/validar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ palpite: palpite, filmeCorreto: activeMovie.title })
+                });
+                const res = await response.json();
+
+                db.ref(`duelos/${roomCode}/guesses`).push({
+                    author: myName,
+                    text: palpite,
+                    correct: res.correto
+                });
+
+                // Se acertou, SOMA PONTOS no acumulado do jogador
+                if (res.correto) {
+                    roundAnswered = true;
+                    db.ref(`duelos/${roomCode}/players/${myPlayerId}/score`).transaction(s => (s || 0) + currentPoints);
+                }
+            } catch (e) {
+                console.error('Erro na validação do palpite:', e);
+            }
+        }
+
+        // TELA DE FIM DE PARTIDA (Placar Final)
+        function exibirResultadoFinal(players) {
+            if (blurInterval) clearInterval(blurInterval);
+            showScreen('screen-lobby');
+
+            document.getElementById('lobby-code').textContent = '🏆 FIM DE JOGO!';
+            const list = document.getElementById('players-list');
+            list.innerHTML = '<h3 style="text-align:center; margin-bottom:10px; color:var(--gold);">RANKING FINAL</h3>';
+
+            // Ordena do maior para o menor placar
+            const ranking = Object.values(players || {}).sort((a, b) => (b.score || 0) - (a.score || 0));
+
+            ranking.forEach((p, index) => {
+                const medalha = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '👤';
+                list.innerHTML += `
+        <li style="padding:12px; background:rgba(255,255,255,0.08); border-radius:8px; display:flex; justify-content:space-between; font-weight:bold;">
+          <span>${medalha} ${p.name}</span>
+          <span style="color:var(--accent);">${p.score || 0} PTS</span>
+        </li>
+      `;
+            });
+
+            if (isHost) {
+                const btn = document.getElementById('btn-start');
+                btn.style.display = 'flex';
+                btn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Jogar Novamente';
+
+                // Reseta a sala para uma nova partida
+                btn.onclick = () => {
+                    db.ref(`duelos/${roomCode}`).update({
+                        status: 'waiting',
+                        round: 0,
+                        usedMovies: []
+                    });
+                    // Reseta os pontos dos jogadores
+                    Object.keys(players).forEach(id => {
+                        db.ref(`duelos/${roomCode}/players/${id}/score`).set(0);
+                    });
+                };
+            }
+        }
+
+        // PEDIR DICA DA IA
+        document.getElementById('btn-hint').addEventListener('click', async () => {
+            if (!activeMovie) return;
+            document.getElementById('modal-hint').classList.add('active');
+            document.getElementById('modal-hint-text').textContent = "Consultando Llama 3 via Groq...";
+
+            try {
+                const response = await fetch('http://localhost:3000/api/dica', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nomeFilme: activeMovie.title })
+                });
+                const data = await response.json();
+                document.getElementById('modal-hint-text').textContent = data.dica || "Dica indisponível.";
+            } catch (e) {
+                document.getElementById('modal-hint-text').textContent = "Erro ao conectar com a IA.";
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>CineTimeline + Groq AI</title>
+
+  <!-- Fontes Google & FontAwesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Firebase v8 (Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #09090e 0%, #13111c 100%);
+      --card-bg: rgba(255, 255, 255, 0.04);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --input-bg: rgba(255, 255, 255, 0.06);
+
+      --primary: #e50914;
+      /* Vermelho Cinema */
+      --primary-hover: #f40612;
+      --accent: #ffb703;
+      --ai-purple: #8a2be2;
+      /* Cor Destaque IA */
+
+      --text-main: #ffffff;
+      --text-muted: #a0a0a8;
+
+      --success: #00e676;
+      --danger: #ff5252;
+
+      --radius-xl: 20px;
+      --radius-lg: 12px;
+      --radius-sm: 8px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 12px;
+      touch-action: manipulation;
+    }
+
+    /* HEADER */
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--primary);
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    header p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+      font-weight: 600;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 620px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* TELAS (GLASSMORPHISM) */
+    .screen {
+      display: none;
+      background: var(--card-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(12px);
+      border-radius: var(--radius-xl);
+      padding: 22px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    .screen.active {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* CAMPOS E BOTÕES */
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .input-group label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input,
+    select {
+      height: 48px;
+      background: var(--input-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      color: var(--text-main);
+      padding: 0 16px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--primary);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .btn {
+      height: 50px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-lg);
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: transform 0.1s ease, background 0.2s ease;
+      box-shadow: 0 4px 15px rgba(229, 9, 20, 0.3);
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background: var(--input-bg);
+      border: 1px solid var(--glass-border);
+      box-shadow: none;
+    }
+
+    /* LOBBY */
+    .room-code-badge {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--accent);
+      text-align: center;
+      letter-spacing: 4px;
+    }
+
+    .players-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .player-item {
+      background: var(--input-bg);
+      padding: 10px 14px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+      font-weight: 700;
+      border: 1px solid var(--glass-border);
+    }
+
+    /* HUD E ÁREA DE JOGO */
+    .hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--input-bg);
+      padding: 12px 16px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--glass-border);
+    }
+
+    .room-tag {
+      font-weight: 800;
+      color: var(--accent);
+      font-size: 0.95rem;
+    }
+
+    .timeline-instructions {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 0 4px;
+    }
+
+    /* CARDS EM GRID DE CINEMA */
+    .timeline-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      padding: 4px 0;
+      width: 100%;
+    }
+
+    .movie-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 2px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      touch-action: none;
+      user-select: none;
+      position: relative;
+      cursor: grab;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+      overflow: hidden;
+    }
+
+    .movie-card.dragging {
+      opacity: 0.5;
+      border-color: var(--accent);
+      transform: scale(0.95);
+    }
+
+    /* CARTAZES OFICIAIS (TMDB ALTA QUALIDADE) */
+    .movie-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: var(--radius-sm);
+      pointer-events: none;
+      background: #181622;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+
+    .movie-card h4 {
+      font-size: 0.8rem;
+      margin-top: 8px;
+      text-align: center;
+      height: 2.4em;
+      line-height: 1.2;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    /* BOTÃO DICA IA */
+    .btn-ai-hint {
+      margin-top: 6px;
+      width: 100%;
+      height: 32px;
+      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+      border: none;
+      border-radius: var(--radius-sm);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: opacity 0.2s ease;
+    }
+
+    .btn-ai-hint:hover {
+      opacity: 0.9;
+    }
+
+    .year-badge {
+      display: none;
+      margin-top: 6px;
+      background: var(--accent);
+      color: #000;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 900;
+    }
+
+    .movie-card.correct {
+      border-color: var(--success);
+      background: rgba(0, 230, 118, 0.1);
+    }
+
+    .movie-card.wrong {
+      border-color: var(--danger);
+      background: rgba(255, 82, 82, 0.1);
+    }
+
+    .movie-card.revealed .year-badge {
+      display: block;
+    }
+
+    .movie-card.revealed .btn-ai-hint {
+      display: none;
+    }
+
+    /* RANKING / PLACAR */
+    .scoreboard {
+      background: var(--input-bg);
+      border-radius: var(--radius-lg);
+      padding: 12px;
+      border: 1px solid var(--glass-border);
+    }
+
+    .scoreboard h3 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    /* MODAL DE DICA DA IA */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #14121f;
+      border: 1px solid var(--ai-purple);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      max-width: 450px;
+      width: 100%;
+      box-shadow: 0 10px 40px rgba(138, 43, 226, 0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--accent);
+      font-weight: 800;
+      font-size: 1.1rem;
+    }
+
+    .modal-body {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: #e0e0e8;
+    }
+
+    @media (min-width: 520px) {
+      .timeline-list {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .movie-card img {
+        height: 190px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1><i class="fa-solid fa-clapperboard"></i> CineTimeline</h1>
+    <p>Organize os filmes com a ajuda da IA (Groq)</p>
+  </header>
+
+  <div class="container">
+
+    <!-- TELA 1: LOGIN -->
+    <div id="screen-login" class="screen active">
+      <div class="input-group">
+        <label>Seu Apelido</label>
+        <input type="text" id="player-name" placeholder="Ex: Lucas" maxlength="12">
+      </div>
+
+      <button class="btn" id="btn-create-room"><i class="fa-solid fa-plus"></i> Criar Nova Sala</button>
+
+      <div style="text-align: center; color: var(--text-muted); font-size: 0.75rem; font-weight: 700;">OU</div>
+
+      <div class="input-group">
+        <label>Código da Sala</label>
+        <input type="text" id="room-code-input" placeholder="Ex: A1B2" style="text-transform: uppercase;">
+      </div>
+      <button class="btn btn-secondary" id="btn-join-room"><i class="fa-solid fa-right-to-bracket"></i> Entrar na
+        Sala</button>
+    </div>
+
+    <!-- TELA 2: LOBBY -->
+    <div id="screen-lobby" class="screen">
+      <div style="text-align: center;">
+        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 800; letter-spacing: 1px;">CÓDIGO DA
+          SALA</span>
+        <div class="room-code-badge" id="lobby-room-code">----</div>
+      </div>
+
+      <label
+        style="font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Jogadores
+        Conectados:</label>
+      <ul class="players-list" id="players-list"></ul>
+
+      <button class="btn" id="btn-start-game" style="display: none;"><i class="fa-solid fa-play"></i> Iniciar
+        Jogo</button>
+      <div id="waiting-msg" style="text-align: center; color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">
+        Aguardando o criador iniciar a partida...</div>
+    </div>
+
+    <!-- TELA 3: ÁREA DE JOGO -->
+    <div id="screen-game" class="screen">
+      <div class="hud">
+        <div class="room-tag" id="hud-room">SALA: ----</div>
+        <div id="status-msg" style="font-size: 0.85rem; font-weight: 800; color: var(--accent);">Valendo!</div>
+      </div>
+
+      <div class="timeline-instructions">
+        <span><i class="fa-solid fa-arrow-left"></i> Mais Antigo</span>
+        <span>Mais Recente <i class="fa-solid fa-arrow-right"></i></span>
+      </div>
+
+      <div class="timeline-list" id="timeline"></div>
+
+      <button class="btn" id="btn-submit"><i class="fa-solid fa-check"></i> Enviar Minha Ordem</button>
+
+      <div class="scoreboard">
+        <h3><i class="fa-solid fa-trophy"></i> Placar ao Vivo</h3>
+        <ul class="players-list" id="live-scoreboard"></ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MODAL DE DICA DA IA -->
+  <div class="modal-overlay" id="ai-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <i class="fa-solid fa-robot"></i> <span id="modal-movie-title">Dica da IA</span>
+      </div>
+      <div class="modal-body" id="modal-hint-content">
+        Consultando o Llama 3 via Groq...
+      </div>
+      <button class="btn btn-secondary" onclick="fecharModalAI()"><i class="fa-solid fa-xmark"></i> Fechar</button>
+    </div>
+  </div>
+
+  <script>
+    // ====================================================
+    // CONFIGURAÇÃO DO FIREBASE (SUBSTITUA PELOS SEUS DADOS)
+    // ====================================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyCJQZ3Pswe6sdsE35wJux8Dgbw_2PaNNOA",
+      authDomain: "filmes-salvos.firebaseapp.com",
+      databaseURL: "https://filmes-salvos-default-rtdb.firebaseio.com",
+      projectId: "filmes-salvos",
+      storageBucket: "filmes-salvos.firebasestorage.app",
+      messagingSenderId: "155114516613",
+      appId: "1:155114516613:web:f0333b9391a7851ad1b9ec",
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // BANCO DE FILMES COM LINKS DE CAPA GARANTIDOS
+    const DB_FILMES = [
+      {
+        title: "Star Wars IV",
+        year: 1977,
+        poster: "https://upload.wikimedia.org/wikipedia/pt/0/06/Star_Wars_Epis%C3%B3dio_IV_Uma_Nova_Esperan%C3%A7a.jpg"
+      },
+      {
+        title: "Exterminador 2",
+        year: 1991,
+        poster: "https://upload.wikimedia.org/wikipedia/pt/8/85/Terminator2poster.jpg"
+      },
+      {
+        title: "Matrix",
+        year: 1999,
+        poster: "https://upload.wikimedia.org/wikipedia/pt/c/c1/The_Matrix_Poster.jpg"
+      },
+      {
+        title: "Cavaleiro das Trevas",
+        year: 2008,
+        poster: "https://upload.wikimedia.org/wikipedia/pt/d/d1/The_Dark_Knight.jpg"
+      },
+      {
+        title: "Vingadores Ultimato",
+        year: 2019,
+        poster: "https://upload.wikimedia.org/wikipedia/pt/9/9b/Avengers_Endgame.jpg"
+      },
+      {
+        title: "O Rei Leão",
+        year: 1994,
+        poster: "https://upload.wikimedia.org/wikipedia/pt/3/3d/The_Lion_King_1994.jpg"
+      },
+      {
+        title: "Avatar",
+        year: 2009,
+        poster: "https://upload.wikimedia.org/wikipedia/pt/b/b0/Avatar-Teaser-Poster.jpg"
+      },
+      {
+        title: "Titanic",
+        year: 1997,
+        poster: "https://upload.wikimedia.org/wikipedia/pt/2/22/Titanic_poster.jpg"
+      },
+      {
+        title: "Jurassic Park",
+        year: 1993,
+        poster: "https://upload.wikimedia.org/wikipedia/pt/e/e7/Jurassic_Park_poster.jpg"
+      }
+    ];
+
+    let myPlayerId = 'p_' + Math.random().toString(36).substr(2, 6);
+    let myName = '';
+    let currentRoomCode = null;
+    let isHost = false;
+    let draggedItem = null;
+
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+    }
+
+    // CRIAR SALA
+    document.getElementById('btn-create-room').addEventListener('click', () => {
+      myName = document.getElementById('player-name').value.trim() || 'Jogador';
+      currentRoomCode = Math.random().toString(36).substring(2, 6).toUpperCase();
+      isHost = true;
+
+      const roomRef = db.ref('rooms/' + currentRoomCode);
+      roomRef.set({
+        status: 'waiting',
+        host: myPlayerId,
+        players: {
+          [myPlayerId]: { name: myName, score: 0, ready: false }
+        }
+      });
+
+      setupLobby();
+    });
+
+    // ENTRAR NA SALA
+    document.getElementById('btn-join-room').addEventListener('click', () => {
+      myName = document.getElementById('player-name').value.trim() || 'Jogador';
+      currentRoomCode = document.getElementById('room-code-input').value.trim().toUpperCase();
+
+      if (!currentRoomCode) return alert("Digite o código da sala!");
+
+      const roomRef = db.ref('rooms/' + currentRoomCode);
+      roomRef.once('value', (snapshot) => {
+        if (!snapshot.exists()) return alert("Sala não encontrada!");
+
+        db.ref(`rooms/${currentRoomCode}/players/${myPlayerId}`).set({
+          name: myName,
+          score: 0,
+          ready: false
+        });
+
+        setupLobby();
+      });
+    });
+
+    function setupLobby() {
+      showScreen('screen-lobby');
+      document.getElementById('lobby-room-code').textContent = currentRoomCode;
+
+      if (isHost) {
+        document.getElementById('btn-start-game').style.display = 'flex';
+        document.getElementById('waiting-msg').style.display = 'none';
+      } else {
+        document.getElementById('btn-start-game').style.display = 'none';
+        document.getElementById('waiting-msg').style.display = 'block';
+      }
+
+      db.ref(`rooms/${currentRoomCode}`).on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (!data) return;
+
+        const list = document.getElementById('players-list');
+        list.innerHTML = '';
+        Object.values(data.players || {}).forEach(p => {
+          list.innerHTML += `<li class="player-item"><span>${p.name}</span><span>${p.score || 0} pts</span></li>`;
+        });
+
+        if (data.status === 'playing') {
+          setupGameScreen(data.currentRound);
+        }
+      });
+    }
+
+    // INICIAR PARTIDA
+    document.getElementById('btn-start-game').addEventListener('click', () => {
+      const roundMovies = [...DB_FILMES].sort(() => 0.5 - Math.random()).slice(0, 4);
+
+      db.ref(`rooms/${currentRoomCode}`).update({
+        status: 'playing',
+        currentRound: {
+          movies: roundMovies,
+          startTime: Date.now()
+        }
+      });
+    });
+
+    function setupGameScreen(roundData) {
+      showScreen('screen-game');
+      document.getElementById('hud-room').textContent = `SALA: ${currentRoomCode}`;
+      document.getElementById('btn-submit').disabled = false;
+      document.getElementById('status-msg').textContent = "Ordene os filmes!";
+
+      renderCards(roundData.movies);
+
+      db.ref(`rooms/${currentRoomCode}/players`).on('value', (snapshot) => {
+        const players = snapshot.val() || {};
+        const scoreboard = document.getElementById('live-scoreboard');
+        scoreboard.innerHTML = '';
+
+        Object.values(players)
+          .sort((a, b) => (b.score || 0) - (a.score || 0))
+          .forEach(p => {
+            const statusText = p.done ? '✅ Enviou' : '⏳ Jogando...';
+            scoreboard.innerHTML += `<li class="player-item"><span>${p.name}</span><span>${statusText} | ${p.score || 0} pts</span></li>`;
+          });
+      });
+    }
+
+    // RENDERIZAR CARDS COM BOTÃO DA IA
+    function renderCards(movies) {
+      const timeline = document.getElementById('timeline');
+      timeline.innerHTML = '';
+
+      movies.forEach((movie) => {
+        const card = document.createElement('div');
+        card.className = 'movie-card';
+        card.dataset.year = movie.year;
+
+        card.innerHTML = `
+      <img src="${movie.poster}" alt="${movie.title}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x450?text=Sem+Capa'">
+      <h4>${movie.title}</h4>
+      <button class="btn-ai-hint" onclick="pedirDicaIA('${movie.title}')">
+        <i class="fa-solid fa-wand-magic-sparkles"></i> Dica IA
+      </button>
+      <span class="year-badge">${movie.year}</span>
+    `;
+
+        attachDragAndTouch(card);
+        timeline.appendChild(card);
+      });
+    }
+
+    // CHAMADA À API DO GROQ (NODE.JS)
+    async function pedirDicaIA(nomeFilme) {
+      document.getElementById('ai-modal').classList.add('active');
+      document.getElementById('modal-movie-title').textContent = nomeFilme;
+      document.getElementById('modal-hint-content').innerHTML = `
+        <div style="text-align: center; padding: 10px;">
+          <i class="fa-solid fa-spinner fa-spin fa-2x" style="color: var(--accent);"></i>
+          <p style="margin-top: 10px;">Pedindo dica ao Llama 3...</p>
+        </div>
+      `;
+
+      try {
+        const response = await fetch('http://localhost:3000/api/dica', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nomeFilme: nomeFilme })
+        });
+
+        const data = await response.json();
+
+        if (data.dica) {
+          document.getElementById('modal-hint-content').textContent = data.dica;
+        } else {
+          document.getElementById('modal-hint-content').textContent = "Não foi possível carregar a dica agora.";
+        }
+      } catch (error) {
+        console.error("Erro na API:", error);
+        document.getElementById('modal-hint-content').textContent = "Erro ao conectar com o servidor Node.js. Verifique se ele está rodando!";
+      }
+    }
+
+    function fecharModalAI() {
+      document.getElementById('ai-modal').classList.remove('active');
+    }
+
+    // CONTROLE DE ARRASTE
+    function attachDragAndTouch(card) {
+      card.addEventListener('touchstart', () => {
+        draggedItem = card;
+        card.classList.add('dragging');
+      }, { passive: true });
+
+      card.addEventListener('touchend', () => {
+        if (draggedItem) draggedItem.classList.remove('dragging');
+        draggedItem = null;
+      });
+
+      card.addEventListener('touchmove', (e) => {
+        if (!draggedItem) return;
+        const target = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
+        const targetCard = target ? target.closest('.movie-card') : null;
+
+        if (targetCard && targetCard !== draggedItem) {
+          const all = [...document.querySelectorAll('.movie-card')];
+          if (all.indexOf(draggedItem) < all.indexOf(targetCard)) {
+            targetCard.after(draggedItem);
+          } else {
+            targetCard.before(draggedItem);
+          }
+        }
+      }, { passive: true });
+    }
+
+    // CONFERIR RESPOSTA
+    document.getElementById('btn-submit').addEventListener('click', () => {
+      const cards = [...document.querySelectorAll('.movie-card')];
+      const years = cards.map(c => parseInt(c.dataset.year));
+
+      let correct = true;
+      for (let i = 0; i < years.length - 1; i++) {
+        if (years[i] > years[i + 1]) { correct = false; break; }
+      }
+
+      cards.forEach(c => {
+        c.classList.add('revealed', correct ? 'correct' : 'wrong');
+      });
+
+      document.getElementById('btn-submit').disabled = true;
+
+      if (correct) {
+        db.ref(`rooms/${currentRoomCode}/players/${myPlayerId}`).transaction(player => {
+          if (player) {
+            player.score = (player.score || 0) + 10;
+            player.done = true;
+          }
+          return player;
+        });
+        document.getElementById('status-msg').textContent = "🎉 Resposta Correta! (+10 Pts)";
+      } else {
+        db.ref(`rooms/${currentRoomCode}/players/${myPlayerId}/done`).set(true);
+        document.getElementById('status-msg').textContent = "❌ Não foi dessa vez!";
+      }
+    });
+  </script>
+</body>
+
+</html>
