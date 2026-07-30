@@ -41,7 +41,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: -48px 0 0 0;
+  margin: 65px 0 0 0;
 }
 
 .inicio-foto {
@@ -138,9 +138,9 @@
   border-radius: 0;
 }
 
-@media (min-width: 768px) {
+/* @media (min-width: 768px) {
   .musica {
     margin: 10px 25% auto 25%;
     width: 50%;
   }
-}
+} */
