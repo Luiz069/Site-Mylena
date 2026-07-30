@@ -36,6 +36,12 @@
   margin: 15px 0 -40px 0;
 }
 
+.musica iframe {
+  border-radius: 12px;
+  width: 98%;
+  height: 232px;
+}
+
 /* --------------------FOTO DO BOLO---------------------------- */
 .capa {
   display: flex;
@@ -138,9 +144,9 @@
   border-radius: 0;
 }
 
-/* @media (min-width: 768px) {
+@media (min-width: 768px) {
   .musica {
     margin: 10px 25% auto 25%;
     width: 50%;
   }
-} */
+}
