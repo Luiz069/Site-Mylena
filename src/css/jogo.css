@@ -64,3 +64,22 @@
   color: #fff;
   padding: 15px 0;
 }
+
+.catalogo-butao {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 65px 0 0 0;
+}
+
+.btn-catalogo {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: var(--azul);
+  color: var(--preto);
+  text-decoration: none;
+  border-radius: 5px;
+  font-family: var(--fonte-numero);
+  font-weight: bold;
+  transition: background-color 0.3s, color 0.3s;
+}
