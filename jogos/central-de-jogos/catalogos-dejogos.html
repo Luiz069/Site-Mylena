@@ -4,12 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nosso Cantinho dos Games 💖🎮</title>
+    <title>Biblioteca de Jogos</title>
 
-    <!-- Fontes Google delicadas & FontAwesome -->
+    <!-- Fonte Segoe UI / Inter para visual limpo de console -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,500&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -19,40 +18,34 @@
 
     <style>
         :root {
-            --bg-gradient: linear-gradient(135deg, #fff0f5 0%, #f3e8ff 50%, #fce7f3 100%);
-            --card-bg: rgba(255, 255, 255, 0.75);
-            --card-border: rgba(244, 114, 182, 0.2);
-            --input-bg: rgba(255, 255, 255, 0.9);
+            --xbox-black: #0f1011;
+            --xbox-dark: #181a1d;
+            --xbox-card: #202327;
+            --xbox-card-hover: #2a2e33;
+            --xbox-green: #107c41;
+            --xbox-green-hover: #13924d;
+            --xbox-green-light: #6cc070;
 
-            --rose-primary: #ec4899;
-            --rose-soft: #fbcfe8;
-            --lavender: #a855f7;
-            --gold: #f59e0b;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: rgba(255, 255, 255, 0.08);
 
-            --text-main: #475569;
-            --text-dark: #1e293b;
-            --text-muted: #94a3b8;
-
-            --radius-xl: 28px;
-            --radius-lg: 20px;
-            --radius-md: 14px;
-
-            --font-title: 'Playfair Display', serif;
-            --font-body: 'Outfit', sans-serif;
+            --radius-sm: 4px;
+            --radius-md: 8px;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: var(--font-body);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
         }
 
         body {
-            background: var(--bg-gradient);
+            background-color: var(--xbox-black);
             color: var(--text-main);
             min-height: 100vh;
-            padding: 36px 16px;
+            padding: 40px 24px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -60,166 +53,156 @@
 
         .container {
             width: 100%;
-            max-width: 650px;
+            max-width: 800px;
             display: flex;
             flex-direction: column;
-            gap: 28px;
+            gap: 32px;
         }
 
-        /* HEADER ROMÂNTICO */
+        /* HEADER XBOX STYLE */
         header {
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 16px;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-title i {
+            color: var(--xbox-green-light);
+            font-size: 1.8rem;
         }
 
         header h1 {
-            font-family: var(--font-title);
-            font-size: 2rem;
-            font-weight: 600;
-            color: var(--text-dark);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            font-size: 1.25rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-main);
         }
 
-        header h1 i {
-            color: var(--rose-primary);
-            font-size: 1.6rem;
+        .header-tag {
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: rgba(16, 124, 65, 0.2);
+            color: var(--xbox-green-light);
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(16, 124, 65, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        header p {
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            margin-top: 6px;
-            font-weight: 500;
-        }
-
-        /* CARD DO PLACAR VERSUS (DESIGN ROMÂNTICO) */
+        /* PLACAR VERSUS (PAINEL DE ESTATÍSTICAS DO CONSOLE) */
         .versus-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            backdrop-filter: blur(16px);
-            border-radius: var(--radius-xl);
-            padding: 26px;
-            box-shadow: 0 15px 35px rgba(236, 72, 153, 0.08);
-            position: relative;
+            background: var(--xbox-dark);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 24px;
         }
 
         .versus-header {
             display: flex;
-            justify-content: center;
             align-items: center;
-            gap: 6px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--rose-primary);
+            gap: 8px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 1.5px;
             margin-bottom: 20px;
+        }
+
+        .versus-header i {
+            color: var(--xbox-green-light);
         }
 
         .scoreboard {
             display: grid;
             grid-template-columns: 1fr auto 1fr;
             align-items: center;
-            gap: 16px;
+            gap: 20px;
         }
 
         .player-box {
-            background: rgba(255, 255, 255, 0.85);
-            border: 1px solid rgba(244, 114, 182, 0.25);
-            border-radius: var(--radius-lg);
-            padding: 18px 12px;
+            background: var(--xbox-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 16px;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+            position: relative;
         }
 
         .player-box h3 {
-            font-size: 1rem;
+            font-size: 0.85rem;
             font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 4px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
         }
 
         .score-count {
-            font-family: var(--font-title);
-            font-size: 2.5rem;
-            font-weight: 600;
-            color: var(--rose-primary);
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: #fff;
             line-height: 1;
-            margin: 4px 0;
-        }
-
-        .score-label {
-            font-size: 0.72rem;
-            color: var(--text-muted);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .vs-divider {
-            background: var(--rose-soft);
-            color: var(--rose-primary);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9rem;
-            font-weight: 800;
-            border: 2px solid #fff;
-            box-shadow: 0 4px 10px rgba(236, 72, 153, 0.15);
         }
 
         .score-controls {
             display: flex;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
             margin-top: 14px;
         }
 
         .btn-score {
-            background: #fff;
-            border: 1px solid var(--card-border);
-            color: var(--rose-primary);
-            width: 32px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            width: 36px;
             height: 32px;
-            border-radius: 50%;
-            font-size: 1.1rem;
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
             font-weight: 700;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
         }
 
         .btn-score:hover {
-            background: var(--rose-primary);
-            color: #fff;
-            transform: scale(1.08);
+            background: var(--xbox-green);
+            border-color: var(--xbox-green);
         }
 
-        /* BARRA DE PESQUISA ESTILO CASAL */
+        .vs-divider {
+            font-size: 0.8rem;
+            font-weight: 900;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+        }
+
+        /* BARRA DE PESQUISA (ESTILO CONSOLE SEARCH) */
         .search-section {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
             position: relative;
         }
 
         .search-box {
             display: flex;
-            gap: 10px;
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            padding: 8px;
-            border-radius: var(--radius-lg);
-            backdrop-filter: blur(16px);
-            box-shadow: 0 10px 25px rgba(236, 72, 153, 0.05);
+            background: var(--xbox-dark);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .search-box:focus-within {
+            border-color: var(--xbox-green-light);
         }
 
         .search-box input {
@@ -227,35 +210,34 @@
             background: transparent;
             border: none;
             outline: none;
-            color: var(--text-dark);
-            padding: 0 16px;
+            color: var(--text-main);
+            padding: 14px 18px;
             font-size: 0.95rem;
             font-weight: 500;
         }
 
         .search-box input::placeholder {
-            color: var(--text-muted);
+            color: #6b7280;
         }
 
         .btn-search {
-            background: linear-gradient(135deg, var(--rose-primary), var(--lavender));
+            background: var(--xbox-green);
             color: white;
             border: none;
-            padding: 0 22px;
-            height: 46px;
-            border-radius: var(--radius-md);
-            font-weight: 600;
-            font-size: 0.9rem;
+            padding: 0 24px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 8px;
-            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.25);
-            transition: transform 0.2s ease;
+            transition: background 0.2s;
         }
 
         .btn-search:hover {
-            transform: translateY(-2px);
+            background: var(--xbox-green-hover);
         }
 
         /* DROPDOWN DE RESULTADOS DA BUSCA */
@@ -264,15 +246,14 @@
             top: 100%;
             left: 0;
             width: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-lg);
-            margin-top: 10px;
-            max-height: 320px;
+            background: var(--xbox-dark);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            margin-top: 8px;
+            max-height: 360px;
             overflow-y: auto;
             z-index: 50;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(12px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
             display: none;
         }
 
@@ -283,131 +264,120 @@
         .result-item {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 16px;
             padding: 12px 16px;
             cursor: pointer;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-            transition: background 0.2s;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.15s;
         }
 
         .result-item:hover {
-            background: var(--rose-soft);
+            background: var(--xbox-card);
+            border-left: 4px solid var(--xbox-green-light);
         }
 
         .result-item img {
-            width: 45px;
-            height: 60px;
+            width: 48px;
+            height: 64px;
             object-fit: cover;
-            border-radius: 8px;
+            border-radius: var(--radius-sm);
         }
 
         .result-item-info h4 {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-weight: 700;
-            color: var(--text-dark);
+            color: #fff;
         }
 
         .result-item-info span {
-            font-size: 0.78rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
         }
 
-        /* BIBLIOTECA DE JOGOS */
-        .library-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 6px;
-        }
-
-        .library-header h2 {
-            font-family: var(--font-title);
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: var(--text-dark);
+        /* GRADE DA BIBLIOTECA (XBOX GAME PASS STYLE) */
+        .library-section-title {
+            font-size: 0.85rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
         }
 
         .games-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 18px;
+            gap: 16px;
         }
 
         .game-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-lg);
-            padding: 12px;
+            background: var(--xbox-dark);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
-            transition: transform 0.25 ease;
             position: relative;
+            transition: transform 0.15s ease, border-color 0.15s ease;
         }
 
         .game-card:hover {
             transform: translateY(-4px);
+            border-color: var(--xbox-green-light);
         }
 
         .game-card img {
             width: 100%;
-            height: 220px;
+            height: 240px;
             object-fit: cover;
-            border-radius: var(--radius-md);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
 
         .game-info {
-            padding: 4px 2px;
+            padding: 12px 14px;
+            background: var(--xbox-dark);
         }
 
         .game-info h4 {
-            font-size: 0.92rem;
+            font-size: 0.9rem;
             font-weight: 700;
-            color: var(--text-dark);
-            line-height: 1.3;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .game-info p {
-            font-size: 0.78rem;
+            font-size: 0.75rem;
             color: var(--text-muted);
-            margin-top: 3px;
-            font-weight: 500;
+            margin-top: 2px;
         }
 
         .btn-remove {
             position: absolute;
-            top: 18px;
-            right: 18px;
-            background: rgba(255, 255, 255, 0.85);
-            border: none;
+            top: 10px;
+            right: 10px;
+            background: rgba(15, 16, 17, 0.85);
+            border: 1px solid var(--border-color);
             color: #ef4444;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            border-radius: var(--radius-sm);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 0.8rem;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(4px);
-            transition: transform 0.2s;
+            transition: background 0.15s;
         }
 
         .btn-remove:hover {
-            transform: scale(1.1);
+            background: #ef4444;
+            color: #fff;
         }
 
-        @media (min-width: 500px) {
+        @media (min-width: 550px) {
             .games-grid {
                 grid-template-columns: repeat(3, 1fr);
-            }
-
-            .game-card img {
-                height: 240px;
             }
         }
     </style>
@@ -417,24 +387,26 @@
 
     <div class="container">
 
+        <!-- HEADER ESTILO XBOX -->
         <header>
-            <h1>Catalogo de Jogos</h1>
-            <p></p>
+            <div class="header-title">
+                <i class="fa-brands fa-xbox"></i>
+                <h1>Minha Biblioteca</h1>
+            </div>
+            <span class="header-tag">Casal Hub</span>
         </header>
 
-        <!-- PLACAR VERSUS ESTILO CASAL -->
+        <!-- PAINEL DE PONTUAÇÃO (PLACAR) -->
         <div class="versus-card">
             <div class="versus-header">
-                <i class="fa-solid fa-crown" style="color: var(--gold);"></i>
-                <span>Placar de Vitórias</span>
+                <i class="fa-solid fa-chart-simple"></i>
+                <span>Histórico de Vitórias</span>
             </div>
 
             <div class="scoreboard">
-                <!-- ELE -->
                 <div class="player-box">
                     <h3 id="p1-name">Luiz</h3>
                     <div class="score-count" id="p1-score">0</div>
-                    <div class="score-label">Vitórias</div>
                     <div class="score-controls">
                         <button class="btn-score" onclick="alterarPontos('p1', -1)">-</button>
                         <button class="btn-score" onclick="alterarPontos('p1', 1)">+</button>
@@ -443,11 +415,9 @@
 
                 <div class="vs-divider">VS</div>
 
-                <!-- ELA -->
                 <div class="player-box">
                     <h3 id="p2-name">Mylena</h3>
                     <div class="score-count" id="p2-score">0</div>
-                    <div class="score-label">Vitórias</div>
                     <div class="score-controls">
                         <button class="btn-score" onclick="alterarPontos('p2', -1)">-</button>
                         <button class="btn-score" onclick="alterarPontos('p2', 1)">+</button>
@@ -456,10 +426,10 @@
             </div>
         </div>
 
-        <!-- PESQUISA DE JOGOS DA ATUALIDADE (API RAWG) -->
+        <!-- BUSCA DE JOGOS DA ATUALIDADE -->
         <div class="search-section">
             <div class="search-box">
-                <input type="text" id="game-search-input" placeholder="Pesquisar jogo para adicionar...">
+                <input type="text" id="game-search-input" placeholder="Buscar jogo para adicionar...">
                 <button class="btn-search" onclick="buscarJogo()">
                     <i class="fa-solid fa-magnifying-glass"></i> Buscar
                 </button>
@@ -468,17 +438,16 @@
             <div class="results-dropdown" id="results-dropdown"></div>
         </div>
 
-        <!-- GRADE DE JOGOS ADICIONADOS -->
-        <div class="library-header">
-            <h2>Jogos Salvos 💕</h2>
+        <!-- CATALOGO SALVO -->
+        <div>
+            <div class="library-section-title">Jogos Instalados / Salvos</div>
+            <div class="games-grid" id="games-grid"></div>
         </div>
-
-        <div class="games-grid" id="games-grid"></div>
 
     </div>
 
     <script>
-        // CHAVE DA API DA RAWG (JOGOS ATUAIS E LANÇAMENTOS)
+        // CHAVE DA API DA RAWG (Insira sua chave aqui)
         const RAWG_API_KEY = "f30fd9bcf3e04423888e103116615218";
 
         // CONFIGURAÇÃO DO SEU FIREBASE
@@ -517,7 +486,7 @@
 
             if (!query) return;
 
-            dropdown.innerHTML = '<div style="padding:14px; color:var(--text-muted); font-size:0.88rem;">Buscando jogos...</div>';
+            dropdown.innerHTML = '<div style="padding:14px; color:var(--text-muted); font-size:0.85rem;">Pesquisando base de dados...</div>';
             dropdown.classList.add('active');
 
             try {
@@ -528,7 +497,7 @@
                 dropdown.innerHTML = '';
 
                 if (games.length === 0) {
-                    dropdown.innerHTML = '<div style="padding:14px; color:var(--text-muted); font-size:0.88rem;">Nenhum jogo encontrado.</div>';
+                    dropdown.innerHTML = '<div style="padding:14px; color:var(--text-muted); font-size:0.85rem;">Nenhum jogo encontrado.</div>';
                     return;
                 }
 
@@ -551,7 +520,7 @@
 
             } catch (e) {
                 console.error("Erro na busca de jogos:", e);
-                dropdown.innerHTML = '<div style="padding:14px; color:var(--text-muted); font-size:0.88rem;">Erro na busca. Verifique sua chave da RAWG.</div>';
+                dropdown.innerHTML = '<div style="padding:14px; color:var(--text-muted); font-size:0.85rem;">Erro de conexão com a RAWG API.</div>';
             }
         }
 
@@ -582,7 +551,7 @@
             const data = snapshot.val();
 
             if (!data) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); font-size:0.88rem; padding: 24px;">Sua biblioteca está vazia. Adicione o primeiro jogo acima! ✨</div>';
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: left; color: var(--text-muted); font-size:0.85rem; padding: 12px 0;">Nenhum jogo salvo na biblioteca. Use a busca acima para adicionar.</div>';
                 return;
             }
 
@@ -590,11 +559,11 @@
                 const card = document.createElement('div');
                 card.className = 'game-card';
                 card.innerHTML = `
-          <button class="btn-remove" onclick="removerJogo('${key}')"><i class="fa-solid fa-trash"></i></button>
+          <button class="btn-remove" onclick="removerJogo('${key}')"><i class="fa-solid fa-xmark"></i></button>
           <img src="${game.poster}" alt="${game.title}">
           <div class="game-info">
             <h4>${game.title}</h4>
-            <p>${game.year ? 'Ano: ' + game.year : 'Salvo no cantinho'}</p>
+            <p>${game.year ? game.year : 'Catalogado'}</p>
           </div>
         `;
                 grid.appendChild(card);
@@ -602,7 +571,7 @@
         });
 
         function removerJogo(id) {
-            if (confirm("Deseja remover este jogo da biblioteca?")) {
+            if (confirm("Remover este jogo da coleção?")) {
                 gamesRef.child(id).remove();
             }
         }

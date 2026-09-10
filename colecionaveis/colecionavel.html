@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colecionáveis - Escolha seu Perfil</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f5f1e8;
+        }
+
+        /* =========================
+           TELA DE SELEÇÃO INICIAL (FULLSCREEN)
+        ========================= */
+        #profileSelectionScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #2b2621;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            padding: 20px;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        #profileSelectionScreen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .screen-title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 40px;
+            color: #f5f1e8;
+            text-align: center;
+        }
+
+        .profiles-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            justify-content: center;
+            max-width: 800px;
+        }
+
+        .profile-card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            width: 110px;
+            transition: transform 0.2s;
+        }
+
+        .profile-card:hover {
+            transform: scale(1.08);
+        }
+
+        .profile-avatar-wrapper {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #cfb27d;
+            border: 4px solid transparent;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+            transition: border-color 0.2s, background-color 0.2s, color 0.2s;
+        }
+
+        .profile-card:hover .profile-avatar-wrapper {
+            border-color: #cfb27d;
+        }
+
+        .profile-avatar-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-card-name {
+            margin-top: 12px;
+            font-size: 16px;
+            color: #d1c7bd;
+            font-weight: bold;
+            text-align: center;
+            word-break: break-word;
+        }
+
+        .profile-card:hover .profile-card-name {
+            color: white;
+        }
+
+        /* Botões de Ação Rápida no Card (Editar / Excluir) */
+        .card-actions {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 10;
+        }
+
+        .profile-card:hover .card-actions {
+            opacity: 1;
+        }
+
+        .action-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+
+        .action-btn.edit {
+            background-color: #3b82f6;
+        }
+
+        .action-btn.delete {
+            background-color: #ef4444;
+        }
+
+        .add-card-wrapper {
+            background-color: transparent;
+            border: 3px dashed #cfb27d;
+            color: #cfb27d;
+            font-size: 40px;
+        }
+
+        .profile-card:hover .add-card-wrapper {
+            background-color: #cfb27d;
+            color: white;
+            border-style: solid;
+        }
+
+        /* =========================
+           CABEÇALHO DA PÁGINA
+        ========================= */
+        header {
+            height: 78px;
+            background-color: #cfb27d;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            position: relative;
+        }
+
+        header>div {
+            display: flex;
+            align-items: center;
+        }
+
+        #backButton {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 38px;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #backButton:hover {
+            opacity: 0.8;
+        }
+
+        h1 {
+            color: white;
+            font-size: 30px;
+            margin: 0 0 0 25px;
+            font-weight: bold;
+        }
+
+        #profileButton {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: 2px solid white;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 0;
+            transition: 0.2s;
+            overflow: hidden;
+        }
+
+        #profileButton:hover {
+            transform: scale(1.05);
+        }
+
+        #headerAvatarImg {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #profileMenu {
+            position: absolute;
+            top: 70px;
+            right: 15px;
+            width: 300px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.20);
+            padding: 15px;
+            display: none;
+            z-index: 100;
+        }
+
+        #profileMenu.open {
+            display: block;
+        }
+
+        #profileMenu h2 {
+            margin: 0 0 15px 5px;
+            font-size: 18px;
+            color: #444;
+        }
+
+        #profileContainer {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .profile-item {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .profile-item:hover {
+            background-color: #f3ead9;
+        }
+
+        .profile-item.selected {
+            background-color: #e7d4ae;
+        }
+
+        .profile-item-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #cfb27d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .profile-item-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-item-info {
+            flex: 1;
+        }
+
+        .profile-item-name {
+            font-weight: bold;
+            color: #333;
+            font-size: 15px;
+        }
+
+        .profile-item-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .menu-action-icon {
+            font-size: 14px;
+            color: #777;
+            padding: 4px;
+            border-radius: 4px;
+            transition: 0.2s;
+        }
+
+        .menu-action-icon:hover {
+            color: #000;
+            background-color: rgba(0, 0, 0, 0.08);
+        }
+
+        #addProfileMenuBtn,
+        #switchProfileScreenBtn {
+            border-top: 1px solid #e0e0e0;
+            margin-top: 8px;
+            padding-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #8c6d37;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        #addProfileMenuBtn:hover,
+        #switchProfileScreenBtn:hover {
+            color: #624a24;
+        }
+
+        /* =========================
+           MODAIS (CRIAÇÃO / CONFIRMAÇÃO)
+        ========================= */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-card {
+            background-color: white;
+            width: 90%;
+            max-width: 440px;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: modalFadeIn 0.25s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #444;
+            font-size: 20px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: #888;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            color: #666;
+            margin-bottom: 6px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: #cfb27d;
+        }
+
+        .avatar-categories {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+            scrollbar-width: thin;
+        }
+
+        .category-btn {
+            background-color: #f0e6d2;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #624a24;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: 0.2s;
+        }
+
+        .category-btn:hover,
+        .category-btn.active {
+            background-color: #cfb27d;
+            color: white;
+        }
+
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            max-height: 180px;
+            overflow-y: auto;
+            padding: 5px;
+        }
+
+        .avatar-option {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #f8f8f8;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: 0.2s;
+            margin: 0 auto;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .avatar-option img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-option.selected {
+            border-color: #8c6d37;
+            background-color: #cfb27d;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-cancel {
+            background-color: #eee;
+            color: #666;
+        }
+
+        .btn-cancel:hover {
+            background-color: #e0e0e0;
+        }
+
+        .btn-save {
+            background-color: #cfb27d;
+            color: white;
+        }
+
+        .btn-save:hover {
+            background-color: #b89a63;
+        }
+
+        .btn-danger {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+
+        /* ================================================================ */
+        ::selection {
+            color: #fff;
+            background: #664AFF;
+        }
+
+        .search-box {
+            position: relative;
+            height: 40px;
+            width: 60px;
+            border-radius: 50%;
+            /* box-shadow: 5px 5px 30px rgba(0, 0, 0, .2); */
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .search-box.active {
+            width: 270px;
+        }
+
+        .search-box input {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 50px;
+            background: #fff;
+            outline: none;
+            padding: 0 60px 0 20px;
+            font-size: 18px;
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .search-box input.active {
+            opacity: 1;
+        }
+
+        .search-box input::placeholder {
+            color: #a6a6a6;
+        }
+
+        .search-box .search-icon {
+            position: absolute;
+            right: 0px;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 50px;
+            width: 50px;
+            background: #8c6d37;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 60px;
+            font-size: 22px;
+            color: #cfb27d;
+            cursor: pointer;
+            z-index: 1;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .search-box .search-icon.active {
+            right: 0px;
+            height: 50px;
+            line-height: 50px;
+            width: 50px;
+            font-size: 20px;
+            background: #cfb27d;
+            color: #8c6d37;
+            transform: translateY(-50%) rotate(360deg);
+        }
+
+        .search-box .cancel-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 25px;
+            color: #8c6d37;
+            cursor: pointer;
+            transition: all 0.5s 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .search-box .cancel-icon.active {
+            right: -40px;
+            transform: translateY(-50%) rotate(360deg);
+        }
+
+        .search-box .search-data {
+            text-align: center;
+            padding-top: 7px;
+            color: #fff;
+            font-size: 18px;
+            word-wrap: break-word;
+        }
+
+        .search-box .search-data.active {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 1. TELA DE SELEÇÃO INICIAL -->
+    <div id="profileSelectionScreen">
+        <h2 class="screen-title">Quem está acessando?</h2>
+        <div class="profiles-grid" id="initialProfilesGrid"></div>
+    </div>
+
+    <!-- 2. CABEÇALHO DA APLICAÇÃO -->
+    <header>
+        <div>
+            <button id="backButton">
+                <i class="bi bi-arrow-left"></i>
+            </button>
+            <h1>Colecionáveis</h1>
+        </div>
+
+        <div>
+            <button id="profileButton">
+                <img id="headerAvatarImg" src="" alt="Avatar">
+            </button>
+        </div>
+
+        <div id="profileMenu">
+            <h2>Perfil</h2>
+            <div id="profileContainer"></div>
+
+            <div id="addProfileMenuBtn">
+                <i class="bi bi-plus-circle"></i>
+                <span>Adicionar perfil</span>
+            </div>
+
+            <div id="switchProfileScreenBtn">
+                <i class="bi bi-people"></i>
+                <span>Trocar de perfil</span>
+            </div>
+        </div>
+    </header>
+
+    <section style="height: 78px;
+    background-color: #cfb27d;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    position: relative;">
+        <div class="search-box">
+            <input type="text" placeholder="Type to search..">
+            <div class="search-icon">
+                <i class="fas fa-search"></i>
+            </div>
+            <div class="cancel-icon">
+                <i class="fas fa-times"></i>
+            </div>
+            <div class="search-data">
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================================================= -->
+
+    <!-- 3. MODAL DE CRIAÇÃO / EDIÇÃO DE PERFIL -->
+    <div class="modal-overlay" id="createProfileModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="modalTitle">Novo Perfil</h3>
+                <button class="modal-close" id="closeModalBtn">&times;</button>
+            </div>
+
+            <div class="form-group">
+                <label for="profileNameInput">Nome do Perfil</label>
+                <input type="text" id="profileNameInput" class="form-input" placeholder="Ex: Maria" maxlength="20">
+            </div>
+
+            <div class="form-group">
+                <label>Escolha um Avatar</label>
+                <div class="avatar-categories" id="avatarCategories">
+                    <button class="category-btn active" data-style="lorelei">Lorelei</button>
+                    <button class="category-btn" data-style="pixel-art">Pixel Art</button>
+                    <button class="category-btn" data-style="bottts">Robôs</button>
+                    <button class="category-btn" data-style="adventurer">Aventureiros</button>
+                </div>
+                <div class="avatar-grid" id="avatarGrid"></div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-cancel" id="cancelModalBtn">Cancelar</button>
+                <button class="btn btn-save" id="saveProfileBtn">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. MODAL DE CONFIRMAÇÃO DE EXCLUSÃO -->
+    <div class="modal-overlay" id="deleteConfirmModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Excluir Perfil</h3>
+                <button class="modal-close" id="closeDeleteModalBtn">&times;</button>
+            </div>
+            <p style="color: #666; font-size: 14px;">Tem certeza que deseja excluir o perfil <b
+                    id="deleteProfileNameText"></b>? Esta ação removerá a coleção associada a ele permanentemente.</p>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" id="cancelDeleteBtn">Cancelar</button>
+                <button class="btn btn-danger" id="confirmDeleteBtn">Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================================= -->
+
+    <!-- SCRIPT DO FIREBASE (MÓDULO JS) -->
+    <script type="module">
+        // ==============================================================================
+
+        const searchBox = document.querySelector(".search-box");
+        const searchBtn = document.querySelector(".search-icon");
+        const cancelBtn = document.querySelector(".cancel-icon");
+        const searchInput = document.querySelector("input");
+        const searchData = document.querySelector(".search-data");
+        searchBtn.onclick = () => {
+            searchBox.classList.add("active");
+            searchBtn.classList.add("active");
+            searchInput.classList.add("active");
+            cancelBtn.classList.add("active");
+            searchInput.focus();
+            if (searchInput.value != "") {
+                var values = searchInput.value;
+                searchData.classList.remove("active");
+                searchData.innerHTML = "You just typed " + "<span style='font-weight: 500;'>" + values + "</span>";
+            } else {
+                searchData.textContent = "";
+            }
+        }
+        cancelBtn.onclick = () => {
+            searchBox.classList.remove("active");
+            searchBtn.classList.remove("active");
+            searchInput.classList.remove("active");
+            cancelBtn.classList.remove("active");
+            searchData.classList.toggle("active");
+            searchInput.value = "";
+        }
+
+
+        // ==============================================================================
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import {
+            getFirestore,
+            collection,
+            addDoc,
+            onSnapshot,
+            doc,
+            updateDoc,
+            deleteDoc,
+            getDocs
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Insira suas credenciais do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCTbJtWVxYAEFrei687-z3-p7urqLsdIU8",
+            authDomain: "filmes-salvos.firebaseapp.com",
+            databaseURL: "https://filmes-salvos-default-rtdb.firebaseio.com",
+            projectId: "filmes-salvos",
+            storageBucket: "filmes-salvos.firebasestorage.app",
+            messagingSenderId: "155114516613",
+            appId: "1:155114516613:web:21d357a5c89b276fd1b9ec",
+            measurementId: "G-R2HTXWN1TB"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const profilesColRef = collection(db, 'perfis');
+
+        const avatarCatalog = {
+            'lorelei': ['Felix', 'Aneka', 'Avery', 'Cali', 'Jack', 'Zoe', 'Milo', 'Luna'],
+            'pixel-art': ['SpiderMan', 'Batman', 'IronMan', 'Mario', 'Zelda', 'Goku', 'Naruto', 'Vader'],
+            'bottts': ['Bender', 'Cyber', 'Optimus', 'R2D2', 'WallE', 'Jarvis', 'Data', 'Omega'],
+            'adventurer': ['Indiana', 'Lara', 'Frodo', 'Aragorn', 'Ezio', 'Geralt', 'Kratos', 'Link']
+        };
+
+        let currentCategory = 'lorelei';
+        let selectedAvatarUrl = '';
+        let currentPerfis = [];
+        let editingProfileId = null;
+        let deletingProfileId = null;
+
+        // Referências DOM
+        const profileSelectionScreen = document.getElementById('profileSelectionScreen');
+        const initialProfilesGrid = document.getElementById('initialProfilesGrid');
+        const backButton = document.getElementById('backButton');
+        const profileButton = document.getElementById('profileButton');
+        const headerAvatarImg = document.getElementById('headerAvatarImg');
+        const profileMenu = document.getElementById('profileMenu');
+        const profileContainer = document.getElementById('profileContainer');
+        const addProfileMenuBtn = document.getElementById('addProfileMenuBtn');
+        const switchProfileScreenBtn = document.getElementById('switchProfileScreenBtn');
+
+        // Modal Form
+        const createProfileModal = document.getElementById('createProfileModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const profileNameInput = document.getElementById('profileNameInput');
+        const avatarGrid = document.getElementById('avatarGrid');
+        const avatarCategories = document.getElementById('avatarCategories');
+        const saveProfileBtn = document.getElementById('saveProfileBtn');
+
+        // Modal Exclusão
+        const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+        const deleteProfileNameText = document.getElementById('deleteProfileNameText');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
+        // 1. ESCUTA DE PERFIS NO FIREBASE
+        function listenToProfiles() {
+            onSnapshot(profilesColRef, (snapshot) => {
+                currentPerfis = [];
+                snapshot.forEach(docSnap => {
+                    currentPerfis.push({ id: docSnap.id, ...docSnap.data() });
+                });
+
+                const perfilAtivo = currentPerfis.find(p => p.selected === true);
+                if (!perfilAtivo || currentPerfis.length === 0) {
+                    profileSelectionScreen.classList.remove('hidden');
+                }
+
+                renderInitialSelectionScreen(currentPerfis);
+                renderHeaderAndMenu(currentPerfis);
+            });
+        }
+
+        // 2. TELA DE SELEÇÃO INICIAL
+        function renderInitialSelectionScreen(perfis) {
+            initialProfilesGrid.innerHTML = '';
+
+            perfis.forEach(perfil => {
+                const card = document.createElement('div');
+                card.className = 'profile-card';
+                card.innerHTML = `
+                    <div class="card-actions">
+                        <button class="action-btn edit" title="Editar"><i class="bi bi-pencil-fill"></i></button>
+                        <button class="action-btn delete" title="Excluir"><i class="bi bi-trash-fill"></i></button>
+                    </div>
+                    <div class="profile-avatar-wrapper">
+                        <img src="${perfil.avatarUrl}" alt="${perfil.name}">
+                    </div>
+                    <div class="profile-card-name">${perfil.name}</div>
+                `;
+
+                // Selecionar perfil
+                card.querySelector('.profile-avatar-wrapper').addEventListener('click', () => {
+                    selectProfileInFirebase(perfil.id);
+                    profileSelectionScreen.classList.add('hidden');
+                });
+
+                // Editar perfil
+                card.querySelector('.edit').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openModal(perfil);
+                });
+
+                // Solicitar exclusão
+                card.querySelector('.delete').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openDeleteModal(perfil);
+                });
+
+                initialProfilesGrid.appendChild(card);
+            });
+
+            // Botão Adicionar "+"
+            const addCard = document.createElement('div');
+            addCard.className = 'profile-card';
+            addCard.innerHTML = `
+                <div class="profile-avatar-wrapper add-card-wrapper">
+                    <i class="bi bi-plus-lg"></i>
+                </div>
+                <div class="profile-card-name">Adicionar</div>
+            `;
+            addCard.addEventListener('click', () => openModal(null));
+
+            initialProfilesGrid.appendChild(addCard);
+        }
+
+        // 3. MENU CABEÇALHO
+        function renderHeaderAndMenu(perfis) {
+            profileContainer.innerHTML = '';
+
+            if (perfis.length === 0) {
+                headerAvatarImg.src = '';
+                return;
+            }
+
+            let perfilAtivo = perfis.find(p => p.selected === true) || perfis[0];
+            headerAvatarImg.src = perfilAtivo.avatarUrl;
+
+            // CARREGA A COLEÇÃO ESPECÍFICA DO PERFIL SELECIONADO
+            carregarColecaoDoPerfil(perfilAtivo.id);
+
+            perfis.forEach(perfil => {
+                const isSelected = perfil.id === perfilAtivo.id;
+
+                const item = document.createElement('div');
+                item.className = `profile-item ${isSelected ? 'selected' : ''}`;
+                item.innerHTML = `
+                    <div class="profile-item-icon">
+                        <img src="${perfil.avatarUrl}" alt="${perfil.name}">
+                    </div>
+                    <div class="profile-item-info">
+                        <div class="profile-item-name">${perfil.name}</div>
+                    </div>
+                    <div class="profile-item-actions">
+                        <i class="bi bi-pencil menu-action-icon btn-menu-edit"></i>
+                        <i class="bi bi-trash menu-action-icon btn-menu-delete"></i>
+                    </div>
+                `;
+
+                item.querySelector('.profile-item-info').addEventListener('click', () => {
+                    selectProfileInFirebase(perfil.id);
+                    profileMenu.classList.remove('open');
+                });
+
+                item.querySelector('.btn-menu-edit').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openModal(perfil);
+                });
+
+                item.querySelector('.btn-menu-delete').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openDeleteModal(perfil);
+                });
+
+                profileContainer.appendChild(item);
+            });
+        }
+
+        // 4. ACESSO À COLEÇÃO DO PERFIL NO FIREBASE
+        function carregarColecaoDoPerfil(perfilId) {
+            // Referência para a coleção isolada deste perfil
+            const perfilItemsRef = collection(db, 'perfis', perfilId, 'dados_colecao');
+
+            onSnapshot(perfilItemsRef, (snapshot) => {
+                const itensDoPerfil = [];
+                snapshot.forEach(docSnap => {
+                    itensDoPerfil.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                console.log(`Itens carregados para o Perfil [${perfilId}]:`, itensDoPerfil);
+            });
+        }
+
+        // 5. TROCAR PERFIL ATIVO
+        async function selectProfileInFirebase(perfilId) {
+            for (const p of currentPerfis) {
+                const pDocRef = doc(db, 'perfis', p.id);
+                await updateDoc(pDocRef, { selected: p.id === perfilId });
+            }
+        }
+
+        // 6. RENDERIZAR AVATARES
+        function renderAvatarOptions(categoryStyle) {
+            avatarGrid.innerHTML = '';
+            const seeds = avatarCatalog[categoryStyle] || avatarCatalog['lorelei'];
+
+            seeds.forEach((seed, index) => {
+                const url = `https://api.dicebear.com/7.x/${categoryStyle}/svg?seed=${seed}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf`;
+
+                const option = document.createElement('div');
+                const isSelected = selectedAvatarUrl === url || (!selectedAvatarUrl && index === 0);
+
+                option.className = `avatar-option ${isSelected ? 'selected' : ''}`;
+                option.innerHTML = `<img src="${url}" alt="Avatar">`;
+
+                if (isSelected) selectedAvatarUrl = url;
+
+                option.addEventListener('click', () => {
+                    document.querySelectorAll('.avatar-option').forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                    selectedAvatarUrl = url;
+                });
+
+                avatarGrid.appendChild(option);
+            });
+        }
+
+        avatarCategories.addEventListener('click', (e) => {
+            if (e.target.classList.contains('category-btn')) {
+                document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+                currentCategory = e.target.getAttribute('data-style');
+                renderAvatarOptions(currentCategory);
+            }
+        });
+
+        // MODAL CRIAR / EDITAR
+        function openModal(perfil = null) {
+            profileMenu.classList.remove('open');
+
+            if (perfil) {
+                editingProfileId = perfil.id;
+                modalTitle.innerText = 'Editar Perfil';
+                profileNameInput.value = perfil.name;
+                selectedAvatarUrl = perfil.avatarUrl;
+            } else {
+                editingProfileId = null;
+                modalTitle.innerText = 'Novo Perfil';
+                profileNameInput.value = '';
+                selectedAvatarUrl = '';
+            }
+
+            currentCategory = 'lorelei';
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('[data-style="lorelei"]').classList.add('active');
+
+            renderAvatarOptions('lorelei');
+            createProfileModal.classList.add('open');
+            profileNameInput.focus();
+        }
+
+        function closeModal() {
+            createProfileModal.classList.remove('open');
+            editingProfileId = null;
+        }
+
+        // MODAL EXCLUIR
+        function openDeleteModal(perfil) {
+            profileMenu.classList.remove('open');
+            deletingProfileId = perfil.id;
+            deleteProfileNameText.innerText = perfil.name;
+            deleteConfirmModal.classList.add('open');
+        }
+
+        function closeDeleteModal() {
+            deleteConfirmModal.classList.remove('open');
+            deletingProfileId = null;
+        }
+
+        // SALVAR NOVO OU ATUALIZAR
+        saveProfileBtn.addEventListener('click', async () => {
+            const nome = profileNameInput.value.trim();
+            if (!nome) {
+                alert('Informe o nome do perfil.');
+                return;
+            }
+
+            if (editingProfileId) {
+                // Atualização
+                const perfilRef = doc(db, 'perfis', editingProfileId);
+                await updateDoc(perfilRef, {
+                    name: nome,
+                    avatarUrl: selectedAvatarUrl
+                });
+            } else {
+                // Criação
+                const snapshot = await getDocs(profilesColRef);
+                snapshot.forEach(async (docSnap) => {
+                    await updateDoc(doc(db, 'perfis', docSnap.id), { selected: false });
+                });
+
+                await addDoc(profilesColRef, {
+                    name: nome,
+                    avatarUrl: selectedAvatarUrl,
+                    selected: true,
+                    createdAt: Date.now()
+                });
+                profileSelectionScreen.classList.add('hidden');
+            }
+
+            // Fecha o modal após salvar
+            closeModal();
+        });
+
+        // CONFIRMAR EXCLUSÃO
+        confirmDeleteBtn.addEventListener('click', async () => {
+            if (deletingProfileId) {
+                await deleteDoc(doc(db, 'perfis', deletingProfileId));
+                closeDeleteModal();
+            }
+        });
+
+        // LISTENERS DE FECHAMENTO
+        document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+        document.getElementById('cancelModalBtn').addEventListener('click', closeModal);
+        document.getElementById('closeDeleteModalBtn').addEventListener('click', closeDeleteModal);
+        document.getElementById('cancelDeleteBtn').addEventListener('click', closeDeleteModal);
+
+        backButton.addEventListener('click', () => window.history.back());
+        profileButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileMenu.classList.toggle('open');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!profileMenu.contains(e.target) && !profileButton.contains(e.target)) {
+                profileMenu.classList.remove('open');
+            }
+        });
+
+        switchProfileScreenBtn.addEventListener('click', () => {
+            profileMenu.classList.remove('open');
+            profileSelectionScreen.classList.remove('hidden');
+        });
+
+        addProfileMenuBtn.addEventListener('click', () => openModal(null));
+
+        listenToProfiles();
+    </script>
+</body>
+
+</html>
