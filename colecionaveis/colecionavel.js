@@ -1,39 +1,3 @@
-// ==============================================================================
-
-const searchBox = document.querySelector(".search-box");
-const searchBtn = document.querySelector(".search-icon");
-const cancelBtn = document.querySelector(".cancel-icon");
-const searchInput = document.querySelector("input");
-const searchData = document.querySelector(".search-data");
-searchBtn.onclick = () => {
-  searchBox.classList.add("active");
-  searchBtn.classList.add("active");
-  searchInput.classList.add("active");
-  cancelBtn.classList.add("active");
-  searchInput.focus();
-  if (searchInput.value != "") {
-    var values = searchInput.value;
-    searchData.classList.remove("active");
-    searchData.innerHTML =
-      "You just typed " +
-      "<span style='font-weight: 500;'>" +
-      values +
-      "</span>";
-  } else {
-    searchData.textContent = "";
-  }
-};
-cancelBtn.onclick = () => {
-  searchBox.classList.remove("active");
-  searchBtn.classList.remove("active");
-  searchInput.classList.remove("active");
-  cancelBtn.classList.remove("active");
-  searchData.classList.toggle("active");
-  searchInput.value = "";
-};
-
-// ==============================================================================
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import {
   getFirestore,
@@ -46,7 +10,6 @@ import {
   getDocs,
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// Insira suas credenciais do Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCTbJtWVxYAEFrei687-z3-p7urqLsdIU8",
   authDomain: "filmes-salvos.firebaseapp.com",
@@ -96,13 +59,24 @@ const avatarCatalog = {
   ],
 };
 
+const AVAILABLE_CATEGORIES = [
+  "interesse",
+  "colecionaveis",
+  "Hot Wheels",
+  "funko",
+  "livros",
+];
+
 let currentCategory = "lorelei";
 let selectedAvatarUrl = "";
 let currentPerfis = [];
 let editingProfileId = null;
 let deletingProfileId = null;
+let activeProfileId = null;
+let activeProfileUnsubscribe = null;
+let manualBase64Image = ""; // Guarda a foto em Base64 enviada pelo dispositivo
 
-// Referências DOM
+// Referências DOM - Perfis
 const profileSelectionScreen = document.getElementById(
   "profileSelectionScreen",
 );
@@ -117,7 +91,6 @@ const switchProfileScreenBtn = document.getElementById(
   "switchProfileScreenBtn",
 );
 
-// Modal Form
 const createProfileModal = document.getElementById("createProfileModal");
 const modalTitle = document.getElementById("modalTitle");
 const profileNameInput = document.getElementById("profileNameInput");
@@ -125,12 +98,30 @@ const avatarGrid = document.getElementById("avatarGrid");
 const avatarCategories = document.getElementById("avatarCategories");
 const saveProfileBtn = document.getElementById("saveProfileBtn");
 
-// Modal Exclusão
 const deleteConfirmModal = document.getElementById("deleteConfirmModal");
 const deleteProfileNameText = document.getElementById("deleteProfileNameText");
 const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
 
-// 1. ESCUTA DE PERFIS NO FIREBASE
+// Referências DOM - Itens, Upload & Carrossel
+const itemModal = document.getElementById("itemModal");
+const itemLinkInput = document.getElementById("itemLinkInput");
+const itemNameInput = document.getElementById("itemNameInput");
+const itemStoreInput = document.getElementById("itemStoreInput");
+const itemCategorySelect = document.getElementById("itemCategorySelect");
+const itemImageInput = document.getElementById("itemImageInput");
+const itemFileInput = document.getElementById("itemFileInput");
+const fileNameText = document.getElementById("fileNameText");
+const imagePreviewWrapper = document.getElementById("imagePreviewWrapper");
+const imagePreview = document.getElementById("imagePreview");
+const saveItemBtn = document.getElementById("saveItemBtn");
+const closeItemModalBtn = document.getElementById("closeItemModalBtn");
+const cancelItemModalBtn = document.getElementById("cancelItemModalBtn");
+
+const recentSection = document.getElementById("recentSection");
+const recentCarousel = document.getElementById("recentCarousel");
+const categoriesContainer = document.getElementById("categoriesContainer");
+
+// 1. ESCUTA DE PERFIS
 function listenToProfiles() {
   onSnapshot(profilesColRef, (snapshot) => {
     currentPerfis = [];
@@ -140,7 +131,7 @@ function listenToProfiles() {
 
     const perfilAtivo = currentPerfis.find((p) => p.selected === true);
     if (!perfilAtivo || currentPerfis.length === 0) {
-      profileSelectionScreen.classList.remove("hidden");
+      profileSelectionScreen?.classList.remove("hidden");
     }
 
     renderInitialSelectionScreen(currentPerfis);
@@ -150,37 +141,35 @@ function listenToProfiles() {
 
 // 2. TELA DE SELEÇÃO INICIAL
 function renderInitialSelectionScreen(perfis) {
+  if (!initialProfilesGrid) return;
   initialProfilesGrid.innerHTML = "";
 
   perfis.forEach((perfil) => {
     const card = document.createElement("div");
     card.className = "profile-card";
     card.innerHTML = `
-                    <div class="card-actions">
-                        <button class="action-btn edit" title="Editar"><i class="bi bi-pencil-fill"></i></button>
-                        <button class="action-btn delete" title="Excluir"><i class="bi bi-trash-fill"></i></button>
-                    </div>
-                    <div class="profile-avatar-wrapper">
-                        <img src="${perfil.avatarUrl}" alt="${perfil.name}">
-                    </div>
-                    <div class="profile-card-name">${perfil.name}</div>
-                `;
+      <div class="card-actions">
+        <button class="action-btn edit" title="Editar"><i class="bi bi-pencil-fill"></i></button>
+        <button class="action-btn delete" title="Excluir"><i class="bi bi-trash-fill"></i></button>
+      </div>
+      <div class="profile-avatar-wrapper">
+        <img src="${perfil.avatarUrl}" alt="${perfil.name}">
+      </div>
+      <div class="profile-card-name">${perfil.name}</div>
+    `;
 
-    // Selecionar perfil
     card
       .querySelector(".profile-avatar-wrapper")
       .addEventListener("click", () => {
         selectProfileInFirebase(perfil.id);
-        profileSelectionScreen.classList.add("hidden");
+        profileSelectionScreen?.classList.add("hidden");
       });
 
-    // Editar perfil
     card.querySelector(".edit").addEventListener("click", (e) => {
       e.stopPropagation();
-      openModal(perfil);
+      openProfileModal(perfil);
     });
 
-    // Solicitar exclusão
     card.querySelector(".delete").addEventListener("click", (e) => {
       e.stopPropagation();
       openDeleteModal(perfil);
@@ -189,61 +178,59 @@ function renderInitialSelectionScreen(perfis) {
     initialProfilesGrid.appendChild(card);
   });
 
-  // Botão Adicionar "+"
   const addCard = document.createElement("div");
   addCard.className = "profile-card";
   addCard.innerHTML = `
-                <div class="profile-avatar-wrapper add-card-wrapper">
-                    <i class="bi bi-plus-lg"></i>
-                </div>
-                <div class="profile-card-name">Adicionar</div>
-            `;
-  addCard.addEventListener("click", () => openModal(null));
-
+    <div class="profile-avatar-wrapper add-card-wrapper">
+      <i class="bi bi-plus-lg"></i>
+    </div>
+    <div class="profile-card-name">Adicionar</div>
+  `;
+  addCard.addEventListener("click", () => openProfileModal(null));
   initialProfilesGrid.appendChild(addCard);
 }
 
 // 3. MENU CABEÇALHO
 function renderHeaderAndMenu(perfis) {
+  if (!profileContainer) return;
   profileContainer.innerHTML = "";
 
   if (perfis.length === 0) {
-    headerAvatarImg.src = "";
+    if (headerAvatarImg) headerAvatarImg.src = "";
     return;
   }
 
   let perfilAtivo = perfis.find((p) => p.selected === true) || perfis[0];
-  headerAvatarImg.src = perfilAtivo.avatarUrl;
+  if (headerAvatarImg) headerAvatarImg.src = perfilAtivo.avatarUrl;
+  activeProfileId = perfilAtivo.id;
 
-  // CARREGA A COLEÇÃO ESPECÍFICA DO PERFIL SELECIONADO
   carregarColecaoDoPerfil(perfilAtivo.id);
 
   perfis.forEach((perfil) => {
     const isSelected = perfil.id === perfilAtivo.id;
-
     const item = document.createElement("div");
     item.className = `profile-item ${isSelected ? "selected" : ""}`;
     item.innerHTML = `
-                    <div class="profile-item-icon">
-                        <img src="${perfil.avatarUrl}" alt="${perfil.name}">
-                    </div>
-                    <div class="profile-item-info">
-                        <div class="profile-item-name">${perfil.name}</div>
-                    </div>
-                    <div class="profile-item-actions">
-                        <i class="bi bi-pencil menu-action-icon btn-menu-edit"></i>
-                        <i class="bi bi-trash menu-action-icon btn-menu-delete"></i>
-                    </div>
-                `;
+      <div class="profile-item-icon">
+        <img src="${perfil.avatarUrl}" alt="${perfil.name}">
+      </div>
+      <div class="profile-item-info">
+        <div class="profile-item-name">${perfil.name}</div>
+      </div>
+      <div class="profile-item-actions">
+        <i class="bi bi-pencil menu-action-icon btn-menu-edit"></i>
+        <i class="bi bi-trash menu-action-icon btn-menu-delete"></i>
+      </div>
+    `;
 
     item.querySelector(".profile-item-info").addEventListener("click", () => {
       selectProfileInFirebase(perfil.id);
-      profileMenu.classList.remove("open");
+      profileMenu?.classList.remove("open");
     });
 
     item.querySelector(".btn-menu-edit").addEventListener("click", (e) => {
       e.stopPropagation();
-      openModal(perfil);
+      openProfileModal(perfil);
     });
 
     item.querySelector(".btn-menu-delete").addEventListener("click", (e) => {
@@ -255,21 +242,293 @@ function renderHeaderAndMenu(perfis) {
   });
 }
 
-// 4. ACESSO À COLEÇÃO DO PERFIL NO FIREBASE
+// 4. CARREGAR E EXIBIR A COLEÇÃO DO PERFIL
 function carregarColecaoDoPerfil(perfilId) {
-  // Referência para a coleção isolada deste perfil
+  if (activeProfileUnsubscribe) activeProfileUnsubscribe();
+
   const perfilItemsRef = collection(db, "perfis", perfilId, "dados_colecao");
 
-  onSnapshot(perfilItemsRef, (snapshot) => {
-    const itensDoPerfil = [];
+  activeProfileUnsubscribe = onSnapshot(perfilItemsRef, (snapshot) => {
+    const itens = [];
     snapshot.forEach((docSnap) => {
-      itensDoPerfil.push({ id: docSnap.id, ...docSnap.data() });
+      itens.push({ id: docSnap.id, ...docSnap.data() });
     });
-    console.log(`Itens carregados para o Perfil [${perfilId}]:`, itensDoPerfil);
+
+    renderAllCarousels(itens);
   });
 }
 
-// 5. TROCAR PERFIL ATIVO
+function renderAllCarousels(itens) {
+  if (!categoriesContainer) return;
+  categoriesContainer.innerHTML = "";
+
+  // A. Recentes
+  const recentes = [...itens]
+    .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+    .slice(0, 10);
+
+  if (recentes.length > 0 && recentSection && recentCarousel) {
+    recentSection.classList.remove("hidden");
+    recentCarousel.innerHTML = recentes.map(createItemCardHTML).join("");
+  } else if (recentSection) {
+    recentSection.classList.add("hidden");
+  }
+
+  // B. Por Categoria
+  AVAILABLE_CATEGORIES.forEach((cat) => {
+    const itensDaCategoria = itens.filter(
+      (item) => item.category?.toLowerCase() === cat.toLowerCase(),
+    );
+
+    if (itensDaCategoria.length > 0) {
+      const section = document.createElement("section");
+      section.className = "category-section";
+
+      const carouselId = `carousel-${cat.replace(/\s+/g, "-")}`;
+
+      section.innerHTML = `
+        <h2 class="category-title">${cat.toUpperCase()}</h2>
+        <div class="carousel-wrapper">
+          
+          <div id="${carouselId}" class="carousel-track">
+            ${itensDaCategoria.map(createItemCardHTML).join("")}
+          </div>
+          
+        </div>
+      `;
+
+      categoriesContainer.appendChild(section);
+    }
+  });
+
+  setupCarouselNavigation();
+}
+
+// Função para gerar o HTML do Card no estilo Ferrari/Colecionável
+function createItemCardHTML(item) {
+  const fallbackImg =
+    "https://via.placeholder.com/150x180/121214/ffffff?text=Sem+Foto";
+
+  const productImg =
+    item.imageUrl && item.imageUrl.trim() !== "" ? item.imageUrl : fallbackImg;
+
+  const categoryName = item.category || "Colecionável";
+
+  return `
+    <div class="item-card-horizontal">
+      <div class="card-img-container">
+        <img src="${productImg}" alt="${item.name}" loading="lazy" onerror="this.onerror=null; this.src='${fallbackImg}';">
+      </div>
+      
+      <div class="card-content-container">
+        <div class="card-badge">
+          <i class="bi bi-car-front-fill"></i>
+          <span>${categoryName}</span>
+        </div>
+        
+        <h3 class="card-title" title="${item.name}">${item.name}</h3>
+        
+        <p class="card-description">
+          ${item.store ? `Disponível em: <strong>${item.store}</strong>` : "Item adicionado à coleção."}
+        </p>
+        
+        ${
+          item.link
+            ? `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="btn-red-action">
+                <i class="bi bi-box-arrow-up-right"></i>
+                <span>Abrir link</span>
+                <i class="bi bi-arrow-right"></i>
+               </a>`
+            : `<button class="btn-red-action disabled" disabled>
+                <span>Sem link</span>
+               </button>`
+        }
+      </div>
+    </div>
+  `;
+}
+
+function setupCarouselNavigation() {
+  document.querySelectorAll(".carousel-nav").forEach((btn) => {
+    btn.onclick = () => {
+      const targetId = btn.getAttribute("data-target");
+      const track = document.getElementById(targetId);
+      if (!track) return;
+
+      const scrollAmount = track.clientWidth * 0.75;
+      track.scrollBy({
+        left: btn.classList.contains("prev") ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    };
+  });
+}
+
+// 5. AUTO-PREENCHIMENTO VIA LINK
+itemLinkInput?.addEventListener("blur", async () => {
+  const url = itemLinkInput.value.trim();
+  if (!url) return;
+
+  try {
+    const parsedUrl = new URL(url);
+    const host = parsedUrl.hostname.replace("www.", "");
+
+    if (itemStoreInput && !itemStoreInput.value) {
+      const storeName = host.split(".")[0];
+      itemStoreInput.value =
+        storeName.charAt(0).toUpperCase() + storeName.slice(1);
+    }
+
+    if (itemNameInput && !itemNameInput.value) {
+      const pathSegments = parsedUrl.pathname.split("/").filter(Boolean);
+      if (pathSegments.length > 0) {
+        const rawName = pathSegments[pathSegments.length - 1];
+        const formattedName = decodeURIComponent(rawName)
+          .replace(/[-_]/g, " ")
+          .replace(/\.(html|php|asp|pdp)$/i, "");
+        if (formattedName.length > 3) {
+          itemNameInput.value =
+            formattedName.charAt(0).toUpperCase() + formattedName.slice(1);
+        }
+      }
+    }
+
+    let productImageUrl = "";
+    try {
+      const response = await fetch(
+        `https://api.microlink.io?url=${encodeURIComponent(url)}`,
+      );
+      const data = await response.json();
+      if (data.status === "success" && data.data.image?.url) {
+        productImageUrl = data.data.image.url;
+      }
+    } catch (e) {
+      console.warn("Falha no Microlink API");
+    }
+
+    if (
+      itemImageInput &&
+      productImageUrl &&
+      !productImageUrl.includes("favicon") &&
+      !productImageUrl.includes("logo")
+    ) {
+      itemImageInput.value = productImageUrl;
+      showImagePreview(productImageUrl);
+    }
+  } catch (e) {
+    console.warn("URL inválida para preenchimento automático.");
+  }
+});
+
+// 6. MANIPULAÇÃO DE UPLOAD E PREVIEW DE IMAGEM
+itemFileInput?.addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  if (file.size > 2 * 1024 * 1024) {
+    alert("A imagem selecionada é muito grande. Escolha uma foto de até 2MB.");
+    itemFileInput.value = "";
+    return;
+  }
+
+  if (fileNameText) fileNameText.innerText = file.name;
+
+  const reader = new FileReader();
+  reader.onload = function (event) {
+    manualBase64Image = event.target.result;
+    if (itemImageInput) itemImageInput.value = "";
+    showImagePreview(manualBase64Image);
+  };
+  reader.readAsDataURL(file);
+});
+
+itemImageInput?.addEventListener("input", () => {
+  const url = itemImageInput.value.trim();
+  if (url) {
+    manualBase64Image = "";
+    if (itemFileInput) itemFileInput.value = "";
+    if (fileNameText) fileNameText.innerText = "Nenhum arquivo selecionado";
+    showImagePreview(url);
+  } else {
+    hideImagePreview();
+  }
+});
+
+function showImagePreview(src) {
+  if (imagePreview && imagePreviewWrapper) {
+    imagePreview.src = src;
+    imagePreviewWrapper.classList.remove("hidden");
+  }
+}
+
+function hideImagePreview() {
+  if (imagePreviewWrapper) {
+    imagePreviewWrapper.classList.add("hidden");
+  }
+}
+
+// 7. SALVAR ITEM
+saveItemBtn?.addEventListener("click", async () => {
+  const nome = itemNameInput ? itemNameInput.value.trim() : "";
+  const categoria = itemCategorySelect ? itemCategorySelect.value : "interesse";
+
+  if (!nome) {
+    alert("O campo Nome é obrigatório.");
+    return;
+  }
+
+  if (!activeProfileId) {
+    alert("Nenhum perfil ativo selecionado.");
+    return;
+  }
+
+  const finalImageUrl =
+    manualBase64Image || (itemImageInput ? itemImageInput.value.trim() : "");
+
+  const newItem = {
+    name: nome,
+    store: itemStoreInput ? itemStoreInput.value.trim() : "",
+    category: categoria,
+    link: itemLinkInput ? itemLinkInput.value.trim() : "",
+    imageUrl: finalImageUrl,
+    createdAt: Date.now(),
+  };
+
+  const perfilItemsRef = collection(
+    db,
+    "perfis",
+    activeProfileId,
+    "dados_colecao",
+  );
+  await addDoc(perfilItemsRef, newItem);
+
+  closeItemModal();
+});
+
+// MODAL ITEM
+function openItemModal() {
+  if (itemNameInput) itemNameInput.value = "";
+  if (itemStoreInput) itemStoreInput.value = "";
+  if (itemLinkInput) itemLinkInput.value = "";
+  if (itemImageInput) itemImageInput.value = "";
+  if (itemFileInput) itemFileInput.value = "";
+  if (fileNameText) fileNameText.innerText = "Nenhum arquivo selecionado";
+
+  manualBase64Image = "";
+  hideImagePreview();
+
+  if (itemCategorySelect) itemCategorySelect.value = "interesse";
+  if (itemModal) itemModal.classList.add("open");
+}
+
+function closeItemModal() {
+  if (itemModal) itemModal.classList.remove("open");
+}
+
+closeItemModalBtn?.addEventListener("click", closeItemModal);
+cancelItemModalBtn?.addEventListener("click", closeItemModal);
+
+// 8. GERENCIAMENTO DE PERFIS E AVATARES
 async function selectProfileInFirebase(perfilId) {
   for (const p of currentPerfis) {
     const pDocRef = doc(db, "perfis", p.id);
@@ -277,14 +536,13 @@ async function selectProfileInFirebase(perfilId) {
   }
 }
 
-// 6. RENDERIZAR AVATARES
 function renderAvatarOptions(categoryStyle) {
+  if (!avatarGrid) return;
   avatarGrid.innerHTML = "";
   const seeds = avatarCatalog[categoryStyle] || avatarCatalog["lorelei"];
 
   seeds.forEach((seed, index) => {
     const url = `https://api.dicebear.com/7.x/${categoryStyle}/svg?seed=${seed}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf`;
-
     const option = document.createElement("div");
     const isSelected =
       selectedAvatarUrl === url || (!selectedAvatarUrl && index === 0);
@@ -306,7 +564,7 @@ function renderAvatarOptions(categoryStyle) {
   });
 }
 
-avatarCategories.addEventListener("click", (e) => {
+avatarCategories?.addEventListener("click", (e) => {
   if (e.target.classList.contains("category-btn")) {
     document
       .querySelectorAll(".category-btn")
@@ -317,19 +575,18 @@ avatarCategories.addEventListener("click", (e) => {
   }
 });
 
-// MODAL CRIAR / EDITAR
-function openModal(perfil = null) {
-  profileMenu.classList.remove("open");
+function openProfileModal(perfil = null) {
+  profileMenu?.classList.remove("open");
 
   if (perfil) {
     editingProfileId = perfil.id;
-    modalTitle.innerText = "Editar Perfil";
-    profileNameInput.value = perfil.name;
+    if (modalTitle) modalTitle.innerText = "Editar Perfil";
+    if (profileNameInput) profileNameInput.value = perfil.name;
     selectedAvatarUrl = perfil.avatarUrl;
   } else {
     editingProfileId = null;
-    modalTitle.innerText = "Novo Perfil";
-    profileNameInput.value = "";
+    if (modalTitle) modalTitle.innerText = "Novo Perfil";
+    if (profileNameInput) profileNameInput.value = "";
     selectedAvatarUrl = "";
   }
 
@@ -337,48 +594,41 @@ function openModal(perfil = null) {
   document
     .querySelectorAll(".category-btn")
     .forEach((btn) => btn.classList.remove("active"));
-  document.querySelector('[data-style="lorelei"]').classList.add("active");
+  document.querySelector('[data-style="lorelei"]')?.classList.add("active");
 
   renderAvatarOptions("lorelei");
-  createProfileModal.classList.add("open");
-  profileNameInput.focus();
+  createProfileModal?.classList.add("open");
+  profileNameInput?.focus();
 }
 
-function closeModal() {
-  createProfileModal.classList.remove("open");
+function closeProfileModal() {
+  createProfileModal?.classList.remove("open");
   editingProfileId = null;
 }
 
-// MODAL EXCLUIR
 function openDeleteModal(perfil) {
-  profileMenu.classList.remove("open");
+  profileMenu?.classList.remove("open");
   deletingProfileId = perfil.id;
-  deleteProfileNameText.innerText = perfil.name;
-  deleteConfirmModal.classList.add("open");
+  if (deleteProfileNameText) deleteProfileNameText.innerText = perfil.name;
+  deleteConfirmModal?.classList.add("open");
 }
 
 function closeDeleteModal() {
-  deleteConfirmModal.classList.remove("open");
+  deleteConfirmModal?.classList.remove("open");
   deletingProfileId = null;
 }
 
-// SALVAR NOVO OU ATUALIZAR
-saveProfileBtn.addEventListener("click", async () => {
-  const nome = profileNameInput.value.trim();
+saveProfileBtn?.addEventListener("click", async () => {
+  const nome = profileNameInput ? profileNameInput.value.trim() : "";
   if (!nome) {
     alert("Informe o nome do perfil.");
     return;
   }
 
   if (editingProfileId) {
-    // Atualização
     const perfilRef = doc(db, "perfis", editingProfileId);
-    await updateDoc(perfilRef, {
-      name: nome,
-      avatarUrl: selectedAvatarUrl,
-    });
+    await updateDoc(perfilRef, { name: nome, avatarUrl: selectedAvatarUrl });
   } else {
-    // Criação
     const snapshot = await getDocs(profilesColRef);
     snapshot.forEach(async (docSnap) => {
       await updateDoc(doc(db, "perfis", docSnap.id), { selected: false });
@@ -390,48 +640,62 @@ saveProfileBtn.addEventListener("click", async () => {
       selected: true,
       createdAt: Date.now(),
     });
-    profileSelectionScreen.classList.add("hidden");
+    profileSelectionScreen?.classList.add("hidden");
   }
 
-  // Fecha o modal após salvar
-  closeModal();
+  closeProfileModal();
 });
 
-// CONFIRMAR EXCLUSÃO
-confirmDeleteBtn.addEventListener("click", async () => {
+confirmDeleteBtn?.addEventListener("click", async () => {
   if (deletingProfileId) {
     await deleteDoc(doc(db, "perfis", deletingProfileId));
     closeDeleteModal();
   }
 });
 
-// LISTENERS DE FECHAMENTO
-document.getElementById("closeModalBtn").addEventListener("click", closeModal);
-document.getElementById("cancelModalBtn").addEventListener("click", closeModal);
+// LISTENERS DE NAVEGAÇÃO E MODAIS
+document
+  .getElementById("closeModalBtn")
+  ?.addEventListener("click", closeProfileModal);
+document
+  .getElementById("cancelModalBtn")
+  ?.addEventListener("click", closeProfileModal);
 document
   .getElementById("closeDeleteModalBtn")
-  .addEventListener("click", closeDeleteModal);
+  ?.addEventListener("click", closeDeleteModal);
 document
   .getElementById("cancelDeleteBtn")
-  .addEventListener("click", closeDeleteModal);
+  ?.addEventListener("click", closeDeleteModal);
 
-backButton.addEventListener("click", () => window.history.back());
-profileButton.addEventListener("click", (e) => {
+backButton?.addEventListener("click", () => window.history.back());
+profileButton?.addEventListener("click", (e) => {
   e.stopPropagation();
-  profileMenu.classList.toggle("open");
+  profileMenu?.classList.toggle("open");
 });
 
 document.addEventListener("click", (e) => {
-  if (!profileMenu.contains(e.target) && !profileButton.contains(e.target)) {
+  if (
+    profileMenu &&
+    !profileMenu.contains(e.target) &&
+    profileButton &&
+    !profileButton.contains(e.target)
+  ) {
     profileMenu.classList.remove("open");
   }
 });
 
-switchProfileScreenBtn.addEventListener("click", () => {
-  profileMenu.classList.remove("open");
-  profileSelectionScreen.classList.remove("hidden");
+switchProfileScreenBtn?.addEventListener("click", () => {
+  profileMenu?.classList.remove("open");
+  profileSelectionScreen?.classList.remove("hidden");
 });
 
-addProfileMenuBtn.addEventListener("click", () => openModal(null));
+addProfileMenuBtn?.addEventListener("click", () => openProfileModal(null));
 
+// EXPOSIÇÃO GLOBAL
+window.openItemModal = openItemModal;
+window.closeItemModal = closeItemModal;
+window.openProfileModal = openProfileModal;
+window.closeProfileModal = closeProfileModal;
+
+// INICIAR
 listenToProfiles();

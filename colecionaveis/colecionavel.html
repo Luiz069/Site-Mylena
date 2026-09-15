@@ -65,12 +65,92 @@
         </div>
 
         <div class="add-item">
-            <button class="btn-add"">
+            <button class="btn-add" onclick="openItemModal()">
                 <i class=" bi bi-plus-circle btn-add-icon"></i>
             </button>
         </div>
     </section>
 
+    <!-- ================================================================================= -->
+    <!-- Container Onde Ficarão os Carrosséis na Página -->
+    <main id="mainContent" class="main-content">
+        <!-- Carrossel Fixo de Recentes -->
+        <section id="recentSection" class="category-section hidden">
+            <h2 class="category-title">🕒 Adicionados Recentemente</h2>
+            <div class="carousel-wrapper">
+                <!-- <button class="carousel-nav prev" data-target="recentCarousel"><i
+                        class="bi bi-chevron-left"></i></button> -->
+                <div id="recentCarousel" class="carousel-track"></div>
+                <!-- <button class="carousel-nav next" data-target="recentCarousel"><i
+                        class="bi bi-chevron-right"></i></button> -->
+            </div>
+        </section>
+
+        <!-- Container de Carrosséis por Categoria -->
+        <div id="categoriesContainer"></div>
+    </main>
+
+    <!-- Modal de Novo / Editar Item da Coleção -->
+    <div id="itemModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="itemModalTitle">Novo Item</h3>
+                <button id="closeItemModalBtn" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Link do Produto (Preenchimento Automático)</label>
+                    <input type="url" id="itemLinkInput" placeholder="https://exemplo.com/produto">
+                </div>
+                <div class="form-group">
+                    <label>Nome do Item *</label>
+                    <input type="text" id="itemNameInput" placeholder="Ex: Hot Wheels Batmobile" required>
+                </div>
+                <div class="form-group">
+                    <label>Loja</label>
+                    <input type="text" id="itemStoreInput" placeholder="Ex: Amazon, Mercado Livre">
+                </div>
+                <div class="form-group">
+                    <label>Categoria *</label>
+                    <select id="itemCategorySelect">
+                        <option value="interesse">Interesse</option>
+                        <option value="colecionaveis">Colecionáveis</option>
+                        <option value="Hot Wheels">Hot Wheels</option>
+                        <option value="funko">Funko</option>
+                        <option value="livros">Livros</option>
+                    </select>
+                </div>
+                <!-- Campo de Upload Manual ou URL -->
+                <div class="form-group">
+                    <label>Foto do Produto</label>
+
+                    <!-- Upload de arquivo local -->
+                    <div class="file-upload-wrapper">
+                        <label for="itemFileInput" class="btn-file-upload">
+                            <i class="bi bi-upload"></i> Escolher foto do dispositivo
+                        </label>
+                        <input type="file" id="itemFileInput" accept="image/*" class="hidden-file-input">
+                        <span id="fileNameText" class="file-name-text">Nenhum arquivo selecionado</span>
+                    </div>
+
+                    <small class="form-help-text">ou cole o link direto da imagem abaixo:</small>
+
+                    <!-- Link da imagem -->
+                    <input type="url" id="itemImageInput" placeholder="https://exemplo.com/imagem.jpg">
+                </div>
+
+                <!-- Preview da Imagem Selecionada -->
+                <div id="imagePreviewWrapper" class="image-preview-wrapper hidden">
+                    <p>Pré-visualização da Foto:</p>
+                    <img id="imagePreview" src="" alt="Preview da imagem">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelItemModalBtn" class="btn btn-secondary">Cancelar</button>
+                <button id="saveItemBtn" class="btn btn-primary">Salvar Item</button>
+            </div>
+        </div>
+    </div>
     <!-- ================================================================================= -->
 
     <!-- 3. MODAL DE CRIAÇÃO / EDIÇÃO DE PERFIL -->
