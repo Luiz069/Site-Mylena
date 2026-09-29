@@ -23,6 +23,28 @@ main {
     margin: 0 auto;
 }
 
+/* ============== SCROLLBAR =============== */
+* {
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE e Edge antigo */
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+/* Firefox */
+html {
+    scrollbar-width: none;
+}
+
+/* IE e Edge antigo */
+body {
+    -ms-overflow-style: none;
+}
+
 /* =========================
            TELA DE SELEÇÃO INICIAL (FULLSCREEN)
         ========================= */

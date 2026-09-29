@@ -42,11 +42,17 @@
 
 .imagem-link {
   border-radius: 10px;
+  width: 271px;
+  height: 100px;
 }
 
 .imagem-link:hover {
   transform: scale(1.5);
   /* box-shadow: 0px 0px 46px 20px rgba(255, 255, 255, 0.76); */
+}
+
+.link-itens {
+  text-decoration: none;
 }
 
 /* ---------------------------------------------------------------- */
