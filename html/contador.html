@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>💖 Nosso Amor 💖</title>
+    <style>
+        :root {
+            --rosa: #ff8fab;
+            --branco: #fff;
+            --preto: #111;
+            --amarelo: #ffe066;
+            --roxo: #c77dff;
+            --azul: #89c2d9;
+        }
+
+        body {
+            background-color: var(--preto);
+            color: var(--branco);
+            font-family: "Poppins", sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            overflow-x: hidden;
+            transition: all 0.5s ease;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            color: var(--rosa);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .contador {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .tempo {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 2px solid var(--rosa);
+            border-radius: 12px;
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        /* 🔒 Conteúdo Oculto por padrão */
+        .conteudo-surpresa {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1.5s ease, transform 1.5s ease;
+            width: 100%;
+        }
+
+        .conteudo-surpresa.visivel {
+            display: flex !important;
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
+
+        /* 💬 Frase Carinhosa */
+        .frase-container {
+            max-width: 500px;
+            text-align: center;
+            margin-bottom: 35px;
+            padding: 15px 25px;
+            background: rgba(255, 143, 171, 0.15);
+            border-left: 4px solid var(--rosa);
+            border-radius: 8px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .frase-texto {
+            font-size: 1.05rem;
+            font-style: italic;
+            color: var(--amarelo);
+            transition: opacity 0.5s ease;
+        }
+
+        /* 📸 Galeria Polaroid Bagunçada */
+        .galeria-polaroid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            max-width: 850px;
+            margin-top: 20px;
+            padding: 20px;
+        }
+
+        .polaroid {
+            background: white;
+            padding: 12px 12px 20px 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+            width: 170px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            border-radius: 3px;
+            color: #333;
+            position: relative;
+        }
+
+        .polaroid:nth-child(1) {
+            transform: rotate(-12deg) translate(-10px, 5px);
+        }
+
+        .polaroid:nth-child(2) {
+            transform: rotate(8deg) translate(8px, -12px);
+        }
+
+        .polaroid:nth-child(3) {
+            transform: rotate(-6deg) translate(-5px, 10px);
+        }
+
+        .polaroid:nth-child(4) {
+            transform: rotate(14deg) translate(12px, -5px);
+        }
+
+        .polaroid:hover {
+            transform: scale(1.15) rotate(0deg) translate(0, 0) !important;
+            z-index: 100;
+            box-shadow: 0 15px 30px rgba(255, 143, 171, 0.6);
+        }
+
+        .polaroid img {
+            width: 100%;
+            height: 170px;
+            object-fit: cover;
+            border-radius: 2px;
+        }
+
+        .polaroid .legenda {
+            font-family: sans-serif;
+            font-size: 0.95rem;
+            margin-top: 10px;
+            color: #222;
+            font-weight: bold;
+        }
+
+        /* 🌈 Brilho de fundo contínuo */
+        .animacao-ativa {
+            animation: brilho 2.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes brilho {
+            0% {
+                background-color: var(--preto);
+            }
+
+            100% {
+                background-color: #1a001f;
+            }
+        }
+
+        .coracoes,
+        .confetes,
+        .estrelas,
+        .particulas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 9999;
+        }
+
+        .coracao {
+            position: absolute;
+            bottom: 0;
+            width: 25px;
+            height: 25px;
+            background: var(--rosa);
+            opacity: 0.8;
+            transform: rotate(45deg);
+            animation: subir 5s linear infinite;
+        }
+
+        .coracao::before,
+        .coracao::after {
+            content: "";
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            background: var(--rosa);
+            border-radius: 50%;
+        }
+
+        .coracao::before {
+            top: -12.5px;
+            left: 0;
+        }
+
+        .coracao::after {
+            top: 0;
+            left: 12.5px;
+        }
+
+        @keyframes subir {
+            0% {
+                transform: translateY(0) rotate(45deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-110vh) rotate(45deg);
+                opacity: 0;
+            }
+        }
+
+        .confete {
+            position: absolute;
+            top: 0;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            animation: cair 4s linear infinite;
+        }
+
+        @keyframes cair {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .estrela {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            width: 2px;
+            height: 2px;
+            animation: piscar 2s ease-in-out infinite;
+        }
+
+        @keyframes piscar {
+
+            0%,
+            100% {
+                opacity: 0.2;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .particula {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--amarelo), transparent);
+            animation: flutuar 6s ease-in-out infinite;
+        }
+
+        @keyframes flutuar {
+            0% {
+                transform: translateY(0);
+                opacity: 0.6;
+            }
+
+            50% {
+                transform: translateY(-50px);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 0.6;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>💞 Nosso Tempo 💞</h1>
+
+    <div class="contador">
+        <div id="ymd" class="tempo"></div>
+        <div id="hms" class="tempo"></div>
+    </div>
+
+    <!-- 🎁 Área Oculta -->
+    <div id="surpresa" class="conteudo-surpresa">
+        <div class="frase-container">
+            <span id="frase" class="frase-texto">Carregando amor...</span>
+        </div>
+
+        <div class="galeria-polaroid">
+            <div class="polaroid">
+                <img src="../src/img/eu-e-ela/foto-01.png" alt="Primeiro Encontro" />
+                <div class="legenda">Aposta Perdida 🙄</div>
+            </div>
+            <div class="polaroid">
+                <img src="../src/img/eu-e-ela/foto-02.png" alt="Viagem Inesquecível" />
+                <div class="legenda">Sempre Juntos 👩‍❤️‍👨</div>
+            </div>
+            <div class="polaroid">
+                <img src="../src/img/eu-e-ela/foto-03.png" alt="Seu Sorriso" />
+                <div class="legenda">Testando 😀</div>
+            </div>
+            <div class="polaroid">
+                <img src="../src/img/eu-e-ela/foto-04.png" alt="Sempre Juntos" />
+                <div class="legenda">Seu Sorriso 💖</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const frases = [
+            "\"Com você, cada segundo se torna uma memória inesquecível.\"",
+            "\"Você é o meu lugar favorito no mundo todinho.\"",
+            "\"Amar você é a escolha mais fácil que faço todos os dias.\"",
+            "\"O tempo voa quando estou com você, mas o amor só aumenta.\"",
+            "\"Seu sorriso ainda faz meu coração acelerar do mesmo jeito.\"",
+            "\"Sempre serar meu player 2.\"",
+            "\"Obrigado(a) por ser minha melhor companhia e meu grande amor.\"",
+            "\"Cada dia ao seu lado é o meu momento preferido do dia.\""
+        ];
+
+        function trocarFrase() {
+            const elementoFrase = document.getElementById("frase");
+            if (!elementoFrase) return;
+            elementoFrase.style.opacity = 0;
+
+            setTimeout(() => {
+                const indiceSorteado = Math.floor(Math.random() * frases.length);
+                elementoFrase.innerText = frases[indiceSorteado];
+                elementoFrase.style.opacity = 1;
+            }, 500);
+        }
+
+        trocarFrase();
+        setInterval(trocarFrase, 7000);
+
+        let animacaoJaRodou = false;
+
+        function criarEfeitoContinuo(classe, quantidade, criador) {
+            const container = document.createElement("div");
+            container.classList.add(classe);
+            document.body.appendChild(container);
+
+            for (let i = 0; i < quantidade; i++) {
+                const elemento = criador();
+                container.appendChild(elemento);
+            }
+        }
+
+        function revelarSurpresaEAnimacao() {
+            if (animacaoJaRodou) return;
+            animacaoJaRodou = true;
+
+            const containerSurpresa = document.getElementById("surpresa");
+            containerSurpresa.classList.add("visivel");
+
+            // O brilho no fundo continua para sempre
+            document.body.classList.add("animacao-ativa");
+
+            // Efeitos de partículas e corações rodando continuamente
+            criarEfeitoContinuo("coracoes", 25, () => {
+                const c = document.createElement("div");
+                c.classList.add("coracao");
+                c.style.left = Math.random() * 100 + "vw";
+                c.style.animationDelay = Math.random() * 5 + "s";
+                return c;
+            });
+
+            criarEfeitoContinuo("confetes", 30, () => {
+                const confete = document.createElement("div");
+                confete.classList.add("confete");
+                confete.style.backgroundColor = [
+                    "#ff8fab", "#c77dff", "#89c2d9", "#ffe066"
+                ][Math.floor(Math.random() * 4)];
+                confete.style.left = Math.random() * 100 + "vw";
+                confete.style.animationDelay = Math.random() * 4 + "s";
+                confete.style.width = confete.style.height = Math.random() * 8 + 4 + "px";
+                return confete;
+            });
+
+            criarEfeitoContinuo("estrelas", 60, () => {
+                const estrela = document.createElement("div");
+                estrela.classList.add("estrela");
+                estrela.style.left = Math.random() * 100 + "vw";
+                estrela.style.top = Math.random() * 100 + "vh";
+                estrela.style.animationDelay = Math.random() * 2 + "s";
+                return estrela;
+            });
+
+            criarEfeitoContinuo("particulas", 25, () => {
+                const p = document.createElement("div");
+                p.classList.add("particula");
+                p.style.left = Math.random() * 100 + "vw";
+                p.style.top = Math.random() * 100 + "vh";
+                p.style.animationDelay = Math.random() * 6 + "s";
+                return p;
+            });
+        }
+
+        function atualizarTemporizador() {
+            const inicio = new Date("2024-10-07T23:00:00");
+            const agora = new Date();
+
+            let anos = agora.getFullYear() - inicio.getFullYear();
+            let meses = agora.getMonth() - inicio.getMonth();
+            let dias = agora.getDate() - inicio.getDate();
+            let horas = agora.getHours() - inicio.getHours();
+            let minutos = agora.getMinutes() - inicio.getMinutes();
+            let segundos = agora.getSeconds() - inicio.getSeconds();
+
+            if (segundos < 0) { segundos += 60; minutos--; }
+            if (minutos < 0) { minutos += 60; horas--; }
+            if (horas < 0) { horas += 24; dias--; }
+            if (dias < 0) {
+                const ultimoMes = new Date(agora.getFullYear(), agora.getMonth(), 0).getDate();
+                dias += ultimoMes;
+                meses--;
+            }
+            if (meses < 0) { meses += 12; anos--; }
+
+            document.getElementById("ymd").innerHTML = `${anos} anos, ${meses} meses, ${dias} dias`;
+            document.getElementById("hms").innerHTML = `${horas}h ${minutos}m ${segundos}s`;
+
+            if (anos >= 2) {
+                revelarSurpresaEAnimacao();
+            }
+        }
+
+        setInterval(atualizarTemporizador, 1000);
+        atualizarTemporizador();
+    </script>
+</body>
+
+</html>
