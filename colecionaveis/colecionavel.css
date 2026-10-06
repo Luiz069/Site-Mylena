@@ -1031,3 +1031,81 @@ h1 {
 .category-section {
     margin-bottom: 30px;
 }
+
+/* ================================================================= */
+/* Cabeçalho do Card (Badge + Menu) */
+.card-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+/* Container do Menu Hambúrguer */
+.card-menu-wrapper {
+    position: relative;
+}
+
+.card-menu-btn {
+    background: transparent;
+    border: none;
+    color: #a1a1aa;
+    font-size: 1rem;
+    padding: 2px 4px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: color 0.2s, background-color 0.2s;
+}
+
+.card-menu-btn:hover {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Dropdown Suspenso */
+.card-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: #1a1a22;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    min-width: 110px;
+    overflow: hidden;
+    padding: 4px 0;
+}
+
+.card-dropdown-menu.open {
+    display: flex;
+    flex-direction: column;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: transparent;
+    border: none;
+    color: #e4e4e7;
+    font-size: 0.8rem;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dropdown-item.btn-delete-item {
+    color: #ef4444;
+}
+
+.dropdown-item.btn-delete-item:hover {
+    background-color: rgba(239, 68, 68, 0.15);
+}

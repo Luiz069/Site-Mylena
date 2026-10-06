@@ -74,7 +74,9 @@ let editingProfileId = null;
 let deletingProfileId = null;
 let activeProfileId = null;
 let activeProfileUnsubscribe = null;
-let manualBase64Image = ""; // Guarda a foto em Base64 enviada pelo dispositivo
+let editingItemId = null;
+let manualBase64Image = "";
+let currentLoadedItems = [];
 
 // Referências DOM - Perfis
 const profileSelectionScreen = document.getElementById(
@@ -102,8 +104,9 @@ const deleteConfirmModal = document.getElementById("deleteConfirmModal");
 const deleteProfileNameText = document.getElementById("deleteProfileNameText");
 const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
 
-// Referências DOM - Itens, Upload & Carrossel
+// Referências DOM - Itens & Carrossel
 const itemModal = document.getElementById("itemModal");
+const itemModalTitle = document.getElementById("itemModalTitle");
 const itemLinkInput = document.getElementById("itemLinkInput");
 const itemNameInput = document.getElementById("itemNameInput");
 const itemStoreInput = document.getElementById("itemStoreInput");
@@ -132,6 +135,8 @@ function listenToProfiles() {
     const perfilAtivo = currentPerfis.find((p) => p.selected === true);
     if (!perfilAtivo || currentPerfis.length === 0) {
       profileSelectionScreen?.classList.remove("hidden");
+    } else {
+      profileSelectionScreen?.classList.add("hidden");
     }
 
     renderInitialSelectionScreen(currentPerfis);
@@ -139,7 +144,7 @@ function listenToProfiles() {
   });
 }
 
-// 2. TELA DE SELEÇÃO INICIAL
+// 2. TELA DE SELEÇÃO INICIAL DE PERFIS
 function renderInitialSelectionScreen(perfis) {
   if (!initialProfilesGrid) return;
   initialProfilesGrid.innerHTML = "";
@@ -160,9 +165,9 @@ function renderInitialSelectionScreen(perfis) {
 
     card
       .querySelector(".profile-avatar-wrapper")
-      .addEventListener("click", () => {
-        selectProfileInFirebase(perfil.id);
-        profileSelectionScreen?.classList.add("hidden");
+      .addEventListener("click", async () => {
+        await selectProfileInFirebase(perfil.id);
+        window.location.reload();
       });
 
     card.querySelector(".edit").addEventListener("click", (e) => {
@@ -190,7 +195,7 @@ function renderInitialSelectionScreen(perfis) {
   initialProfilesGrid.appendChild(addCard);
 }
 
-// 3. MENU CABEÇALHO
+// 3. MENU NO CABEÇALHO
 function renderHeaderAndMenu(perfis) {
   if (!profileContainer) return;
   profileContainer.innerHTML = "";
@@ -223,10 +228,12 @@ function renderHeaderAndMenu(perfis) {
       </div>
     `;
 
-    item.querySelector(".profile-item-info").addEventListener("click", () => {
-      selectProfileInFirebase(perfil.id);
-      profileMenu?.classList.remove("open");
-    });
+    item
+      .querySelector(".profile-item-info")
+      .addEventListener("click", async () => {
+        await selectProfileInFirebase(perfil.id);
+        window.location.reload();
+      });
 
     item.querySelector(".btn-menu-edit").addEventListener("click", (e) => {
       e.stopPropagation();
@@ -242,25 +249,35 @@ function renderHeaderAndMenu(perfis) {
   });
 }
 
-// 4. CARREGAR E EXIBIR A COLEÇÃO DO PERFIL
+// 4. CARREGAR A COLEÇÃO DO PERFIL ATIVO
 function carregarColecaoDoPerfil(perfilId) {
-  if (activeProfileUnsubscribe) activeProfileUnsubscribe();
+  if (activeProfileUnsubscribe) {
+    activeProfileUnsubscribe();
+    activeProfileUnsubscribe = null;
+  }
 
   const perfilItemsRef = collection(db, "perfis", perfilId, "dados_colecao");
 
-  activeProfileUnsubscribe = onSnapshot(perfilItemsRef, (snapshot) => {
-    const itens = [];
-    snapshot.forEach((docSnap) => {
-      itens.push({ id: docSnap.id, ...docSnap.data() });
-    });
+  activeProfileUnsubscribe = onSnapshot(
+    perfilItemsRef,
+    (snapshot) => {
+      const itens = [];
+      snapshot.forEach((docSnap) => {
+        itens.push({ id: docSnap.id, ...docSnap.data() });
+      });
 
-    renderAllCarousels(itens);
-  });
+      currentLoadedItems = itens;
+      renderAllCarousels(itens);
+    },
+    (error) => {
+      console.error("Erro ao carregar coleção:", error);
+    },
+  );
 }
 
 function renderAllCarousels(itens) {
-  if (!categoriesContainer) return;
-  categoriesContainer.innerHTML = "";
+  if (categoriesContainer) categoriesContainer.innerHTML = "";
+  if (recentCarousel) recentCarousel.innerHTML = "";
 
   // A. Recentes
   const recentes = [...itens]
@@ -280,7 +297,7 @@ function renderAllCarousels(itens) {
       (item) => item.category?.toLowerCase() === cat.toLowerCase(),
     );
 
-    if (itensDaCategoria.length > 0) {
+    if (itensDaCategoria.length > 0 && categoriesContainer) {
       const section = document.createElement("section");
       section.className = "category-section";
 
@@ -289,11 +306,9 @@ function renderAllCarousels(itens) {
       section.innerHTML = `
         <h2 class="category-title">${cat.toUpperCase()}</h2>
         <div class="carousel-wrapper">
-          
           <div id="${carouselId}" class="carousel-track">
             ${itensDaCategoria.map(createItemCardHTML).join("")}
           </div>
-          
         </div>
       `;
 
@@ -302,9 +317,10 @@ function renderAllCarousels(itens) {
   });
 
   setupCarouselNavigation();
+  setupCardMenuEvents();
 }
 
-// Função para gerar o HTML do Card no estilo Ferrari/Colecionável
+// Gera HTML do Card com Menu Hambúrguer (Editar / Apagar)
 function createItemCardHTML(item) {
   const fallbackImg =
     "https://via.placeholder.com/150x180/121214/ffffff?text=Sem+Foto";
@@ -315,14 +331,30 @@ function createItemCardHTML(item) {
   const categoryName = item.category || "Colecionável";
 
   return `
-    <div class="item-card-horizontal">
+    <div class="item-card-horizontal" data-id="${item.id}">
       <div class="card-img-container">
         <img src="${productImg}" alt="${item.name}" loading="lazy" onerror="this.onerror=null; this.src='${fallbackImg}';">
       </div>
       
       <div class="card-content-container">
-        <div class="card-badge">
-          <span>${categoryName}</span>
+        <div class="card-header-row">
+          <div class="card-badge">
+            <span>${categoryName}</span>
+          </div>
+          
+          <div class="card-menu-wrapper">
+            <button class="card-menu-btn" title="Opções">
+              <i class="bi bi-three-dots-vertical"></i>
+            </button>
+            <div class="card-dropdown-menu">
+              <button class="dropdown-item btn-edit-item" data-id="${item.id}">
+                <i class="bi bi-pencil"></i> Editar
+              </button>
+              <button class="dropdown-item btn-delete-item" data-id="${item.id}">
+                <i class="bi bi-trash"></i> Apagar
+              </button>
+            </div>
+          </div>
         </div>
         
         <h3 class="card-title" title="${item.name}">${item.name}</h3>
@@ -347,6 +379,54 @@ function createItemCardHTML(item) {
   `;
 }
 
+// Configurações do Menu do Card (Editar/Apagar)
+function setupCardMenuEvents() {
+  document.querySelectorAll(".card-menu-btn").forEach((btn) => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const currentDropdown = btn.nextElementSibling;
+
+      document.querySelectorAll(".card-dropdown-menu.open").forEach((drop) => {
+        if (drop !== currentDropdown) drop.classList.remove("open");
+      });
+
+      currentDropdown?.classList.toggle("open");
+    };
+  });
+
+  document.querySelectorAll(".btn-edit-item").forEach((btn) => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const itemId = btn.getAttribute("data-id");
+      const item = currentLoadedItems.find((i) => i.id === itemId);
+      if (item) openItemModal(item);
+    };
+  });
+
+  document.querySelectorAll(".btn-delete-item").forEach((btn) => {
+    btn.onclick = async (e) => {
+      e.stopPropagation();
+      const itemId = btn.getAttribute("data-id");
+      if (confirm("Tem certeza que deseja apagar este item?")) {
+        await deleteItemFromFirebase(itemId);
+      }
+    };
+  });
+}
+
+// Apagar item do Firestore e recarregar
+async function deleteItemFromFirebase(itemId) {
+  if (!activeProfileId || !itemId) return;
+  try {
+    const itemRef = doc(db, "perfis", activeProfileId, "dados_colecao", itemId);
+    await deleteDoc(itemRef);
+    window.location.reload();
+  } catch (error) {
+    console.error("Erro ao apagar item:", error);
+    alert("Não foi possível apagar o item.");
+  }
+}
+
 function setupCarouselNavigation() {
   document.querySelectorAll(".carousel-nav").forEach((btn) => {
     btn.onclick = () => {
@@ -363,7 +443,7 @@ function setupCarouselNavigation() {
   });
 }
 
-// 5. AUTO-PREENCHIMENTO VIA LINK
+// 5. AUTO-PREENCHIMENTO DE DADOS VIA LINK
 itemLinkInput?.addEventListener("blur", async () => {
   const url = itemLinkInput.value.trim();
   if (!url) return;
@@ -402,7 +482,7 @@ itemLinkInput?.addEventListener("blur", async () => {
         productImageUrl = data.data.image.url;
       }
     } catch (e) {
-      console.warn("Falha no Microlink API");
+      console.warn("Falha na API Microlink");
     }
 
     if (
@@ -415,17 +495,17 @@ itemLinkInput?.addEventListener("blur", async () => {
       showImagePreview(productImageUrl);
     }
   } catch (e) {
-    console.warn("URL inválida para preenchimento automático.");
+    console.warn("URL inválida.");
   }
 });
 
-// 6. MANIPULAÇÃO DE UPLOAD E PREVIEW DE IMAGEM
+// 6. UPLOAD E PREVIEW DA IMAGEM
 itemFileInput?.addEventListener("change", (e) => {
   const file = e.target.files[0];
   if (!file) return;
 
   if (file.size > 2 * 1024 * 1024) {
-    alert("A imagem selecionada é muito grande. Escolha uma foto de até 2MB.");
+    alert("Selecione uma imagem de até 2MB.");
     itemFileInput.value = "";
     return;
   }
@@ -466,7 +546,7 @@ function hideImagePreview() {
   }
 }
 
-// 7. SALVAR ITEM
+// 7. SALVAR OU EDITAR ITEM (COM RECARREGAMENTO)
 saveItemBtn?.addEventListener("click", async () => {
   const nome = itemNameInput ? itemNameInput.value.trim() : "";
   const categoria = itemCategorySelect ? itemCategorySelect.value : "interesse";
@@ -484,44 +564,83 @@ saveItemBtn?.addEventListener("click", async () => {
   const finalImageUrl =
     manualBase64Image || (itemImageInput ? itemImageInput.value.trim() : "");
 
-  const newItem = {
+  const itemData = {
     name: nome,
     store: itemStoreInput ? itemStoreInput.value.trim() : "",
     category: categoria,
     link: itemLinkInput ? itemLinkInput.value.trim() : "",
     imageUrl: finalImageUrl,
-    createdAt: Date.now(),
+    updatedAt: Date.now(),
   };
 
-  const perfilItemsRef = collection(
-    db,
-    "perfis",
-    activeProfileId,
-    "dados_colecao",
-  );
-  await addDoc(perfilItemsRef, newItem);
+  try {
+    if (editingItemId) {
+      const itemRef = doc(
+        db,
+        "perfis",
+        activeProfileId,
+        "dados_colecao",
+        editingItemId,
+      );
+      await updateDoc(itemRef, itemData);
+    } else {
+      itemData.createdAt = Date.now();
+      const perfilItemsRef = collection(
+        db,
+        "perfis",
+        activeProfileId,
+        "dados_colecao",
+      );
+      await addDoc(perfilItemsRef, itemData);
+    }
 
-  closeItemModal();
+    closeItemModal();
+    window.location.reload();
+  } catch (error) {
+    console.error("Erro ao salvar item:", error);
+    alert("Erro ao salvar o item.");
+  }
 });
 
-// MODAL ITEM
-function openItemModal() {
-  if (itemNameInput) itemNameInput.value = "";
-  if (itemStoreInput) itemStoreInput.value = "";
-  if (itemLinkInput) itemLinkInput.value = "";
-  if (itemImageInput) itemImageInput.value = "";
-  if (itemFileInput) itemFileInput.value = "";
-  if (fileNameText) fileNameText.innerText = "Nenhum arquivo selecionado";
+// MODAL DE ITEM
+function openItemModal(itemToEdit = null) {
+  if (itemToEdit) {
+    editingItemId = itemToEdit.id;
+    if (itemModalTitle) itemModalTitle.innerText = "Editar Item";
+    if (itemNameInput) itemNameInput.value = itemToEdit.name || "";
+    if (itemStoreInput) itemStoreInput.value = itemToEdit.store || "";
+    if (itemLinkInput) itemLinkInput.value = itemToEdit.link || "";
+    if (itemImageInput) itemImageInput.value = itemToEdit.imageUrl || "";
+    if (itemCategorySelect)
+      itemCategorySelect.value = itemToEdit.category || "interesse";
 
-  manualBase64Image = "";
-  hideImagePreview();
+    if (itemToEdit.imageUrl) {
+      showImagePreview(itemToEdit.imageUrl);
+    } else {
+      hideImagePreview();
+    }
+  } else {
+    editingItemId = null;
+    if (itemModalTitle) itemModalTitle.innerText = "Novo Item";
+    if (itemNameInput) itemNameInput.value = "";
+    if (itemStoreInput) itemStoreInput.value = "";
+    if (itemLinkInput) itemLinkInput.value = "";
+    if (itemImageInput) itemImageInput.value = "";
+    if (itemFileInput) itemFileInput.value = "";
+    if (fileNameText) fileNameText.innerText = "Nenhum arquivo selecionado";
 
-  if (itemCategorySelect) itemCategorySelect.value = "interesse";
+    manualBase64Image = "";
+    hideImagePreview();
+
+    if (itemCategorySelect) itemCategorySelect.value = "interesse";
+  }
+
   if (itemModal) itemModal.classList.add("open");
 }
 
 function closeItemModal() {
   if (itemModal) itemModal.classList.remove("open");
+  editingItemId = null;
 }
 
 closeItemModalBtn?.addEventListener("click", closeItemModal);
@@ -617,6 +736,7 @@ function closeDeleteModal() {
   deletingProfileId = null;
 }
 
+// CORREÇÃO CRÍTICA AQUI: Usando for...of em vez de forEach assíncrono
 saveProfileBtn?.addEventListener("click", async () => {
   const nome = profileNameInput ? profileNameInput.value.trim() : "";
   if (!nome) {
@@ -629,9 +749,9 @@ saveProfileBtn?.addEventListener("click", async () => {
     await updateDoc(perfilRef, { name: nome, avatarUrl: selectedAvatarUrl });
   } else {
     const snapshot = await getDocs(profilesColRef);
-    snapshot.forEach(async (docSnap) => {
+    for (const docSnap of snapshot.docs) {
       await updateDoc(doc(db, "perfis", docSnap.id), { selected: false });
-    });
+    }
 
     await addDoc(profilesColRef, {
       name: nome,
@@ -639,55 +759,21 @@ saveProfileBtn?.addEventListener("click", async () => {
       selected: true,
       createdAt: Date.now(),
     });
-    profileSelectionScreen?.classList.add("hidden");
   }
 
   closeProfileModal();
+  window.location.reload();
 });
 
 confirmDeleteBtn?.addEventListener("click", async () => {
   if (deletingProfileId) {
     await deleteDoc(doc(db, "perfis", deletingProfileId));
     closeDeleteModal();
+    window.location.reload();
   }
 });
 
-// =============================================================
-// BOTÃO DE PESQUISA
-const searchBox = document.querySelector(".search-box");
-const searchBtn = document.querySelector(".search-icon");
-const cancelBtn = document.querySelector(".cancel-icon");
-const searchInput = document.querySelector("input");
-const searchData = document.querySelector(".search-data");
-searchBtn.onclick = () => {
-  searchBox.classList.add("active");
-  searchBtn.classList.add("active");
-  searchInput.classList.add("active");
-  cancelBtn.classList.add("active");
-  searchInput.focus();
-  if (searchInput.value != "") {
-    var values = searchInput.value;
-    searchData.classList.remove("active");
-    searchData.innerHTML =
-      "You just typed " +
-      "<span style='font-weight: 500;'>" +
-      values +
-      "</span>";
-  } else {
-    searchData.textContent = "";
-  }
-};
-cancelBtn.onclick = () => {
-  searchBox.classList.remove("active");
-  searchBtn.classList.remove("active");
-  searchInput.classList.remove("active");
-  cancelBtn.classList.remove("active");
-  searchData.classList.toggle("active");
-  searchInput.value = "";
-};
-// =============================================================
-
-// LISTENERS DE NAVEGAÇÃO E MODAIS
+// LISTENERS DE EVENTOS DOM
 document
   .getElementById("closeModalBtn")
   ?.addEventListener("click", closeProfileModal);
@@ -715,6 +801,14 @@ document.addEventListener("click", (e) => {
     !profileButton.contains(e.target)
   ) {
     profileMenu.classList.remove("open");
+  }
+
+  if (!e.target.closest(".card-menu-wrapper")) {
+    document
+      .querySelectorAll(".card-dropdown-menu.open")
+      .forEach((dropdown) => {
+        dropdown.classList.remove("open");
+      });
   }
 });
 
