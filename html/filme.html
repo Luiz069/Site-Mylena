@@ -1398,6 +1398,7 @@
 
 
 
+
     function abrirPlayerComToken(url, nome) {
       const modal = document.getElementById("modalPlayerMoto");
       const video = document.getElementById("videoMoto");
@@ -1405,28 +1406,55 @@
       const mensagem = document.getElementById("playerMensagem");
 
       titulo.textContent = nome || "Reproduzindo filme";
-      mensagem.textContent = "Carregando vídeo...";
+      mensagem.textContent = "Conectando ao servidor do Moto E7...";
 
       modal.style.display = "flex";
       document.body.style.overflow = "hidden";
 
-      video.onerror = () => {
-        mensagem.textContent =
-          "Não foi possível reproduzir este vídeo. Verifique o arquivo e a conexão com o servidor.";
+      video.pause();
+      video.removeAttribute("src");
+      video.load();
+
+      video.controls = true;
+      video.playsInline = true;
+      video.preload = "metadata";
+
+      video.onwaiting = () => {
+        mensagem.textContent = "Carregando vídeo...";
+      };
+
+      video.onloadedmetadata = () => {
+        mensagem.textContent = "Vídeo carregado. Toque em Play para assistir.";
       };
 
       video.onplaying = () => {
         mensagem.textContent = "";
       };
 
+      video.oncanplay = () => {
+        mensagem.textContent = "Pronto para reproduzir.";
+      };
+
+      video.onerror = () => {
+        const erro = video.error;
+        const codigos = {
+          1: "O carregamento foi cancelado.",
+          2: "Falha de rede ao receber o vídeo.",
+          3: "Formato ou codec não compatível com o Chrome.",
+          4: "O vídeo não pôde ser carregado neste navegador."
+        };
+
+        mensagem.textContent =
+          codigos[erro?.code] ||
+          "Não foi possível carregar o vídeo. Verifique a conexão com o servidor.";
+      };
+
       video.src = url;
       video.load();
 
-      video.play().catch(() => {
-        mensagem.textContent =
-          "O vídeo está pronto. Pressione Play para iniciar.";
-      });
+      // No celular, deixe o usuário iniciar com um toque explícito.
     }
+
 
     function fecharPlayerMoto() {
       const modal = document.getElementById("modalPlayerMoto");
