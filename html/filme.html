@@ -1296,6 +1296,16 @@
 
     // REPRODUÇÃO NO GOOGLE DRIVE
 
+
+    function normalizarNomeFilme(texto) {
+      return String(texto || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\.[^.]+$/, "") // Remove a extensão do arquivo
+        .replace(/[^a-zA-Z0-9]/g, "") // Ignora espaços, :, hífens etc.
+        .toLowerCase();
+    }
+
     async function assistiNoDrive(nome, btn) {
       const textoOriginal = btn.innerHTML;
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
@@ -1305,8 +1315,12 @@
         const token = await obterTokenServidor();
         if (!token) return;
 
+        // Pesquisa primeiro pelo trecho anterior aos dois-pontos.
+        // Ex.: "Homem-Aranha: Um Novo Dia" -> "Homem-Aranha"
+        const buscaTermo = nome.split(/[:：]/)[0].trim() || nome;
+
         const resposta = await fetch(
-          `${SERVIDOR_URL}/api/buscar?q=${encodeURIComponent(nome)}`,
+          `${SERVIDOR_URL}/api/buscar?q=${encodeURIComponent(buscaTermo)}`,
           {
             headers: {
               Authorization: `Bearer ${token}`
@@ -1326,25 +1340,26 @@
         }
 
         const dados = await resposta.json();
+        const nomeNormalizado = normalizarNomeFilme(nome);
 
-        const normalizar = texto => texto
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .toLowerCase()
-          .replace(/\.mp4$/i, "")
-          .trim();
+        // Compara o título com os nomes dos arquivos ignorando pontuação.
+        const arquivos = dados.resultados || [];
 
-        const filme = (dados.resultados || []).find(arquivo =>
-          normalizar(arquivo.nome) === normalizar(nome) ||
-          normalizar(arquivo.nome).startsWith(normalizar(nome))
+        const filme = arquivos.find(arquivo =>
+          normalizarNomeFilme(arquivo.nome) === nomeNormalizado
+        ) || arquivos.find(arquivo =>
+          normalizarNomeFilme(arquivo.nome).startsWith(nomeNormalizado)
         );
 
         if (!filme) {
-          alert(`"${nome}" não foi encontrado na pasta Movies do Moto E7.`);
+          alert(
+            `O vídeo "${nome}" não foi encontrado. ` +
+            "Confira se o arquivo está na pasta Movies do Moto E7."
+          );
           return;
         }
 
-        // Solicita um ticket temporário usando o token já existente.
+        // Solicita o ticket temporário com o token já existente.
         const respostaTicket = await fetch(
           `${SERVIDOR_URL}/api/ticket?caminho=${encodeURIComponent(filme.caminho)}`,
           {
@@ -1355,7 +1370,9 @@
         );
 
         if (!respostaTicket.ok) {
-          throw new Error(`Falha ao autorizar o vídeo: HTTP ${respostaTicket.status}`);
+          throw new Error(
+            `Falha ao autorizar o vídeo: HTTP ${respostaTicket.status}`
+          );
         }
 
         const dadosTicket = await respostaTicket.json();
@@ -1368,6 +1385,7 @@
 
       } catch (erro) {
         console.error("Erro ao reproduzir:", erro);
+
         alert(
           "Não foi possível abrir o vídeo. Confira se o servidor está online " +
           "e se o computador está conectado ao Tailscale."
@@ -1377,6 +1395,7 @@
         btn.disabled = false;
       }
     }
+
 
 
     function abrirPlayerComToken(url, nome) {
